@@ -14,4 +14,3 @@ Repository for LOS201 assignments and labs.
 
 This repository follows a basic DevOps branching strategy:
 - `main`: The stable production-ready code.
-- `develop`: The active development branch. Feature branches should merge here.
