@@ -4,12 +4,12 @@
 #include <linux/ioctl.h>
 
 #define ASGN1_MAGIC 'x'          //Choosing the magic number by using whatever is unoccupied in the ioctl_number
-#define ASGN1_VERSION_LEN 64     //A block of 64 characters
+#define ASGN1_VERSION_LEN 64      //A block of 64 characters
 
-#define ASGN1_MODE_KERNEL 0      // kernel mode: driver adds [KERNEL] in front of the data
-#define ASGN1_MODE_ECHO   1      // echo mode: driver stores the data unchanged
+#define ASGN1_MODE_KERNEL 0       // kernel mode: driver adds [KERNEL] in front of the data
+#define ASGN1_MODE_ECHO   1       // echo mode: driver stores the data unchanged
 
-struct asgn1_stats {             //Constructing the structure for the statistics
+struct asgn1_stats {            //Constructing the structure for the statistics
     int open_count;
     int read_count;
     int write_count;
@@ -21,5 +21,4 @@ struct asgn1_stats {             //Constructing the structure for the statistics
 #define ASGN1_GET_STATS _IOR(ASGN1_MAGIC, 2, struct asgn1_stats)
 #define ASGN1_SET_MODE _IOW(ASGN1_MAGIC, 3, int)
 #define ASGN1_GET_VERSION _IOR(ASGN1_MAGIC, 4, char[ASGN1_VERSION_LEN])
-
 #endif
