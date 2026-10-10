@@ -11,7 +11,7 @@
 #define DEVICE_NAME    "asgn1"
 #define CLASS_NAME     "asgn1_class"
 #define BUFFER_SIZE    1024
-#define DRIVER_MAJOR   250                          /* allowed range: 241 to 254 */
+#define DRIVER_MAJOR   NNN                          /* allowed range: 241 to 254 */
 #define DRIVER_VERSION "asgn1_driver v1.0 - SE203155"   /* must fit in 64 bytes incl. the '\0' */
 #define LOG_PREFIX     "asgn1_driver: "             /* in front of every log line */
 #define KERNEL_PREFIX  "[KERNEL]"                   /* added to stored data in kernel mode */
