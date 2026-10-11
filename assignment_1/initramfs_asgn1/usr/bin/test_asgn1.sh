@@ -1,4 +1,3 @@
-
 #!/bin/sh
 # test_asgn1.sh - functional test for asgn1_driver (runs inside QEMU, as root)
 #
@@ -15,7 +14,7 @@
 # Counters start at 0 right after insmod, so the expected numbers below are exact.
  
 DEV=/dev/asgn1
-MAJOR=NNN                                   # must equal DRIVER_MAJOR in asgn1_driver.c
+MAJOR=241
 MODULE=/lib/modules/5.15.0/asgn1_driver.ko
 PASS=0
 FAIL=0
@@ -88,12 +87,17 @@ check "buffer_len is the STORED size"     "10" "$(stat_of buffer_len)"
 check "last_write_size is the USER size"  "2" "$(stat_of last_write_size)"
 check "read_count"                        "4" "$(stat_of read_count)"
  
-echo "=== 5. oversized write is truncated (kernel mode) ==="
+echo "=== 5. oversized write is cut to fit (kernel mode) ==="
+# The driver accepts only what fits and returns that smaller count (1015 = 1023 - 8).
+# dd treats a short write as "not finished" and sends the remaining 985 bytes in a
+# second write(), which replaces the buffer again (every write replaces it).
 dd if=/dev/zero of=$DEV bs=2000 count=1 2>/dev/null
 asgn1_ctl stats
-check "buffer_len filled to the limit (1024 - 1)"  "1023" "$(stat_of buffer_len)"
-check "last_write_size = bytes accepted (1023 - 8)" "1015" "$(stat_of last_write_size)"
- 
+check "write_count: dd needed two write() calls (2 + 2)"   "4"   "$(stat_of write_count)"
+check "buffer_len after the second write (8 + 985)"        "993" "$(stat_of buffer_len)"
+check "last_write_size = second write (2000 - 1015)"       "985" "$(stat_of last_write_size)"
+check_has "driver logged the truncation" "write too large" "$(dmesg)"
+
 echo "=== 6. RESET_BUFFER ==="
 printf 'hello' > $DEV
 check "buffer filled before reset ([KERNEL]hello = 13)" "13" "$(stat_of buffer_len)"

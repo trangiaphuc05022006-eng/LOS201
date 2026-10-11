@@ -11,12 +11,10 @@
 #define DEVICE_NAME    "asgn1"
 #define CLASS_NAME     "asgn1_class"
 #define BUFFER_SIZE    1024
-#define DRIVER_MAJOR   NNN                          /* allowed range: 241 to 254 */
+#define DRIVER_MAJOR   241                          /* allowed range: 241 to 254 */
 #define DRIVER_VERSION "asgn1_driver v1.0 - SE203155"   /* must fit in 64 bytes incl. the '\0' */
 #define LOG_PREFIX     "asgn1_driver: "             /* in front of every log line */
 #define KERNEL_PREFIX  "[KERNEL]"                   /* added to stored data in kernel mode */
-#define ASGN1_MODE_KERNEL 0
-#define ASGN1_MODE_ECHO   1
 
 /* ---- global variables ---- */
 static char buffer[BUFFER_SIZE];          /* the data buffer */
@@ -179,7 +177,8 @@ static long asgn1_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
     struct asgn1_stats stats;
     char version[ASGN1_VERSION_LEN] = {0};     /* zero-filled: no stack data leaks */
     int new_mode;
-
+    
+    printk(KERN_INFO LOG_PREFIX "ioctl called: cmd=0x%x nr=%u\n", cmd, _IOC_NR(cmd));
     switch (cmd) {
     case ASGN1_RESET_BUFFER:
         mutex_lock(&asgn1_mutex);
@@ -209,8 +208,10 @@ static long asgn1_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
     case ASGN1_SET_MODE:
         if (copy_from_user(&new_mode, (int __user *)arg, sizeof(new_mode)))
             return -EFAULT;
-        if (new_mode != ASGN1_MODE_KERNEL && new_mode != ASGN1_MODE_ECHO)
-            return -EINVAL;                    /* only 0 and 1 are valid modes */
+        if (new_mode != ASGN1_MODE_KERNEL && new_mode != ASGN1_MODE_ECHO) {
+            printk(KERN_WARNING LOG_PREFIX "ioctl SET_MODE: rejected mode %d\n", new_mode);
+            return -EINVAL;
+        }               /* only 0 and 1 are valid modes */
 
         mutex_lock(&asgn1_mutex);
         current_mode = new_mode;
