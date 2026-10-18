@@ -1,0 +1,8 @@
+107470 execve("./perf_target", ["./perf_target"], 0x7ffd43dbfb18 /* 55 vars */) = 0
+107470 access("/etc/ld.so.preload", R_OK) = -1 ENOENT (No such file or directory)
+107470 openat(AT_FDCWD, "/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 3
+107470 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libm.so.6", O_RDONLY|O_CLOEXEC) = 3
+107470 openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/libc.so.6", O_RDONLY|O_CLOEXEC) = 3
+107470 openat(AT_FDCWD, "/tmp/perf_test.txt", O_WRONLY|O_CREAT|O_TRUNC, 0666) = 3
+107470 exit_group(0)                    = ?
+107470 +++ exited with 0 +++
