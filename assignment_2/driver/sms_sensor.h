@@ -21,6 +21,6 @@
 
 /* Shared constants: both sides must agree on these */
 #define SMS_DEFAULT_INTERVAL_MS  100
-#define SMS_MIN_INTERVAL_MS      1
+#define SMS_MIN_INTERVAL_MS      10
 #define SMS_MAX_INTERVAL_MS      60000
 #endif /* closing the guard */
