@@ -1,3 +1,9 @@
+/*
+ * circular_buffer.c
+ * A simple circular buffer implementation for managing sensor data.
+ * Author: <Tran Hoang Khoi - SE203155>
+ */
+
 #include <stdlib.h>
 #include <pthread.h>
 #include "circular_buffer.h"
@@ -13,9 +19,9 @@ struct CircularBuffer {
 
 CircularBuffer *cb_create(size_t capacity)
 {
-    /* TODO 1: calloc the struct and the items array (check both!), set
-     *         capacity, init mutex and cond. On any failure free what you
-     *         allocated and return NULL. */
+    /* calloc the struct and the items array (check both!), set
+     * capacity, init mutex and cond. On any failure free what you
+     * allocated and return NULL. */
     struct CircularBuffer *cb;
 
     if (capacity == 0) {
@@ -54,7 +60,7 @@ CircularBuffer *cb_create(size_t capacity)
 
 void cb_destroy(CircularBuffer *cb)
 {
-    /* TODO 2: destroy cond and mutex, free items, free cb (cb may be NULL) */
+    /*  destroy cond and mutex, free items, free cb (cb may be NULL) */
     if (cb == NULL) { 
             return; 
     }
@@ -66,7 +72,7 @@ void cb_destroy(CircularBuffer *cb)
 
 int cb_push(CircularBuffer *cb, const SensorData *d)
 {
-    /* TODO 3: lock. If full: overflow_count++, unlock, return -1.
+    /* lock. If full: overflow_count++, unlock, return -1.
      *         Else copy *d to items[head], advance head (wrap around),
      *         size++, total_produced++, signal not_empty, unlock, return 0 */
     pthread_mutex_lock(&cb->lock);
@@ -88,10 +94,10 @@ int cb_push(CircularBuffer *cb, const SensorData *d)
 
 int cb_pop(CircularBuffer *cb, SensorData *out)
 {
-    /* TODO 4: lock. While (size == 0 && !shutting_down) wait on not_empty.
-     *         If size == 0 now (we were shut down): unlock, return -1.
-     *         Else take items[tail] into *out, advance tail, size--,
-     *         total_consumed++, unlock, return 0 */
+    /* lock. While (size == 0 && !shutting_down) wait on not_empty.
+     * If size == 0 now (we were shut down): unlock, return -1.
+     * Else take items[tail] into *out, advance tail, size--,
+     * total_consumed++, unlock, return 0 */
     pthread_mutex_lock(&cb->lock); 
     while (cb->size == 0 && !cb->shutting_down) { 
         pthread_cond_wait(&cb->not_empty, &cb->lock); 
@@ -111,7 +117,7 @@ int cb_pop(CircularBuffer *cb, SensorData *out)
 
 void cb_shutdown(CircularBuffer *cb)
 {
-    /* TODO 5: lock, shutting_down = 1, broadcast not_empty, unlock */
+    /* lock, shutting_down = 1, broadcast not_empty, unlock */
     pthread_mutex_lock(&cb->lock); 
     cb->shutting_down = 1; 
     pthread_cond_broadcast(&cb->not_empty);
