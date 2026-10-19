@@ -1,3 +1,12 @@
+/*
+ * alert_thread.c - Alert thread: reports alarms sent by the Processor
+ * Author: Tran Hoang Khoi - SE203155
+ * Date:   2026-10-18
+ *
+ * Blocks on the alarm queue, prints each alarm to stderr, counts them per
+ * type and forwards the same text to the Logger. Stops on ALARM_QUIT.
+ */
+
 #include <stdio.h>
 #include <string.h>
 #include <errno.h>
@@ -9,7 +18,7 @@
 /* Return the printable name of an alarm type */
 static const char *alarm_name(AlarmType t)
 {
-    /* TODO 1: switch on t, return "TEMP_HIGH", "HUMID_HIGH" or "TEMP_SPIKE" */
+    /*switch on t, return "TEMP_HIGH", "HUMID_HIGH" or "TEMP_SPIKE" */
     switch (t) {
     case ALARM_TEMP_HIGH:
         return "TEMP_HIGH";
@@ -31,7 +40,7 @@ void *alert_thread(void *arg)
     for (;;) {
         ssize_t n;
 
-        /* TODO 2: n = mq_receive(ctx->alarm_mq, (char *)&msg, sizeof(msg), NULL)
+        /* n = mq_receive(ctx->alarm_mq, (char *)&msg, sizeof(msg), NULL)
          *   n < 0: EINTR -> continue; otherwise perror and break.
          *   Careful: the buffer passed must be at least the queue's msgsize
          *   (main will create the queue with msgsize = sizeof(AlarmMsg)) */
@@ -48,12 +57,12 @@ void *alert_thread(void *arg)
             continue;
         }
 
-        /* TODO 3: if msg.type == ALARM_QUIT: break */
+        /* if msg.type == ALARM_QUIT: break */
         if (msg.type == ALARM_QUIT) {
             break;
         }
 
-        /* TODO 4: count it: increment the counter for msg.type */
+        /* count it: increment the counter for msg.type */
         switch (msg.type) {
         case ALARM_TEMP_HIGH:
             ctx->count_temp_high++;
@@ -69,12 +78,8 @@ void *alert_thread(void *arg)
             continue;
         }
 
-        /* TODO 5: print to stderr:
-         * [ALERT][<timestamp_ms>] TYPE: <name> VALUE: <value> THRESHOLD: <threshold>
-         * (value and threshold with 1 decimal) */
-        /* TODO 6: build the same text with snprintf into a char[LOG_LINE_SIZE]
-         *   and send it with mq_send(ctx->log_mq, text, strlen(text), 0).
-         *   If the send fails with EAGAIN (queue full): ignore, drop the line. */
+        /* wait for the next alarm; the buffer must be at least the queue's message size */
+        /* format once: the same text goes to stderr and to the log queue */
         if (snprintf(text, sizeof(text),
                      "[ALERT][%" PRIu64 "] TYPE: %s VALUE: %.1f THRESHOLD: %.1f",
                      msg.timestamp_ms, alarm_name(msg.type), msg.value,

@@ -1,7 +1,7 @@
 /*
  * circular_buffer.c
  * A simple circular buffer implementation for managing sensor data.
- * Author: <Tran Hoang Khoi - SE203155>
+ * Author: Tran Hoang Khoi - SE203155
  */
 
 #include <stdlib.h>
@@ -18,7 +18,7 @@ struct CircularBuffer {
 };
 
 CircularBuffer *cb_create(size_t capacity)
-{
+{   
     /* calloc the struct and the items array (check both!), set
      * capacity, init mutex and cond. On any failure free what you
      * allocated and return NULL. */
@@ -72,25 +72,32 @@ void cb_destroy(CircularBuffer *cb)
 
 int cb_push(CircularBuffer *cb, const SensorData *d)
 {
-    /* lock. If full: overflow_count++, unlock, return -1.
-     *         Else copy *d to items[head], advance head (wrap around),
-     *         size++, total_produced++, signal not_empty, unlock, return 0 */
     pthread_mutex_lock(&cb->lock);
-    if (cb->size == cb->capacity) { 
-            cb->overflow_count++;
-            pthread_mutex_unlock(&cb->lock); 
-            return -1;
-    }
-    else {
-        cb->items[cb->head] = *d;
-        cb->head = (cb->head + 1) % cb->capacity;
-        cb->size++;
-        cb->total_produced++;
-        pthread_cond_signal(&cb->not_empty);
+
+    /* After shutdown nothing new is accepted. This is not an overflow,
+     * so overflow_count is left alone. */
+    if (cb->shutting_down) {
         pthread_mutex_unlock(&cb->lock);
-        return 0;
+        return -1;
     }
+
+    /* Buffer full: drop the sample and count it. */
+    if (cb->size == cb->capacity) {
+        cb->overflow_count++;
+        pthread_mutex_unlock(&cb->lock);
+        return -1;
+    }
+
+    cb->items[cb->head] = *d;
+    cb->head = (cb->head + 1) % cb->capacity;
+    cb->size++;
+    cb->total_produced++;
+    pthread_cond_signal(&cb->not_empty);
+    pthread_mutex_unlock(&cb->lock);
+    return 0;
 }
+/* Returns 0 on success. Returns -1 if the buffer is full (overflow_count is
+ * incremented) or already shut down (no overflow is counted). */
 
 int cb_pop(CircularBuffer *cb, SensorData *out)
 {
