@@ -1,0 +1,158 @@
+  ASSIGNMENT 01 - TASK 1: IOCTL DRIVER TEST SUITE
+  Student: Tran Gia Phuc - SE204417
+============================================================
+
+[STEP 1] Loading asgn1_driver.ko and verifying /dev/asgn1 (major=241)...
+asgn1_driver: loading out-of-tree module taints kernel.
+asgn1_driver: initializing module (version: asgn1_driver v1.0 - SE204417)
+asgn1_driver: loaded successfully on /dev/asgn1 (major=241, default_mode=1)
+crw-rw-rw-    1 root     0         241,   0 Oct 19 12:16 [1;35m/dev/asgn1[m
+asgn1_driver 16384 0 - Live 0x7f000000 (O)
+
+[STEP 2] Testing ioctl Command 4: ASGN1_GET_VERSION...
+asgn1_driver: device opened (open_count=1)
+asgn1_driver: ioctl ASGN1_GET_VERSION executed (version="asgn1_driver v1.0 - SE204417")
+[USERSPACE] ASGN1_GET_VERSION: "asgn1_driver v1.0 - SE204417"
+asgn1_driver: device closed
+
+[STEP 3] Testing Write/Read in Default Mode (Mode 1 - Echo Mode)...
+asgn1_driver: device opened (open_count=2)
+asgn1_driver: write in mode=1, stored 24 bytes: [Hello_Echo_Mode_SE204417] (write_count=1)
+asgn1_driver: device closed
+asgn1_driver: device opened (open_count=3)
+asgn1_driver: read 24 bytes (read_count=1)
+asgn1_driver: device closed
+  -> Data written : Hello_Echo_Mode_SE204417
+  -> Data read    : Hello_Echo_Mode_SE204417
+  [PASS] Echo Mode preserved original string.
+
+[STEP 4] Testing ioctl Command 3: ASGN1_SET_MODE -> Mode 0 (Kernel Mode)...
+asgn1_driver: device opened (open_count=4)
+asgn1_driver: ioctl ASGN1_SET_MODE set to 0 (Kernel mode)
+[USERSPACE] ASGN1_SET_MODE set to 0 (Kernel mode).
+asgn1_driver: device closed
+asgn1_driver: device opened (open_count=5)
+asgn1_driver: write in mode=0, stored 28 bytes: [[KERNEL] Data_From_Userspace] (write_count=2)
+asgn1_driver: device closed
+asgn1_driver: device opened (open_count=6)
+asgn1_driver: read 28 bytes (read_count=2)
+asgn1_driver: device closed
+  -> Data written : Data_From_Userspace
+  -> Data read    : [KERNEL] Data_From_Userspace
+  [PASS] Kernel Mode prepended '[KERNEL] ' prefix accurately.
+
+[STEP 5] Switching back to Mode 1 (Echo Mode) via ASGN1_SET_MODE...
+asgn1_driver: device opened (open_count=7)
+asgn1_driver: ioctl ASGN1_SET_MODE set to 1 (Echo mode)
+[USERSPACE] ASGN1_SET_MODE set to 1 (Echo mode).
+asgn1_driver: device closed
+asgn1_driver: device opened (open_count=8)
+asgn1_driver: write in mode=1, stored 17 bytes: [Back_To_Echo_Mode] (write_count=3)
+asgn1_driver: device closed
+asgn1_driver: device opened (open_count=9)
+asgn1_driver: read 17 bytes (read_count=3)
+asgn1_driver: device closed
+  -> Data read    : Back_To_Echo_Mode
+
+[STEP 6] Testing ioctl Command 2: ASGN1_GET_STATS (before reset)...
+asgn1_driver: device opened (open_count=10)
+asgn1_driver: ioctl ASGN1_GET_STATS executed (open=10, write=3, read=3, len=17, last_write=17)
+[USERSPACE] ASGN1_GET_STATS result:
+  -> open_count      : 10
+  -> write_count     : 3
+  -> read_count      : 3
+  -> buffer_len      : 17 bytes
+  -> last_write_size : 17 bytes
+asgn1_driver: device closed
+  -> Checking /proc/asgn1_info:
+ASSIGNMENT-01 Driver Statistics
+===============================
+Driver version  : asgn1_driver v1.0 - SE204417
+Device node     : /dev/asgn1 (major=241)
+Current mode    : 1 (Echo mode)
+Open count      : 10
+Write count     : 3
+Read count      : 3
+Buffer length   : 17 bytes
+Last write size : 17 bytes
+Buffer content  : [Back_To_Echo_Mode]
+
+[STEP 7] Testing ioctl Command 1: ASGN1_RESET_BUFFER...
+asgn1_driver: device opened (open_count=11)
+asgn1_driver: ioctl ASGN1_RESET_BUFFER executed (buffer cleared, write_count=0, read_count=0)
+[USERSPACE] ASGN1_RESET_BUFFER executed successfully.
+asgn1_driver: device closed
+asgn1_driver: device opened (open_count=12)
+asgn1_driver: device closed
+  -> Output of 'cat /dev/asgn1' after reset: []
+  [PASS] Buffer is completely empty after ASGN1_RESET_BUFFER.
+  -> Checking stats after reset (note: cat just incremented read_count on empty buffer or returned EOF):
+asgn1_driver: device opened (open_count=13)
+asgn1_driver: ioctl ASGN1_GET_STATS executed (open=13, write=0, read=0, len=0, last_write=17)
+[USERSPACE] ASGN1_GET_STATS result:
+  -> open_count      : 13
+  -> write_count     : 0
+  -> read_count      : 0
+  -> buffer_len      : 0 bytes
+  -> last_write_size : 17 bytes
+asgn1_driver: device closed
+
+[STEP 8] Testing invalid ioctl command handling (-ENOTTY)...
+asgn1_driver: device opened (open_count=14)
+asgn1_driver: ioctl invalid magic 0x5a (expected 0x41)
+[USERSPACE] Invalid ioctl correctly rejected: Inappropriate ioctl for device (errno=25)
+asgn1_driver: device closed
+
+[STEP 9] Unloading asgn1_driver module and checking dmesg...
+asgn1_driver: module unloaded cleanly
+  [PASS] rmmod asgn1_driver succeeded.
+
+[STEP 10] Kernel log (dmesg) for asgn1_driver:
+asgn1_driver: loading out-of-tree module taints kernel.
+asgn1_driver: initializing module (version: asgn1_driver v1.0 - SE204417)
+asgn1_driver: loaded successfully on /dev/asgn1 (major=241, default_mode=1)
+asgn1_driver: device opened (open_count=1)
+asgn1_driver: ioctl ASGN1_GET_VERSION executed (version="asgn1_driver v1.0 - SE204417")
+asgn1_driver: device closed
+asgn1_driver: device opened (open_count=2)
+asgn1_driver: write in mode=1, stored 24 bytes: [Hello_Echo_Mode_SE204417] (write_count=1)
+asgn1_driver: device closed
+asgn1_driver: device opened (open_count=3)
+asgn1_driver: read 24 bytes (read_count=1)
+asgn1_driver: device closed
+asgn1_driver: device opened (open_count=4)
+asgn1_driver: ioctl ASGN1_SET_MODE set to 0 (Kernel mode)
+asgn1_driver: device closed
+asgn1_driver: device opened (open_count=5)
+asgn1_driver: write in mode=0, stored 28 bytes: [[KERNEL] Data_From_Userspace] (write_count=2)
+asgn1_driver: device closed
+asgn1_driver: device opened (open_count=6)
+asgn1_driver: read 28 bytes (read_count=2)
+asgn1_driver: device closed
+asgn1_driver: device opened (open_count=7)
+asgn1_driver: ioctl ASGN1_SET_MODE set to 1 (Echo mode)
+asgn1_driver: device closed
+asgn1_driver: device opened (open_count=8)
+asgn1_driver: write in mode=1, stored 17 bytes: [Back_To_Echo_Mode] (write_count=3)
+asgn1_driver: device closed
+asgn1_driver: device opened (open_count=9)
+asgn1_driver: read 17 bytes (read_count=3)
+asgn1_driver: device closed
+asgn1_driver: device opened (open_count=10)
+asgn1_driver: ioctl ASGN1_GET_STATS executed (open=10, write=3, read=3, len=17, last_write=17)
+asgn1_driver: device closed
+asgn1_driver: device opened (open_count=11)
+asgn1_driver: ioctl ASGN1_RESET_BUFFER executed (buffer cleared, write_count=0, read_count=0)
+asgn1_driver: device closed
+asgn1_driver: device opened (open_count=12)
+asgn1_driver: device closed
+asgn1_driver: device opened (open_count=13)
+asgn1_driver: ioctl ASGN1_GET_STATS executed (open=13, write=0, read=0, len=0, last_write=17)
+asgn1_driver: device closed
+asgn1_driver: device opened (open_count=14)
+asgn1_driver: ioctl invalid magic 0x5a (expected 0x41)
+asgn1_driver: device closed
+asgn1_driver: module unloaded cleanly
+
+============================================================
+  TASK 1 TEST SUITE COMPLETED SUCCESSFULLY!

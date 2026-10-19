@@ -1,0 +1,87 @@
+  ASSIGNMENT 01 - TASK 2: MISC COUNTER DRIVER TEST SUITE
+  Student: Tran Gia Phuc - SE204417
+============================================================
+
+[STEP 1] Loading counter_driver.ko and checking /dev/counter (major=10)...
+counter_driver: initializing miscellaneous device driver
+counter_driver: loaded successfully on /dev/counter (minor=125)
+crw-rw-rw-    1 root     0          10, 125 Oct 19 12:23 [1;35m/dev/counter[m
+counter_driver 16384 0 - Live 0x7f000000 (O)
+125 counter
+
+[STEP 2] Testing READ auto-increment on /dev/counter...
+counter_driver: read counter=0, auto-incremented
+counter_driver: read counter=1, auto-incremented
+counter_driver: read counter=2, auto-incremented
+  -> Read #1 (expected 0): 0
+  -> Read #2 (expected 1): 1
+  -> Read #3 (expected 2): 2
+  [PASS] Auto-increment on read works accurately.
+
+[STEP 3] Checking /proc/counter_info [Timepoint #1 - Before Write]:
+ASSIGNMENT-01 Counter Driver Statistics
+=======================================
+Device name     : /dev/counter (Misc major: 10)
+Current counter : 3
+Total reads     : 3
+Total resets    : 0
+
+[STEP 4] Testing WRITE: setting counter to 100...
+counter_driver: counter set to 100 via write
+counter_driver: read counter=100, auto-incremented
+counter_driver: read counter=101, auto-incremented
+  -> First read after setting 100 (expected 100): 100
+  -> Next read (expected 101)                    : 101
+  [PASS] Counter set to 100 and incremented to 101.
+
+[STEP 5] Checking /proc/counter_info [Timepoint #2 - After Write 100]:
+ASSIGNMENT-01 Counter Driver Statistics
+=======================================
+Device name     : /dev/counter (Misc major: 10)
+Current counter : 102
+Total reads     : 5
+Total resets    : 1
+
+[STEP 6] Testing WRITE '0' to reset counter to 0...
+counter_driver: counter set to 0 via write
+counter_driver: read counter=0, auto-incremented
+  -> Read immediately after reset (expected 0): 0
+  [PASS] Counter reset to 0 accurately.
+
+[STEP 7] Checking /proc/counter_info [Timepoint #3 - After Reset]:
+ASSIGNMENT-01 Counter Driver Statistics
+=======================================
+Device name     : /dev/counter (Misc major: 10)
+Current counter : 1
+Total reads     : 6
+Total resets    : 2
+
+[STEP 8] Testing invalid WRITE inputs (-EINVAL check)...
+  -> Writing negative value '-50' to /dev/counter:
+counter_driver: negative value not allowed: -50
+  [PASS] Negative value '-50' rejected with error (-EINVAL).
+  -> Writing non-numeric string 'abc_invalid' to /dev/counter:
+counter_driver: invalid non-numeric input: "abc_invalid"
+  [PASS] Non-numeric string 'abc_invalid' rejected with error (-EINVAL).
+
+[STEP 9] Unloading counter_driver and checking dmesg...
+counter_driver: module unloaded cleanly
+  [PASS] rmmod counter_driver succeeded.
+
+[STEP 10] Kernel log (dmesg) for counter_driver:
+counter_driver: initializing miscellaneous device driver
+counter_driver: loaded successfully on /dev/counter (minor=125)
+counter_driver: read counter=0, auto-incremented
+counter_driver: read counter=1, auto-incremented
+counter_driver: read counter=2, auto-incremented
+counter_driver: counter set to 100 via write
+counter_driver: read counter=100, auto-incremented
+counter_driver: read counter=101, auto-incremented
+counter_driver: counter set to 0 via write
+counter_driver: read counter=0, auto-incremented
+counter_driver: negative value not allowed: -50
+counter_driver: invalid non-numeric input: "abc_invalid"
+counter_driver: module unloaded cleanly
+
+============================================================
+  TASK 2 TEST SUITE COMPLETED SUCCESSFULLY!
