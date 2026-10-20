@@ -15,7 +15,9 @@
 #define DEFAULT_DURATION_SEC     60
 
 /* Paths and names: nothing is hardcoded in the .c files */
+#ifndef SENSOR_DEVICE_PATH
 #define SENSOR_DEVICE_PATH   "/dev/sms_sensor"
+#endif
 #define LOG_FILE_PATH        "/tmp/sms.log"
 #define ALARM_QUEUE_NAME     "/sms_alarm"
 #define LOG_QUEUE_NAME       "/sms_log"
