@@ -5,6 +5,11 @@ mount -t proc none /proc
 mount -t sysfs none /sys
 mount -t tmpfs none /tmp
 mount -t devtmpfs none /dev 2>/dev/null || true
+mkdir -p /dev/mqueue
+mount -t mqueue none /dev/mqueue 2>/dev/null || true
+
+insmod /lib/modules/5.15.0/sms_sensor_driver.ko
+
 
 [ -c /dev/console ] || mknod /dev/console c 5 1
 [ -c /dev/null ] || mknod /dev/null c 1 3
