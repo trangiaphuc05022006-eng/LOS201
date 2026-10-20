@@ -12,11 +12,11 @@
 /* Send a short text line to the Logger; drop it if the queue is full */
 static void log_text(SensorCtx *ctx, const char *text)
 {
-    /* TODO 1: mq_send(ctx->log_mq, text, strlen(text), 0);
+    /* mq_send(ctx->log_mq, text, strlen(text), 0);
      *         ignore EAGAIN, perror on other errors */
     if (mq_send(ctx->log_mq, text, strlen(text), 0) == -1) {
         if (errno != EAGAIN) {
-            perror("mq_send");
+            perror("sensor: mq_send");
         }
     }
 }
@@ -24,7 +24,7 @@ static void log_text(SensorCtx *ctx, const char *text)
 /* Add ms milliseconds to t, keeping tv_nsec below 1,000,000,000 */
 static void add_ms(struct timespec *t, int ms)
 {
-    /* TODO 2 */
+   
     t->tv_sec += ms / 1000;
     t->tv_nsec += (ms % 1000) * 1000000L;
     if (t->tv_nsec >= 1000000000L) {
@@ -40,7 +40,7 @@ void *sensor_thread(void *arg)
     struct timespec next;
 
     if (clock_gettime(CLOCK_MONOTONIC, &next) != 0) {
-        perror("clock_gettime");
+        perror("sensor: clock_gettime");
         return NULL;
     }
 
@@ -48,7 +48,7 @@ void *sensor_thread(void *arg)
         ssize_t n = read(ctx->fd, line, sizeof(line) - 1);
         int sleep_result;
 
-        /* TODO 3: n < 0: EINTR -> continue (re-check stop);
+        /* n < 0: EINTR -> continue (re-check stop);
          *         other errors (EAGAIN included): read_errors++, log it.
          *         n == 0 (EOF): read_errors++, log it.
          *         n > 0: line[n] = '\0' and go on to parse */
@@ -56,41 +56,49 @@ void *sensor_thread(void *arg)
             if(errno == EINTR) {
                 continue; // re-check stop
             } else {
+                int read_error = errno;
+
                 ctx->read_errors++;
-                log_text(ctx, "ERROR: read failed");
+                if (read_error == EAGAIN || read_error == EWOULDBLOCK) {
+                    log_text(ctx, "sensor: ERROR: read returned EAGAIN");
+                } else {
+                    errno = read_error;
+                    perror("sensor: read");
+                    log_text(ctx, "sensor: ERROR: read failed");
+                }
                 goto next_period;
             }
         } else if (n == 0) {
             ctx->read_errors++;
-            log_text(ctx, "ERROR: EOF reached");
+            log_text(ctx, "sensor: ERROR: EOF reached");
             goto next_period;
         } else {
             line[n] = '\0';
         }
 
-        /* TODO 4: sscanf(line, "%" SCNu64 ",%lf,%lf", &ts, &t, &h) must
+        /* sscanf(line, "%" SCNu64 ",%lf,%lf", &ts, &t, &h) must
          *         return 3; otherwise read_errors++ and log it */
         uint64_t ts;
         double t, h; 
         int result = sscanf(line, "%" SCNu64 ",%lf,%lf", &ts, &t, &h);
         if (result != 3) {
             ctx->read_errors++; 
-            log_text(ctx, "ERROR: sscanf failed");
+            log_text(ctx, "sensor: ERROR: sscanf failed");
             goto next_period;
         }
 
-        /* TODO 5: fill a SensorData and cb_push it.
+        /* fill a SensorData and cb_push it.
          *         -1 -> log "WARN: buffer full, sample dropped";
          *         0  -> samples_read++ */
-        SensorData data = {ts, t, h}; 
+        SensorData data = { .timestamp_ms = ts, .temperature = t, .humidity = h };
         int push_result = cb_push(ctx->buffer, &data);
         if (push_result == -1) { 
-            log_text(ctx, "WARN: buffer full, sample dropped");
+            log_text(ctx, "sensor: WARN: buffer full, sample dropped");
         } else {
             ctx->samples_read++;
         }
  
-        /* TODO 6: sleep until the next period: add_ms(&next, interval_ms),
+        /* sleep until the next period: add_ms(&next, interval_ms),
          *         then clock_nanosleep(CLOCK_MONOTONIC, TIMER_ABSTIME, &next, NULL).
          *         It returns an error NUMBER (not -1): if it is EINTR and
          *         we are not stopping, call it again with the same `next`. */
@@ -101,7 +109,7 @@ next_period:
                                            &next, NULL);
         } while (sleep_result == EINTR && !*ctx->stop);
         if (sleep_result != 0 && !(sleep_result == EINTR && *ctx->stop)) {
-            log_text(ctx, "ERROR: clock_nanosleep failed");
+            log_text(ctx, "sensor: ERROR: clock_nanosleep failed");
         }
     }
     return NULL;
