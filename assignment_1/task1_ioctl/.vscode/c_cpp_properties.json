@@ -1,0 +1,20 @@
+{
+  "configurations": [
+    {
+      "name": "ARM kernel module",
+      "includePath": [
+        "${workspaceFolder}",
+        "${env:HOME}/embedded_lab1/kernel/linux-5.15/include",
+        "${env:HOME}/embedded_lab1/kernel/linux-5.15/arch/arm/include",
+        "${env:HOME}/embedded_lab1/kernel/linux-5.15/arch/arm/include/generated",
+        "${env:HOME}/embedded_lab1/kernel/linux-5.15/include/generated",
+        "${env:HOME}/embedded_lab1/kernel/linux-5.15/arch/arm/include/uapi",
+        "${env:HOME}/embedded_lab1/kernel/linux-5.15/include/uapi"
+      ],
+      "defines": ["__KERNEL__", "MODULE"],
+      "cStandard": "gnu11",
+      "intelliSenseMode": "linux-gcc-arm"
+    }
+  ],
+  "version": 4
+}
