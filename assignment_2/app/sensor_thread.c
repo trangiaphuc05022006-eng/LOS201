@@ -1,3 +1,8 @@
+/*
+ * sensor_thread.c - Sensor thread: periodic reading with RT scheduling & jitter tracking
+ * Author: Tran Hoang Khoi - SE203155
+ * Date:   2026-10-21
+ */
 #include <stdio.h>
 #include <string.h>
 #include <errno.h>
@@ -5,6 +10,8 @@
 #include <time.h>
 #include <unistd.h>
 #include <mqueue.h>
+#include <pthread.h>
+#include <sched.h>
 #include "sms_common.h"
 #include "circular_buffer.h"
 #include "sensor_thread.h"
@@ -12,8 +19,6 @@
 /* Send a short text line to the Logger; drop it if the queue is full */
 static void log_text(SensorCtx *ctx, const char *text)
 {
-    /* mq_send(ctx->log_mq, text, strlen(text), 0);
-     *         ignore EAGAIN, perror on other errors */
     if (mq_send(ctx->log_mq, text, strlen(text), 0) == -1) {
         if (errno != EAGAIN) {
             perror("sensor: mq_send");
@@ -24,7 +29,6 @@ static void log_text(SensorCtx *ctx, const char *text)
 /* Add ms milliseconds to t, keeping tv_nsec below 1,000,000,000 */
 static void add_ms(struct timespec *t, int ms)
 {
-   
     t->tv_sec += ms / 1000;
     t->tv_nsec += (ms % 1000) * 1000000L;
     if (t->tv_nsec >= 1000000000L) {
@@ -33,11 +37,41 @@ static void add_ms(struct timespec *t, int ms)
     }
 }
 
+/* Configure SCHED_FIFO when requested; fall back to SCHED_OTHER on error */
+static void apply_policy(SensorCtx *ctx)
+{
+    if (ctx->cfg->realtime) {
+        struct sched_param sp = { .sched_priority = RT_PRIORITY };
+        int err = pthread_setschedparam(pthread_self(), SCHED_FIFO, &sp);
+
+        if (err != 0) {
+            fprintf(stderr,
+                    "warning: pthread_setschedparam(SCHED_FIFO, %d) failed: %s "
+                    "(continuing with SCHED_OTHER)\n",
+                    RT_PRIORITY, strerror(err));
+            log_text(ctx, "sensor: SCHED_OTHER");
+        } else {
+            log_text(ctx, "sensor: SCHED_FIFO prio 50");
+        }
+    } else {
+        log_text(ctx, "sensor: SCHED_OTHER");
+    }
+}
+
+/* Return (a - b) in microseconds; a is the actual wake time, b is expected */
+static long diff_us(const struct timespec *a, const struct timespec *b)
+{
+    return (long)(a->tv_sec - b->tv_sec) * 1000000L +
+           (long)(a->tv_nsec - b->tv_nsec) / 1000L;
+}
+
 void *sensor_thread(void *arg)
 {
     SensorCtx *ctx = arg;
     char line[64];
     struct timespec next;
+
+    apply_policy(ctx);
 
     if (clock_gettime(CLOCK_MONOTONIC, &next) != 0) {
         perror("sensor: clock_gettime");
@@ -48,13 +82,9 @@ void *sensor_thread(void *arg)
         ssize_t n = read(ctx->fd, line, sizeof(line) - 1);
         int sleep_result;
 
-        /* n < 0: EINTR -> continue (re-check stop);
-         *         other errors (EAGAIN included): read_errors++, log it.
-         *         n == 0 (EOF): read_errors++, log it.
-         *         n > 0: line[n] = '\0' and go on to parse */
-        if (n < 0) { 
-            if(errno == EINTR) {
-                continue; // re-check stop
+        if (n < 0) {
+            if (errno == EINTR) {
+                continue;
             } else {
                 int read_error = errno;
 
@@ -76,32 +106,23 @@ void *sensor_thread(void *arg)
             line[n] = '\0';
         }
 
-        /* sscanf(line, "%" SCNu64 ",%lf,%lf", &ts, &t, &h) must
-         *         return 3; otherwise read_errors++ and log it */
         uint64_t ts;
-        double t, h; 
+        double t, h;
         int result = sscanf(line, "%" SCNu64 ",%lf,%lf", &ts, &t, &h);
         if (result != 3) {
-            ctx->read_errors++; 
+            ctx->read_errors++;
             log_text(ctx, "sensor: ERROR: sscanf failed");
             goto next_period;
         }
 
-        /* fill a SensorData and cb_push it.
-         *         -1 -> log "WARN: buffer full, sample dropped";
-         *         0  -> samples_read++ */
         SensorData data = { .timestamp_ms = ts, .temperature = t, .humidity = h };
         int push_result = cb_push(ctx->buffer, &data);
-        if (push_result == -1) { 
+        if (push_result == -1) {
             log_text(ctx, "sensor: WARN: buffer full, sample dropped");
         } else {
             ctx->samples_read++;
         }
- 
-        /* sleep until the next period: add_ms(&next, interval_ms),
-         *         then clock_nanosleep(CLOCK_MONOTONIC, TIMER_ABSTIME, &next, NULL).
-         *         It returns an error NUMBER (not -1): if it is EINTR and
-         *         we are not stopping, call it again with the same `next`. */
+
 next_period:
         add_ms(&next, ctx->cfg->interval_ms);
         do {
@@ -110,6 +131,12 @@ next_period:
         } while (sleep_result == EINTR && !*ctx->stop);
         if (sleep_result != 0 && !(sleep_result == EINTR && *ctx->stop)) {
             log_text(ctx, "sensor: ERROR: clock_nanosleep failed");
+        } else if (sleep_result == 0 && ctx->jitter_us &&
+                   ctx->jitter_count < ctx->jitter_cap) {
+            struct timespec actual;
+            if (clock_gettime(CLOCK_MONOTONIC, &actual) == 0) {
+                ctx->jitter_us[ctx->jitter_count++] = diff_us(&actual, &next);
+            }
         }
     }
     return NULL;
