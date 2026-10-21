@@ -18,6 +18,7 @@ MODULE_VERSION("1.0");
 #define CLASS_NAME "lab2_class"
 #define BUFFER_SIZE 1024
 #define DRIVER_MAJOR 240
+/* 240-254: reserved for local/experimental use */
 
 static int major_number = DRIVER_MAJOR;
 static char device_buffer[BUFFER_SIZE];
@@ -33,13 +34,13 @@ static struct proc_dir_entry *proc_entry;
 static int lab2_proc_show(struct seq_file *m, void *v) {
     seq_printf(m, "LAB-02 Driver Statistics\n");
     seq_printf(m, "======================\n");
-    seq_printf(m, "Driver name : %s\n", DEVICE_NAME);
+    seq_printf(m, "Driver name  : %s\n", DEVICE_NAME);
     seq_printf(m, "Major number : %d\n", major_number);
-    seq_printf(m, "Buffer size : %d bytes\n", BUFFER_SIZE);
-    seq_printf(m, "Data length : %d bytes\n", buffer_len);
-    seq_printf(m, "Open count : %d\n", open_count);
+    seq_printf(m, "Buffer size  : %d bytes\n", BUFFER_SIZE);
+    seq_printf(m, "Data length  : %d bytes\n", buffer_len);
+    seq_printf(m, "Open count   : %d\n", open_count);
     if (buffer_len > 0)
-        seq_printf(m, "Last data : [%s]\n", device_buffer);
+        seq_printf(m, "Last data    : [%s]\n", device_buffer);
     return 0;
 }
 
@@ -104,7 +105,7 @@ static ssize_t lab2_read(struct file *file, char __user *buf,
                           size_t len, loff_t *offset) {
     int bytes_read = 0;
     if (*offset >= buffer_len)
-        return 0;
+        return 0; /* EOF */
     if (len > buffer_len - *offset)
         len = buffer_len - *offset;
     if (copy_to_user(buf, device_buffer + *offset, len)) {
@@ -167,15 +168,17 @@ static int __init lab2_init(void) {
         return PTR_ERR(lab2_device);
     }
 
+    /* Đăng ký sysfs attribute group */
+    ret = sysfs_create_group(&lab2_device->kobj, &lab2_attr_group);
+    if (ret)
+        pr_warn("lab2_driver: sysfs_create_group failed\n");
+
+    /* Tạo /proc/lab2_info */
     proc_entry = proc_create("lab2_info", 0444, NULL, &lab2_proc_fops);
     if (!proc_entry)
         pr_warn("lab2_driver: failed to create /proc/lab2_info\n");
     else
         pr_info("lab2_driver: /proc/lab2_info created\n");
-
-    ret = sysfs_create_group(&lab2_device->kobj, &lab2_attr_group);
-    if (ret)
-        pr_warn("lab2_driver: sysfs_create_group failed\n");
 
     pr_info("lab2_driver: loaded, major=%d\n", major_number);
     return 0;
