@@ -25,8 +25,13 @@ Record *create_record(int id, const char *name, int num_scores) {
 
 /* Bug: free record nhung QUEN free r->name va r->scores */
 void delete_record(Record *r) {
+<<<<<<< HEAD
      free(r->name);
      free(r->scores);
+=======
+     /* free(r->name); <-- BI COMMENT = memory leak */
+     /* free(r->scores); <-- BI COMMENT = memory leak */
+>>>>>>> e910c57 (Upload full Lab 3: apps, logs, repacked initramfs, and report)
     free(r);
 }
 
@@ -37,7 +42,11 @@ void process_messages(int count) {
         snprintf(buf, MSG_SIZE, "Message #%d: data payload here", i);
         if (i % 10 == 0)
             printf(" Processed: %s\n", buf);
+<<<<<<< HEAD
          free(buf);
+=======
+         /* free(buf); <-- BI THIEU */
+>>>>>>> e910c57 (Upload full Lab 3: apps, logs, repacked initramfs, and report)
     }
 }
 
