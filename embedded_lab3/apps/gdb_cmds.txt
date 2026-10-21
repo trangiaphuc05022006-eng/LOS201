@@ -1,0 +1,31 @@
+set pagination off
+set architecture arm
+target remote localhost:1234
+break main
+break process_data
+break create_message
+break calculate
+info breakpoints
+continue
+backtrace
+info locals
+print arr
+print arr[0]@5
+continue
+next
+print i
+print data[0]@5
+print data[5]
+continue
+next
+next
+next
+print buf
+x/s buf
+continue
+next
+info locals
+info registers
+info registers pc sp lr
+continue
+quit
