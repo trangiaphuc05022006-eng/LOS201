@@ -1,0 +1,15 @@
+# Bỏ qua các file build của Kernel Driver
+driver/*.o
+driver/*.ko
+driver/*.mod
+driver/*.mod.c
+driver/modules.order
+driver/Module.symvers
+driver/.*.cmd
+
+# Bỏ qua các file thực thi của Application
+app/sms_app
+app/sms_app_x86
+
+# Bỏ qua các file log tạm thời (trừ các file báo cáo yêu cầu nộp)
+/tmp/sms.log*

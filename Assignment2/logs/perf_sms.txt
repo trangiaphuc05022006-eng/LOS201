@@ -1,0 +1,2909 @@
+# To display the perf.data header info, please use --header/--header-only options.
+#
+#
+# Total Lost Samples: 0
+#
+# Samples: 33  of event 'cpu/cycles/P'
+# Event count (approx.): 5056351
+#
+# Children      Self  Command      Shared Object         Symbol                                     
+# ........  ........  ...........  ....................  ...........................................
+#
+    63.78%     2.47%  sms_app_x86  [kernel.kallsyms]     [.] entry_SYSCALL_64_after_hwframe
+            |          
+            |--61.30%--entry_SYSCALL_64_after_hwframe
+            |          do_syscall_64
+            |          |          
+            |          |--56.51%--x64_sys_call
+            |          |          |          
+            |          |          |--19.78%--__x64_sys_clock_nanosleep
+            |          |          |          common_nsleep
+            |          |          |          hrtimer_nanosleep
+            |          |          |          |          
+            |          |          |          |--17.30%--do_nanosleep
+            |          |          |          |          |          
+            |          |          |          |          |--12.36%--schedule
+            |          |          |          |          |          __schedule
+            |          |          |          |          |          |          
+            |          |          |          |          |          |--4.94%--finish_task_switch.isra.0
+            |          |          |          |          |          |          |          
+            |          |          |          |          |          |           --2.47%--asm_sysvec_apic_timer_interrupt
+            |          |          |          |          |          |                     sysvec_apic_timer_interrupt
+            |          |          |          |          |          |                     __sysvec_apic_timer_interrupt
+            |          |          |          |          |          |                     hrtimer_interrupt
+            |          |          |          |          |          |                     __hrtimer_run_queues
+            |          |          |          |          |          |                     tick_nohz_handler
+            |          |          |          |          |          |                     update_process_times
+            |          |          |          |          |          |                     sched_tick
+            |          |          |          |          |          |                     task_tick_fair
+            |          |          |          |          |          |                     update_se
+            |          |          |          |          |          |          
+            |          |          |          |          |           --2.47%--pick_next_task
+            |          |          |          |          |                     pick_next_task_fair
+            |          |          |          |          |                     sched_balance_newidle
+            |          |          |          |          |                     __sched_balance_update_blocked_averages
+            |          |          |          |          |                     update_rt_rq_load_avg
+            |          |          |          |          |          
+            |          |          |          |           --4.94%--hrtimer_start_range_ns
+            |          |          |          |                     |          
+            |          |          |          |                     |--2.47%--switch_hrtimer_base
+            |          |          |          |                     |          
+            |          |          |          |                      --2.47%--enqueue_hrtimer
+            |          |          |          |                                timerqueue_add
+            |          |          |          |          
+            |          |          |           --2.47%--hrtimer_active
+            |          |          |          
+            |          |          |--9.60%--__x64_sys_clone3
+            |          |          |          __do_sys_clone3
+            |          |          |          kernel_clone
+            |          |          |          wake_up_new_task
+            |          |          |          select_task_rq_fair
+            |          |          |          sched_balance_find_dst_group
+            |          |          |          _find_next_and_bit
+            |          |          |          
+            |          |          |--7.42%--__x64_sys_mq_timedreceive
+            |          |          |          |          
+            |          |          |          |--4.94%--do_mq_timedreceive
+            |          |          |          |          wq_sleep
+            |          |          |          |          |          
+            |          |          |          |           --2.47%--schedule_hrtimeout_range_clock
+            |          |          |          |          
+            |          |          |           --2.47%--fdget
+            |          |          |          
+            |          |          |--7.35%--__x64_sys_lseek
+            |          |          |          ksys_lseek
+            |          |          |          fdget_pos
+            |          |          |          
+            |          |          |--4.94%--__x64_sys_execve
+            |          |          |          do_execveat_common.isra.0
+            |          |          |          bprm_execve
+            |          |          |          bprm_execve.part.0
+            |          |          |          exec_binprm
+            |          |          |          load_elf_binary
+            |          |          |          |          
+            |          |          |          |--2.47%--load_elf_interp.isra.0
+            |          |          |          |          elf_load
+            |          |          |          |          vm_mmap
+            |          |          |          |          vm_mmap_pgoff
+            |          |          |          |          do_mmap
+            |          |          |          |          path_noexec
+            |          |          |          |          
+            |          |          |           --2.47%--elf_load
+            |          |          |                     vm_mmap
+            |          |          |                     vm_mmap_pgoff
+            |          |          |                     security_mmap_file
+            |          |          |                     ima_file_mmap
+            |          |          |                     process_measurement
+            |          |          |          
+            |          |          |--2.47%--__x64_sys_mq_unlink
+            |          |          |          __do_sys_mq_unlink
+            |          |          |          start_removing_noperm
+            |          |          |          lookup_one_qstr_excl
+            |          |          |          lookup_dcache
+            |          |          |          d_lookup
+            |          |          |          __d_lookup
+            |          |          |          
+            |          |          |--2.47%--__x64_sys_futex
+            |          |          |          do_futex
+            |          |          |          futex_wait
+            |          |          |          __futex_wait
+            |          |          |          futex_do_wait
+            |          |          |          schedule
+            |          |          |          __schedule
+            |          |          |          psi_task_switch
+            |          |          |          psi_group_change
+            |          |          |          
+            |          |           --2.47%--common_nsleep
+            |          |          
+            |           --2.47%--arch_exit_to_user_mode_prepare.isra.0
+            |                     restore_fpregs_from_fpstate
+            |          
+             --2.47%--__clone3 (inlined)
+                       start_thread
+                       sensor_thread_func
+                       usleep
+                       __nanosleep
+                       __clock_nanosleep (inlined)
+                       __syscall_cancel_arch (inlined)
+                       entry_SYSCALL_64_after_hwframe
+
+    61.30%     2.32%  sms_app_x86  [kernel.kallsyms]     [.] do_syscall_64
+            |          
+            |--58.98%--do_syscall_64
+            |          |          
+            |          |--56.51%--x64_sys_call
+            |          |          |          
+            |          |          |--19.78%--__x64_sys_clock_nanosleep
+            |          |          |          common_nsleep
+            |          |          |          hrtimer_nanosleep
+            |          |          |          |          
+            |          |          |          |--17.30%--do_nanosleep
+            |          |          |          |          |          
+            |          |          |          |          |--12.36%--schedule
+            |          |          |          |          |          __schedule
+            |          |          |          |          |          |          
+            |          |          |          |          |          |--4.94%--finish_task_switch.isra.0
+            |          |          |          |          |          |          |          
+            |          |          |          |          |          |           --2.47%--asm_sysvec_apic_timer_interrupt
+            |          |          |          |          |          |                     sysvec_apic_timer_interrupt
+            |          |          |          |          |          |                     __sysvec_apic_timer_interrupt
+            |          |          |          |          |          |                     hrtimer_interrupt
+            |          |          |          |          |          |                     __hrtimer_run_queues
+            |          |          |          |          |          |                     tick_nohz_handler
+            |          |          |          |          |          |                     update_process_times
+            |          |          |          |          |          |                     sched_tick
+            |          |          |          |          |          |                     task_tick_fair
+            |          |          |          |          |          |                     update_se
+            |          |          |          |          |          |          
+            |          |          |          |          |           --2.47%--pick_next_task
+            |          |          |          |          |                     pick_next_task_fair
+            |          |          |          |          |                     sched_balance_newidle
+            |          |          |          |          |                     __sched_balance_update_blocked_averages
+            |          |          |          |          |                     update_rt_rq_load_avg
+            |          |          |          |          |          
+            |          |          |          |           --4.94%--hrtimer_start_range_ns
+            |          |          |          |                     |          
+            |          |          |          |                     |--2.47%--switch_hrtimer_base
+            |          |          |          |                     |          
+            |          |          |          |                      --2.47%--enqueue_hrtimer
+            |          |          |          |                                timerqueue_add
+            |          |          |          |          
+            |          |          |           --2.47%--hrtimer_active
+            |          |          |          
+            |          |          |--9.60%--__x64_sys_clone3
+            |          |          |          __do_sys_clone3
+            |          |          |          kernel_clone
+            |          |          |          wake_up_new_task
+            |          |          |          select_task_rq_fair
+            |          |          |          sched_balance_find_dst_group
+            |          |          |          _find_next_and_bit
+            |          |          |          
+            |          |          |--7.42%--__x64_sys_mq_timedreceive
+            |          |          |          |          
+            |          |          |          |--4.94%--do_mq_timedreceive
+            |          |          |          |          wq_sleep
+            |          |          |          |          |          
+            |          |          |          |           --2.47%--schedule_hrtimeout_range_clock
+            |          |          |          |          
+            |          |          |           --2.47%--fdget
+            |          |          |          
+            |          |          |--7.35%--__x64_sys_lseek
+            |          |          |          ksys_lseek
+            |          |          |          fdget_pos
+            |          |          |          
+            |          |          |--4.94%--__x64_sys_execve
+            |          |          |          do_execveat_common.isra.0
+            |          |          |          bprm_execve
+            |          |          |          bprm_execve.part.0
+            |          |          |          exec_binprm
+            |          |          |          load_elf_binary
+            |          |          |          |          
+            |          |          |          |--2.47%--load_elf_interp.isra.0
+            |          |          |          |          elf_load
+            |          |          |          |          vm_mmap
+            |          |          |          |          vm_mmap_pgoff
+            |          |          |          |          do_mmap
+            |          |          |          |          path_noexec
+            |          |          |          |          
+            |          |          |           --2.47%--elf_load
+            |          |          |                     vm_mmap
+            |          |          |                     vm_mmap_pgoff
+            |          |          |                     security_mmap_file
+            |          |          |                     ima_file_mmap
+            |          |          |                     process_measurement
+            |          |          |          
+            |          |          |--2.47%--__x64_sys_mq_unlink
+            |          |          |          __do_sys_mq_unlink
+            |          |          |          start_removing_noperm
+            |          |          |          lookup_one_qstr_excl
+            |          |          |          lookup_dcache
+            |          |          |          d_lookup
+            |          |          |          __d_lookup
+            |          |          |          
+            |          |          |--2.47%--__x64_sys_futex
+            |          |          |          do_futex
+            |          |          |          futex_wait
+            |          |          |          __futex_wait
+            |          |          |          futex_do_wait
+            |          |          |          schedule
+            |          |          |          __schedule
+            |          |          |          psi_task_switch
+            |          |          |          psi_group_change
+            |          |          |          
+            |          |           --2.47%--common_nsleep
+            |          |          
+            |           --2.47%--arch_exit_to_user_mode_prepare.isra.0
+            |                     restore_fpregs_from_fpstate
+            |          
+             --2.32%--__clone3 (inlined)
+                       start_thread
+                       sensor_thread_func
+                       usleep
+                       __nanosleep
+                       __clock_nanosleep (inlined)
+                       __syscall_cancel_arch (inlined)
+                       entry_SYSCALL_64_after_hwframe
+                       do_syscall_64
+
+    61.20%     0.00%  sms_app_x86  libc.so.6             [.] __clone3 (inlined)
+            |
+            ---__clone3 (inlined)
+               |          
+               |--51.59%--start_thread
+               |          |          
+               |          |--26.94%--sensor_thread_func
+               |          |          |          
+               |          |          |--24.47%--usleep
+               |          |          |          |          
+               |          |          |           --17.16%--__nanosleep
+               |          |          |                     __clock_nanosleep (inlined)
+               |          |          |                     __syscall_cancel_arch (inlined)
+               |          |          |                     entry_SYSCALL_64_after_hwframe
+               |          |          |                     |          
+               |          |          |                      --14.68%--do_syscall_64
+               |          |          |                                |          
+               |          |          |                                 --12.36%--x64_sys_call
+               |          |          |                                           __x64_sys_clock_nanosleep
+               |          |          |                                           common_nsleep
+               |          |          |                                           hrtimer_nanosleep
+               |          |          |                                           |          
+               |          |          |                                           |--9.89%--do_nanosleep
+               |          |          |                                           |          |          
+               |          |          |                                           |          |--7.42%--schedule
+               |          |          |                                           |          |          __schedule
+               |          |          |                                           |          |          |          
+               |          |          |                                           |          |          |--4.94%--finish_task_switch.isra.0
+               |          |          |                                           |          |          |          |          
+               |          |          |                                           |          |          |           --2.47%--asm_sysvec_apic_timer_interrupt
+               |          |          |                                           |          |          |                     sysvec_apic_timer_interrupt
+               |          |          |                                           |          |          |                     __sysvec_apic_timer_interrupt
+               |          |          |                                           |          |          |                     hrtimer_interrupt
+               |          |          |                                           |          |          |                     __hrtimer_run_queues
+               |          |          |                                           |          |          |                     tick_nohz_handler
+               |          |          |                                           |          |          |                     update_process_times
+               |          |          |                                           |          |          |                     sched_tick
+               |          |          |                                           |          |          |                     task_tick_fair
+               |          |          |                                           |          |          |                     update_se
+               |          |          |                                           |          |          |          
+               |          |          |                                           |          |           --2.47%--pick_next_task
+               |          |          |                                           |          |                     pick_next_task_fair
+               |          |          |                                           |          |                     sched_balance_newidle
+               |          |          |                                           |          |                     __sched_balance_update_blocked_averages
+               |          |          |                                           |          |                     update_rt_rq_load_avg
+               |          |          |                                           |          |          
+               |          |          |                                           |           --2.47%--hrtimer_start_range_ns
+               |          |          |                                           |                     enqueue_hrtimer
+               |          |          |                                           |                     timerqueue_add
+               |          |          |                                           |          
+               |          |          |                                            --2.47%--hrtimer_active
+               |          |          |          
+               |          |           --2.47%--__libc_read (inlined)
+               |          |                     __syscall_cancel
+               |          |                     __internal_syscall_cancel (inlined)
+               |          |          
+               |          |--12.36%--alert_thread_func
+               |          |          ___mq_timedreceive_time64 (inlined)
+               |          |          |          
+               |          |          |--9.89%--__syscall_cancel_arch (inlined)
+               |          |          |          entry_SYSCALL_64_after_hwframe
+               |          |          |          do_syscall_64
+               |          |          |          |          
+               |          |          |          |--7.42%--x64_sys_call
+               |          |          |          |          __x64_sys_mq_timedreceive
+               |          |          |          |          |          
+               |          |          |          |          |--4.94%--do_mq_timedreceive
+               |          |          |          |          |          wq_sleep
+               |          |          |          |          |          |          
+               |          |          |          |          |           --2.47%--schedule_hrtimeout_range_clock
+               |          |          |          |          |          
+               |          |          |          |           --2.47%--fdget
+               |          |          |          |          
+               |          |          |           --2.47%--arch_exit_to_user_mode_prepare.isra.0
+               |          |          |                     restore_fpregs_from_fpstate
+               |          |          |          
+               |          |           --2.47%--__syscall_cancel
+               |          |                     __internal_syscall_cancel (inlined)
+               |          |          
+               |          |--9.82%--__lseek64 (inlined)
+               |          |          |          
+               |          |           --7.35%--entry_SYSCALL_64_after_hwframe
+               |          |                     do_syscall_64
+               |          |                     x64_sys_call
+               |          |                     __x64_sys_lseek
+               |          |                     ksys_lseek
+               |          |                     fdget_pos
+               |          |          
+               |           --2.47%--logger_thread_func
+               |                     _IO_new_fopen (inlined)
+               |                     __fopen_internal (inlined)
+               |                     __libc_malloc2
+               |                     arena_get2
+               |                     arena_get2
+               |                     _int_new_arena (inlined)
+               |                     alloc_new_heap
+               |                     asm_exc_page_fault
+               |                     exc_page_fault
+               |                     do_user_addr_fault
+               |                     handle_mm_fault
+               |                     __handle_mm_fault
+               |                     handle_pte_fault
+               |                     do_anonymous_page
+               |                     __vmf_anon_prepare
+               |                     __anon_vma_prepare
+               |                     kmem_cache_alloc_noprof
+               |                     __memcg_slab_post_alloc_hook
+               |          
+                --9.60%--entry_SYSCALL_64_after_hwframe
+                          do_syscall_64
+                          x64_sys_call
+                          __x64_sys_clone3
+                          __do_sys_clone3
+                          kernel_clone
+                          wake_up_new_task
+                          select_task_rq_fair
+                          sched_balance_find_dst_group
+                          _find_next_and_bit
+
+    56.51%     0.00%  sms_app_x86  [kernel.kallsyms]     [.] x64_sys_call
+            |
+            ---x64_sys_call
+               |          
+               |--19.78%--__x64_sys_clock_nanosleep
+               |          common_nsleep
+               |          hrtimer_nanosleep
+               |          |          
+               |          |--17.30%--do_nanosleep
+               |          |          |          
+               |          |          |--12.36%--schedule
+               |          |          |          __schedule
+               |          |          |          |          
+               |          |          |          |--4.94%--finish_task_switch.isra.0
+               |          |          |          |          |          
+               |          |          |          |           --2.47%--asm_sysvec_apic_timer_interrupt
+               |          |          |          |                     sysvec_apic_timer_interrupt
+               |          |          |          |                     __sysvec_apic_timer_interrupt
+               |          |          |          |                     hrtimer_interrupt
+               |          |          |          |                     __hrtimer_run_queues
+               |          |          |          |                     tick_nohz_handler
+               |          |          |          |                     update_process_times
+               |          |          |          |                     sched_tick
+               |          |          |          |                     task_tick_fair
+               |          |          |          |                     update_se
+               |          |          |          |          
+               |          |          |           --2.47%--pick_next_task
+               |          |          |                     pick_next_task_fair
+               |          |          |                     sched_balance_newidle
+               |          |          |                     __sched_balance_update_blocked_averages
+               |          |          |                     update_rt_rq_load_avg
+               |          |          |          
+               |          |           --4.94%--hrtimer_start_range_ns
+               |          |                     |          
+               |          |                     |--2.47%--switch_hrtimer_base
+               |          |                     |          
+               |          |                      --2.47%--enqueue_hrtimer
+               |          |                                timerqueue_add
+               |          |          
+               |           --2.47%--hrtimer_active
+               |          
+               |--9.60%--__x64_sys_clone3
+               |          __do_sys_clone3
+               |          kernel_clone
+               |          wake_up_new_task
+               |          select_task_rq_fair
+               |          sched_balance_find_dst_group
+               |          _find_next_and_bit
+               |          
+               |--7.42%--__x64_sys_mq_timedreceive
+               |          |          
+               |          |--4.94%--do_mq_timedreceive
+               |          |          wq_sleep
+               |          |          |          
+               |          |           --2.47%--schedule_hrtimeout_range_clock
+               |          |          
+               |           --2.47%--fdget
+               |          
+               |--7.35%--__x64_sys_lseek
+               |          ksys_lseek
+               |          fdget_pos
+               |          
+               |--4.94%--__x64_sys_execve
+               |          do_execveat_common.isra.0
+               |          bprm_execve
+               |          bprm_execve.part.0
+               |          exec_binprm
+               |          load_elf_binary
+               |          |          
+               |          |--2.47%--load_elf_interp.isra.0
+               |          |          elf_load
+               |          |          vm_mmap
+               |          |          vm_mmap_pgoff
+               |          |          do_mmap
+               |          |          path_noexec
+               |          |          
+               |           --2.47%--elf_load
+               |                     vm_mmap
+               |                     vm_mmap_pgoff
+               |                     security_mmap_file
+               |                     ima_file_mmap
+               |                     process_measurement
+               |          
+               |--2.47%--__x64_sys_mq_unlink
+               |          __do_sys_mq_unlink
+               |          start_removing_noperm
+               |          lookup_one_qstr_excl
+               |          lookup_dcache
+               |          d_lookup
+               |          __d_lookup
+               |          
+               |--2.47%--__x64_sys_futex
+               |          do_futex
+               |          futex_wait
+               |          __futex_wait
+               |          futex_do_wait
+               |          schedule
+               |          __schedule
+               |          psi_task_switch
+               |          psi_group_change
+               |          
+                --2.47%--common_nsleep
+
+    51.59%     0.00%  sms_app_x86  libc.so.6             [.] start_thread
+            |
+            ---start_thread
+               |          
+               |--26.94%--sensor_thread_func
+               |          |          
+               |          |--24.47%--usleep
+               |          |          |          
+               |          |           --17.16%--__nanosleep
+               |          |                     __clock_nanosleep (inlined)
+               |          |                     __syscall_cancel_arch (inlined)
+               |          |                     entry_SYSCALL_64_after_hwframe
+               |          |                     |          
+               |          |                      --14.68%--do_syscall_64
+               |          |                                |          
+               |          |                                 --12.36%--x64_sys_call
+               |          |                                           __x64_sys_clock_nanosleep
+               |          |                                           common_nsleep
+               |          |                                           hrtimer_nanosleep
+               |          |                                           |          
+               |          |                                           |--9.89%--do_nanosleep
+               |          |                                           |          |          
+               |          |                                           |          |--7.42%--schedule
+               |          |                                           |          |          __schedule
+               |          |                                           |          |          |          
+               |          |                                           |          |          |--4.94%--finish_task_switch.isra.0
+               |          |                                           |          |          |          |          
+               |          |                                           |          |          |           --2.47%--asm_sysvec_apic_timer_interrupt
+               |          |                                           |          |          |                     sysvec_apic_timer_interrupt
+               |          |                                           |          |          |                     __sysvec_apic_timer_interrupt
+               |          |                                           |          |          |                     hrtimer_interrupt
+               |          |                                           |          |          |                     __hrtimer_run_queues
+               |          |                                           |          |          |                     tick_nohz_handler
+               |          |                                           |          |          |                     update_process_times
+               |          |                                           |          |          |                     sched_tick
+               |          |                                           |          |          |                     task_tick_fair
+               |          |                                           |          |          |                     update_se
+               |          |                                           |          |          |          
+               |          |                                           |          |           --2.47%--pick_next_task
+               |          |                                           |          |                     pick_next_task_fair
+               |          |                                           |          |                     sched_balance_newidle
+               |          |                                           |          |                     __sched_balance_update_blocked_averages
+               |          |                                           |          |                     update_rt_rq_load_avg
+               |          |                                           |          |          
+               |          |                                           |           --2.47%--hrtimer_start_range_ns
+               |          |                                           |                     enqueue_hrtimer
+               |          |                                           |                     timerqueue_add
+               |          |                                           |          
+               |          |                                            --2.47%--hrtimer_active
+               |          |          
+               |           --2.47%--__libc_read (inlined)
+               |                     __syscall_cancel
+               |                     __internal_syscall_cancel (inlined)
+               |          
+               |--12.36%--alert_thread_func
+               |          ___mq_timedreceive_time64 (inlined)
+               |          |          
+               |          |--9.89%--__syscall_cancel_arch (inlined)
+               |          |          entry_SYSCALL_64_after_hwframe
+               |          |          do_syscall_64
+               |          |          |          
+               |          |          |--7.42%--x64_sys_call
+               |          |          |          __x64_sys_mq_timedreceive
+               |          |          |          |          
+               |          |          |          |--4.94%--do_mq_timedreceive
+               |          |          |          |          wq_sleep
+               |          |          |          |          |          
+               |          |          |          |           --2.47%--schedule_hrtimeout_range_clock
+               |          |          |          |          
+               |          |          |           --2.47%--fdget
+               |          |          |          
+               |          |           --2.47%--arch_exit_to_user_mode_prepare.isra.0
+               |          |                     restore_fpregs_from_fpstate
+               |          |          
+               |           --2.47%--__syscall_cancel
+               |                     __internal_syscall_cancel (inlined)
+               |          
+               |--9.82%--__lseek64 (inlined)
+               |          |          
+               |           --7.35%--entry_SYSCALL_64_after_hwframe
+               |                     do_syscall_64
+               |                     x64_sys_call
+               |                     __x64_sys_lseek
+               |                     ksys_lseek
+               |                     fdget_pos
+               |          
+                --2.47%--logger_thread_func
+                          _IO_new_fopen (inlined)
+                          __fopen_internal (inlined)
+                          __libc_malloc2
+                          arena_get2
+                          arena_get2
+                          _int_new_arena (inlined)
+                          alloc_new_heap
+                          asm_exc_page_fault
+                          exc_page_fault
+                          do_user_addr_fault
+                          handle_mm_fault
+                          __handle_mm_fault
+                          handle_pte_fault
+                          do_anonymous_page
+                          __vmf_anon_prepare
+                          __anon_vma_prepare
+                          kmem_cache_alloc_noprof
+                          __memcg_slab_post_alloc_hook
+
+    39.41%     0.00%  sms_app_x86  libc.so.6             [.] __syscall_cancel_arch (inlined)
+            |
+            ---__syscall_cancel_arch (inlined)
+               entry_SYSCALL_64_after_hwframe
+               |          
+                --36.93%--do_syscall_64
+                          |          
+                          |--32.14%--x64_sys_call
+                          |          |          
+                          |          |--19.78%--__x64_sys_clock_nanosleep
+                          |          |          common_nsleep
+                          |          |          hrtimer_nanosleep
+                          |          |          |          
+                          |          |          |--17.30%--do_nanosleep
+                          |          |          |          |          
+                          |          |          |          |--12.36%--schedule
+                          |          |          |          |          __schedule
+                          |          |          |          |          |          
+                          |          |          |          |          |--4.94%--finish_task_switch.isra.0
+                          |          |          |          |          |          |          
+                          |          |          |          |          |           --2.47%--asm_sysvec_apic_timer_interrupt
+                          |          |          |          |          |                     sysvec_apic_timer_interrupt
+                          |          |          |          |          |                     __sysvec_apic_timer_interrupt
+                          |          |          |          |          |                     hrtimer_interrupt
+                          |          |          |          |          |                     __hrtimer_run_queues
+                          |          |          |          |          |                     tick_nohz_handler
+                          |          |          |          |          |                     update_process_times
+                          |          |          |          |          |                     sched_tick
+                          |          |          |          |          |                     task_tick_fair
+                          |          |          |          |          |                     update_se
+                          |          |          |          |          |          
+                          |          |          |          |           --2.47%--pick_next_task
+                          |          |          |          |                     pick_next_task_fair
+                          |          |          |          |                     sched_balance_newidle
+                          |          |          |          |                     __sched_balance_update_blocked_averages
+                          |          |          |          |                     update_rt_rq_load_avg
+                          |          |          |          |          
+                          |          |          |           --4.94%--hrtimer_start_range_ns
+                          |          |          |                     |          
+                          |          |          |                     |--2.47%--switch_hrtimer_base
+                          |          |          |                     |          
+                          |          |          |                      --2.47%--enqueue_hrtimer
+                          |          |          |                                timerqueue_add
+                          |          |          |          
+                          |          |           --2.47%--hrtimer_active
+                          |          |          
+                          |          |--7.42%--__x64_sys_mq_timedreceive
+                          |          |          |          
+                          |          |          |--4.94%--do_mq_timedreceive
+                          |          |          |          wq_sleep
+                          |          |          |          |          
+                          |          |          |           --2.47%--schedule_hrtimeout_range_clock
+                          |          |          |          
+                          |          |           --2.47%--fdget
+                          |          |          
+                          |          |--2.47%--__x64_sys_futex
+                          |          |          do_futex
+                          |          |          futex_wait
+                          |          |          __futex_wait
+                          |          |          futex_do_wait
+                          |          |          schedule
+                          |          |          __schedule
+                          |          |          psi_task_switch
+                          |          |          psi_group_change
+                          |          |          
+                          |           --2.47%--common_nsleep
+                          |          
+                           --2.47%--arch_exit_to_user_mode_prepare.isra.0
+                                     restore_fpregs_from_fpstate
+
+    32.54%     0.00%  sms_app_x86  sms_app_x86           [.] _start
+            |
+            ---_start
+               |          
+               |--24.44%--__libc_start_main_impl (inlined)
+               |          call_init (inlined)
+               |          __libc_start_call_main
+               |          |          
+               |          |--21.97%--main
+               |          |          |          
+               |          |          |--9.89%--__sleep
+               |          |          |          __nanosleep
+               |          |          |          __clock_nanosleep (inlined)
+               |          |          |          __syscall_cancel_arch (inlined)
+               |          |          |          entry_SYSCALL_64_after_hwframe
+               |          |          |          do_syscall_64
+               |          |          |          x64_sys_call
+               |          |          |          |          
+               |          |          |          |--7.42%--__x64_sys_clock_nanosleep
+               |          |          |          |          common_nsleep
+               |          |          |          |          hrtimer_nanosleep
+               |          |          |          |          do_nanosleep
+               |          |          |          |          |          
+               |          |          |          |          |--4.94%--schedule
+               |          |          |          |          |          __schedule
+               |          |          |          |          |          
+               |          |          |          |           --2.47%--hrtimer_start_range_ns
+               |          |          |          |                     switch_hrtimer_base
+               |          |          |          |          
+               |          |          |           --2.47%--common_nsleep
+               |          |          |          
+               |          |          |--9.60%--__pthread_create_2_1 (inlined)
+               |          |          |          internal_signal_restore_set (inlined)
+               |          |          |          create_thread
+               |          |          |          __clone3 (inlined)
+               |          |          |          entry_SYSCALL_64_after_hwframe
+               |          |          |          do_syscall_64
+               |          |          |          x64_sys_call
+               |          |          |          __x64_sys_clone3
+               |          |          |          __do_sys_clone3
+               |          |          |          kernel_clone
+               |          |          |          wake_up_new_task
+               |          |          |          select_task_rq_fair
+               |          |          |          sched_balance_find_dst_group
+               |          |          |          _find_next_and_bit
+               |          |          |          
+               |          |           --2.47%--__pthread_clockjoin_ex
+               |          |                     __futex_abstimed_wait_cancelable64 (inlined)
+               |          |                     __futex_abstimed_wait_common (inlined)
+               |          |                     __syscall_cancel_arch (inlined)
+               |          |                     entry_SYSCALL_64_after_hwframe
+               |          |                     do_syscall_64
+               |          |                     x64_sys_call
+               |          |                     __x64_sys_futex
+               |          |                     do_futex
+               |          |                     futex_wait
+               |          |                     __futex_wait
+               |          |                     futex_do_wait
+               |          |                     schedule
+               |          |                     __schedule
+               |          |                     psi_task_switch
+               |          |                     psi_group_change
+               |          |          
+               |           --2.47%--__mq_unlink (inlined)
+               |                     entry_SYSCALL_64_after_hwframe
+               |                     do_syscall_64
+               |                     x64_sys_call
+               |                     __x64_sys_mq_unlink
+               |                     __do_sys_mq_unlink
+               |                     start_removing_noperm
+               |                     lookup_one_qstr_excl
+               |                     lookup_dcache
+               |                     d_lookup
+               |                     __d_lookup
+               |          
+                --8.10%--asm_exc_page_fault
+                          exc_page_fault
+                          irqentry_exit
+
+    27.05%     0.00%  sms_app_x86  libc.so.6             [.] __nanosleep
+            |
+            ---__nanosleep
+               __clock_nanosleep (inlined)
+               __syscall_cancel_arch (inlined)
+               entry_SYSCALL_64_after_hwframe
+               |          
+                --24.57%--do_syscall_64
+                          |          
+                           --22.25%--x64_sys_call
+                                     |          
+                                     |--19.78%--__x64_sys_clock_nanosleep
+                                     |          common_nsleep
+                                     |          hrtimer_nanosleep
+                                     |          |          
+                                     |          |--17.30%--do_nanosleep
+                                     |          |          |          
+                                     |          |          |--12.36%--schedule
+                                     |          |          |          __schedule
+                                     |          |          |          |          
+                                     |          |          |          |--4.94%--finish_task_switch.isra.0
+                                     |          |          |          |          |          
+                                     |          |          |          |           --2.47%--asm_sysvec_apic_timer_interrupt
+                                     |          |          |          |                     sysvec_apic_timer_interrupt
+                                     |          |          |          |                     __sysvec_apic_timer_interrupt
+                                     |          |          |          |                     hrtimer_interrupt
+                                     |          |          |          |                     __hrtimer_run_queues
+                                     |          |          |          |                     tick_nohz_handler
+                                     |          |          |          |                     update_process_times
+                                     |          |          |          |                     sched_tick
+                                     |          |          |          |                     task_tick_fair
+                                     |          |          |          |                     update_se
+                                     |          |          |          |          
+                                     |          |          |           --2.47%--pick_next_task
+                                     |          |          |                     pick_next_task_fair
+                                     |          |          |                     sched_balance_newidle
+                                     |          |          |                     __sched_balance_update_blocked_averages
+                                     |          |          |                     update_rt_rq_load_avg
+                                     |          |          |          
+                                     |          |           --4.94%--hrtimer_start_range_ns
+                                     |          |                     |          
+                                     |          |                     |--2.47%--switch_hrtimer_base
+                                     |          |                     |          
+                                     |          |                      --2.47%--enqueue_hrtimer
+                                     |          |                                timerqueue_add
+                                     |          |          
+                                     |           --2.47%--hrtimer_active
+                                     |          
+                                      --2.47%--common_nsleep
+
+    27.05%     0.00%  sms_app_x86  libc.so.6             [.] __clock_nanosleep (inlined)
+            |
+            ---__clock_nanosleep (inlined)
+               __syscall_cancel_arch (inlined)
+               entry_SYSCALL_64_after_hwframe
+               |          
+                --24.57%--do_syscall_64
+                          |          
+                           --22.25%--x64_sys_call
+                                     |          
+                                     |--19.78%--__x64_sys_clock_nanosleep
+                                     |          common_nsleep
+                                     |          hrtimer_nanosleep
+                                     |          |          
+                                     |          |--17.30%--do_nanosleep
+                                     |          |          |          
+                                     |          |          |--12.36%--schedule
+                                     |          |          |          __schedule
+                                     |          |          |          |          
+                                     |          |          |          |--4.94%--finish_task_switch.isra.0
+                                     |          |          |          |          |          
+                                     |          |          |          |           --2.47%--asm_sysvec_apic_timer_interrupt
+                                     |          |          |          |                     sysvec_apic_timer_interrupt
+                                     |          |          |          |                     __sysvec_apic_timer_interrupt
+                                     |          |          |          |                     hrtimer_interrupt
+                                     |          |          |          |                     __hrtimer_run_queues
+                                     |          |          |          |                     tick_nohz_handler
+                                     |          |          |          |                     update_process_times
+                                     |          |          |          |                     sched_tick
+                                     |          |          |          |                     task_tick_fair
+                                     |          |          |          |                     update_se
+                                     |          |          |          |          
+                                     |          |          |           --2.47%--pick_next_task
+                                     |          |          |                     pick_next_task_fair
+                                     |          |          |                     sched_balance_newidle
+                                     |          |          |                     __sched_balance_update_blocked_averages
+                                     |          |          |                     update_rt_rq_load_avg
+                                     |          |          |          
+                                     |          |           --4.94%--hrtimer_start_range_ns
+                                     |          |                     |          
+                                     |          |                     |--2.47%--switch_hrtimer_base
+                                     |          |                     |          
+                                     |          |                      --2.47%--enqueue_hrtimer
+                                     |          |                                timerqueue_add
+                                     |          |          
+                                     |           --2.47%--hrtimer_active
+                                     |          
+                                      --2.47%--common_nsleep
+
+    26.94%     0.00%  sms_app_x86  sms_app_x86           [.] sensor_thread_func
+            |
+            ---sensor_thread_func
+               |          
+               |--24.47%--usleep
+               |          |          
+               |           --17.16%--__nanosleep
+               |                     __clock_nanosleep (inlined)
+               |                     __syscall_cancel_arch (inlined)
+               |                     entry_SYSCALL_64_after_hwframe
+               |                     |          
+               |                      --14.68%--do_syscall_64
+               |                                |          
+               |                                 --12.36%--x64_sys_call
+               |                                           __x64_sys_clock_nanosleep
+               |                                           common_nsleep
+               |                                           hrtimer_nanosleep
+               |                                           |          
+               |                                           |--9.89%--do_nanosleep
+               |                                           |          |          
+               |                                           |          |--7.42%--schedule
+               |                                           |          |          __schedule
+               |                                           |          |          |          
+               |                                           |          |          |--4.94%--finish_task_switch.isra.0
+               |                                           |          |          |          |          
+               |                                           |          |          |           --2.47%--asm_sysvec_apic_timer_interrupt
+               |                                           |          |          |                     sysvec_apic_timer_interrupt
+               |                                           |          |          |                     __sysvec_apic_timer_interrupt
+               |                                           |          |          |                     hrtimer_interrupt
+               |                                           |          |          |                     __hrtimer_run_queues
+               |                                           |          |          |                     tick_nohz_handler
+               |                                           |          |          |                     update_process_times
+               |                                           |          |          |                     sched_tick
+               |                                           |          |          |                     task_tick_fair
+               |                                           |          |          |                     update_se
+               |                                           |          |          |          
+               |                                           |          |           --2.47%--pick_next_task
+               |                                           |          |                     pick_next_task_fair
+               |                                           |          |                     sched_balance_newidle
+               |                                           |          |                     __sched_balance_update_blocked_averages
+               |                                           |          |                     update_rt_rq_load_avg
+               |                                           |          |          
+               |                                           |           --2.47%--hrtimer_start_range_ns
+               |                                           |                     enqueue_hrtimer
+               |                                           |                     timerqueue_add
+               |                                           |          
+               |                                            --2.47%--hrtimer_active
+               |          
+                --2.47%--__libc_read (inlined)
+                          __syscall_cancel
+                          __internal_syscall_cancel (inlined)
+
+    24.47%     4.80%  sms_app_x86  libc.so.6             [.] usleep
+            |          
+            |--19.67%--usleep
+            |          |          
+            |           --17.16%--__nanosleep
+            |                     __clock_nanosleep (inlined)
+            |                     __syscall_cancel_arch (inlined)
+            |                     entry_SYSCALL_64_after_hwframe
+            |                     |          
+            |                      --14.68%--do_syscall_64
+            |                                |          
+            |                                 --12.36%--x64_sys_call
+            |                                           __x64_sys_clock_nanosleep
+            |                                           common_nsleep
+            |                                           hrtimer_nanosleep
+            |                                           |          
+            |                                           |--7.42%--do_nanosleep
+            |                                           |          schedule
+            |                                           |          __schedule
+            |                                           |          |          
+            |                                           |          |--4.94%--finish_task_switch.isra.0
+            |                                           |          |          |          
+            |                                           |          |           --2.47%--asm_sysvec_apic_timer_interrupt
+            |                                           |          |                     sysvec_apic_timer_interrupt
+            |                                           |          |                     __sysvec_apic_timer_interrupt
+            |                                           |          |                     hrtimer_interrupt
+            |                                           |          |                     __hrtimer_run_queues
+            |                                           |          |                     tick_nohz_handler
+            |                                           |          |                     update_process_times
+            |                                           |          |                     sched_tick
+            |                                           |          |                     task_tick_fair
+            |                                           |          |                     update_se
+            |                                           |          |          
+            |                                           |           --2.47%--pick_next_task
+            |                                           |                     pick_next_task_fair
+            |                                           |                     sched_balance_newidle
+            |                                           |                     __sched_balance_update_blocked_averages
+            |                                           |                     update_rt_rq_load_avg
+            |                                           |          
+            |                                           |--2.47%--0xffffffffa3138ae2
+            |                                           |          0xffffffffa1f766fa
+            |                                           |          0xffffffffa1f753fa
+            |                                           |          0xffffffffa310c7d4
+            |                                           |          
+            |                                            --2.47%--hrtimer_active
+            |          
+             --4.80%--__clone3 (inlined)
+                       start_thread
+                       sensor_thread_func
+                       usleep
+
+    24.44%     0.00%  sms_app_x86  libc.so.6             [.] __libc_start_main_impl (inlined)
+            |
+            ---__libc_start_main_impl (inlined)
+               call_init (inlined)
+               __libc_start_call_main
+               |          
+               |--21.97%--main
+               |          |          
+               |          |--9.89%--__sleep
+               |          |          __nanosleep
+               |          |          __clock_nanosleep (inlined)
+               |          |          __syscall_cancel_arch (inlined)
+               |          |          entry_SYSCALL_64_after_hwframe
+               |          |          do_syscall_64
+               |          |          x64_sys_call
+               |          |          |          
+               |          |          |--7.42%--__x64_sys_clock_nanosleep
+               |          |          |          common_nsleep
+               |          |          |          hrtimer_nanosleep
+               |          |          |          do_nanosleep
+               |          |          |          |          
+               |          |          |          |--4.94%--schedule
+               |          |          |          |          __schedule
+               |          |          |          |          
+               |          |          |           --2.47%--hrtimer_start_range_ns
+               |          |          |                     switch_hrtimer_base
+               |          |          |          
+               |          |           --2.47%--common_nsleep
+               |          |          
+               |          |--9.60%--__pthread_create_2_1 (inlined)
+               |          |          internal_signal_restore_set (inlined)
+               |          |          create_thread
+               |          |          __clone3 (inlined)
+               |          |          entry_SYSCALL_64_after_hwframe
+               |          |          do_syscall_64
+               |          |          x64_sys_call
+               |          |          __x64_sys_clone3
+               |          |          __do_sys_clone3
+               |          |          kernel_clone
+               |          |          wake_up_new_task
+               |          |          select_task_rq_fair
+               |          |          sched_balance_find_dst_group
+               |          |          _find_next_and_bit
+               |          |          
+               |           --2.47%--__pthread_clockjoin_ex
+               |                     __futex_abstimed_wait_cancelable64 (inlined)
+               |                     __futex_abstimed_wait_common (inlined)
+               |                     __syscall_cancel_arch (inlined)
+               |                     entry_SYSCALL_64_after_hwframe
+               |                     do_syscall_64
+               |                     x64_sys_call
+               |                     __x64_sys_futex
+               |                     do_futex
+               |                     futex_wait
+               |                     __futex_wait
+               |                     futex_do_wait
+               |                     schedule
+               |                     __schedule
+               |                     psi_task_switch
+               |                     psi_group_change
+               |          
+                --2.47%--__mq_unlink (inlined)
+                          entry_SYSCALL_64_after_hwframe
+                          do_syscall_64
+                          x64_sys_call
+                          __x64_sys_mq_unlink
+                          __do_sys_mq_unlink
+                          start_removing_noperm
+                          lookup_one_qstr_excl
+                          lookup_dcache
+                          d_lookup
+                          __d_lookup
+
+    24.44%     0.00%  sms_app_x86  libc.so.6             [.] call_init (inlined)
+            |
+            ---call_init (inlined)
+               __libc_start_call_main
+               |          
+               |--21.97%--main
+               |          |          
+               |          |--9.89%--__sleep
+               |          |          __nanosleep
+               |          |          __clock_nanosleep (inlined)
+               |          |          __syscall_cancel_arch (inlined)
+               |          |          entry_SYSCALL_64_after_hwframe
+               |          |          do_syscall_64
+               |          |          x64_sys_call
+               |          |          |          
+               |          |          |--7.42%--__x64_sys_clock_nanosleep
+               |          |          |          common_nsleep
+               |          |          |          hrtimer_nanosleep
+               |          |          |          do_nanosleep
+               |          |          |          |          
+               |          |          |          |--4.94%--schedule
+               |          |          |          |          __schedule
+               |          |          |          |          
+               |          |          |           --2.47%--hrtimer_start_range_ns
+               |          |          |                     switch_hrtimer_base
+               |          |          |          
+               |          |           --2.47%--common_nsleep
+               |          |          
+               |          |--9.60%--__pthread_create_2_1 (inlined)
+               |          |          internal_signal_restore_set (inlined)
+               |          |          create_thread
+               |          |          __clone3 (inlined)
+               |          |          entry_SYSCALL_64_after_hwframe
+               |          |          do_syscall_64
+               |          |          x64_sys_call
+               |          |          __x64_sys_clone3
+               |          |          __do_sys_clone3
+               |          |          kernel_clone
+               |          |          wake_up_new_task
+               |          |          select_task_rq_fair
+               |          |          sched_balance_find_dst_group
+               |          |          _find_next_and_bit
+               |          |          
+               |           --2.47%--__pthread_clockjoin_ex
+               |                     __futex_abstimed_wait_cancelable64 (inlined)
+               |                     __futex_abstimed_wait_common (inlined)
+               |                     __syscall_cancel_arch (inlined)
+               |                     entry_SYSCALL_64_after_hwframe
+               |                     do_syscall_64
+               |                     x64_sys_call
+               |                     __x64_sys_futex
+               |                     do_futex
+               |                     futex_wait
+               |                     __futex_wait
+               |                     futex_do_wait
+               |                     schedule
+               |                     __schedule
+               |                     psi_task_switch
+               |                     psi_group_change
+               |          
+                --2.47%--__mq_unlink (inlined)
+                          entry_SYSCALL_64_after_hwframe
+                          do_syscall_64
+                          x64_sys_call
+                          __x64_sys_mq_unlink
+                          __do_sys_mq_unlink
+                          start_removing_noperm
+                          lookup_one_qstr_excl
+                          lookup_dcache
+                          d_lookup
+                          __d_lookup
+
+    24.44%     0.00%  sms_app_x86  libc.so.6             [.] __libc_start_call_main
+            |
+            ---__libc_start_call_main
+               |          
+               |--12.36%--0x619fb55e9ab3
+               |          |          
+               |          |--9.89%--0x76d9e2d1aebe
+               |          |          0x76d9e2d03707
+               |          |          0x76d9e2cf5af2
+               |          |          0x76d9e2cac802
+               |          |          0xffffffffa1a0012b
+               |          |          0xffffffffa3120b65
+               |          |          0xffffffffa1d48f75
+               |          |          |          
+               |          |          |--7.42%--0xffffffffa1f85dee
+               |          |          |          0xffffffffa1f83524
+               |          |          |          0xffffffffa1f773eb
+               |          |          |          0xffffffffa3138ae2
+               |          |          |          |          
+               |          |          |          |--4.94%--0xffffffffa3130d97
+               |          |          |          |          0xffffffffa313078c
+               |          |          |          |          
+               |          |          |           --2.47%--0xffffffffa1f766e6
+               |          |          |                     0xffffffffa1f7558e
+               |          |          |          
+               |          |           --2.47%--0xffffffffa1f83525
+               |          |          
+               |           --2.47%--0x76d9e2ca5dd9
+               |                     0x76d9e2ca06e7
+               |                     0x76d9e2ca06e7
+               |                     0x76d9e2cac802
+               |                     0xffffffffa1a0012b
+               |                     0xffffffffa3120b65
+               |                     0xffffffffa1d4858e
+               |                     0xffffffffa1f9b820
+               |                     0xffffffffa1f9b112
+               |                     0xffffffffa1f9f72b
+               |                     0xffffffffa1f9f62c
+               |                     0xffffffffa1f9ee28
+               |                     0xffffffffa3130d97
+               |                     0xffffffffa3130bbc
+               |                     0xffffffffa1efe2da
+               |                     0xffffffffa1ef038c
+               |          
+               |--9.60%--main
+               |          __pthread_create_2_1 (inlined)
+               |          internal_signal_restore_set (inlined)
+               |          create_thread
+               |          __clone3 (inlined)
+               |          entry_SYSCALL_64_after_hwframe
+               |          do_syscall_64
+               |          x64_sys_call
+               |          __x64_sys_clone3
+               |          __do_sys_clone3
+               |          kernel_clone
+               |          wake_up_new_task
+               |          select_task_rq_fair
+               |          sched_balance_find_dst_group
+               |          _find_next_and_bit
+               |          
+                --2.47%--0x76d9e2caff74
+                          0xffffffffa1a0012b
+                          0xffffffffa3120b65
+                          0xffffffffa1d47b96
+                          0xffffffffa2501382
+                          0xffffffffa25012b5
+                          0xffffffffa2301412
+                          0xffffffffa22f94cf
+                          0xffffffffa22f9436
+                          0xffffffffa231181a
+                          0xffffffffa2311742
+
+    22.25%     2.47%  sms_app_x86  [kernel.kallsyms]     [.] common_nsleep
+            |          
+            |--19.78%--common_nsleep
+            |          hrtimer_nanosleep
+            |          |          
+            |          |--17.30%--do_nanosleep
+            |          |          |          
+            |          |          |--12.36%--schedule
+            |          |          |          __schedule
+            |          |          |          |          
+            |          |          |          |--4.94%--finish_task_switch.isra.0
+            |          |          |          |          |          
+            |          |          |          |           --2.47%--asm_sysvec_apic_timer_interrupt
+            |          |          |          |                     sysvec_apic_timer_interrupt
+            |          |          |          |                     __sysvec_apic_timer_interrupt
+            |          |          |          |                     hrtimer_interrupt
+            |          |          |          |                     __hrtimer_run_queues
+            |          |          |          |                     tick_nohz_handler
+            |          |          |          |                     update_process_times
+            |          |          |          |                     sched_tick
+            |          |          |          |                     task_tick_fair
+            |          |          |          |                     update_se
+            |          |          |          |          
+            |          |          |           --2.47%--pick_next_task
+            |          |          |                     pick_next_task_fair
+            |          |          |                     sched_balance_newidle
+            |          |          |                     __sched_balance_update_blocked_averages
+            |          |          |                     update_rt_rq_load_avg
+            |          |          |          
+            |          |           --4.94%--hrtimer_start_range_ns
+            |          |                     |          
+            |          |                     |--2.47%--switch_hrtimer_base
+            |          |                     |          
+            |          |                      --2.47%--enqueue_hrtimer
+            |          |                                timerqueue_add
+            |          |          
+            |           --2.47%--hrtimer_active
+            |          
+             --2.47%--_start
+                       __libc_start_main_impl (inlined)
+                       call_init (inlined)
+                       __libc_start_call_main
+                       main
+                       __sleep
+                       __nanosleep
+                       __clock_nanosleep (inlined)
+                       __syscall_cancel_arch (inlined)
+                       entry_SYSCALL_64_after_hwframe
+                       do_syscall_64
+                       x64_sys_call
+                       common_nsleep
+
+    21.97%     0.00%  sms_app_x86  sms_app_x86           [.] main
+            |
+            ---main
+               |          
+               |--9.89%--__sleep
+               |          __nanosleep
+               |          __clock_nanosleep (inlined)
+               |          __syscall_cancel_arch (inlined)
+               |          entry_SYSCALL_64_after_hwframe
+               |          do_syscall_64
+               |          x64_sys_call
+               |          |          
+               |          |--7.42%--__x64_sys_clock_nanosleep
+               |          |          common_nsleep
+               |          |          hrtimer_nanosleep
+               |          |          do_nanosleep
+               |          |          |          
+               |          |          |--4.94%--schedule
+               |          |          |          __schedule
+               |          |          |          
+               |          |           --2.47%--hrtimer_start_range_ns
+               |          |                     switch_hrtimer_base
+               |          |          
+               |           --2.47%--common_nsleep
+               |          
+               |--9.60%--__pthread_create_2_1 (inlined)
+               |          internal_signal_restore_set (inlined)
+               |          create_thread
+               |          __clone3 (inlined)
+               |          entry_SYSCALL_64_after_hwframe
+               |          do_syscall_64
+               |          x64_sys_call
+               |          __x64_sys_clone3
+               |          __do_sys_clone3
+               |          kernel_clone
+               |          wake_up_new_task
+               |          select_task_rq_fair
+               |          sched_balance_find_dst_group
+               |          _find_next_and_bit
+               |          
+                --2.47%--__pthread_clockjoin_ex
+                          __futex_abstimed_wait_cancelable64 (inlined)
+                          __futex_abstimed_wait_common (inlined)
+                          __syscall_cancel_arch (inlined)
+                          entry_SYSCALL_64_after_hwframe
+                          do_syscall_64
+                          x64_sys_call
+                          __x64_sys_futex
+                          do_futex
+                          futex_wait
+                          __futex_wait
+                          futex_do_wait
+                          schedule
+                          __schedule
+                          psi_task_switch
+                          psi_group_change
+
+    19.78%     0.00%  sms_app_x86  [kernel.kallsyms]     [.] __x64_sys_clock_nanosleep
+            |
+            ---__x64_sys_clock_nanosleep
+               common_nsleep
+               hrtimer_nanosleep
+               |          
+               |--17.30%--do_nanosleep
+               |          |          
+               |          |--12.36%--schedule
+               |          |          __schedule
+               |          |          |          
+               |          |          |--4.94%--finish_task_switch.isra.0
+               |          |          |          |          
+               |          |          |           --2.47%--asm_sysvec_apic_timer_interrupt
+               |          |          |                     sysvec_apic_timer_interrupt
+               |          |          |                     __sysvec_apic_timer_interrupt
+               |          |          |                     hrtimer_interrupt
+               |          |          |                     __hrtimer_run_queues
+               |          |          |                     tick_nohz_handler
+               |          |          |                     update_process_times
+               |          |          |                     sched_tick
+               |          |          |                     task_tick_fair
+               |          |          |                     update_se
+               |          |          |          
+               |          |           --2.47%--pick_next_task
+               |          |                     pick_next_task_fair
+               |          |                     sched_balance_newidle
+               |          |                     __sched_balance_update_blocked_averages
+               |          |                     update_rt_rq_load_avg
+               |          |          
+               |           --4.94%--hrtimer_start_range_ns
+               |                     |          
+               |                     |--2.47%--switch_hrtimer_base
+               |                     |          
+               |                      --2.47%--enqueue_hrtimer
+               |                                timerqueue_add
+               |          
+                --2.47%--hrtimer_active
+
+    19.78%     0.00%  sms_app_x86  [kernel.kallsyms]     [.] hrtimer_nanosleep
+            |
+            ---hrtimer_nanosleep
+               |          
+               |--17.30%--do_nanosleep
+               |          |          
+               |          |--12.36%--schedule
+               |          |          __schedule
+               |          |          |          
+               |          |          |--4.94%--finish_task_switch.isra.0
+               |          |          |          |          
+               |          |          |           --2.47%--asm_sysvec_apic_timer_interrupt
+               |          |          |                     sysvec_apic_timer_interrupt
+               |          |          |                     __sysvec_apic_timer_interrupt
+               |          |          |                     hrtimer_interrupt
+               |          |          |                     __hrtimer_run_queues
+               |          |          |                     tick_nohz_handler
+               |          |          |                     update_process_times
+               |          |          |                     sched_tick
+               |          |          |                     task_tick_fair
+               |          |          |                     update_se
+               |          |          |          
+               |          |           --2.47%--pick_next_task
+               |          |                     pick_next_task_fair
+               |          |                     sched_balance_newidle
+               |          |                     __sched_balance_update_blocked_averages
+               |          |                     update_rt_rq_load_avg
+               |          |          
+               |           --4.94%--hrtimer_start_range_ns
+               |                     |          
+               |                     |--2.47%--switch_hrtimer_base
+               |                     |          
+               |                      --2.47%--enqueue_hrtimer
+               |                                timerqueue_add
+               |          
+                --2.47%--hrtimer_active
+
+    17.30%     0.00%  sms_app_x86  [kernel.kallsyms]     [.] do_nanosleep
+            |
+            ---do_nanosleep
+               |          
+               |--12.36%--schedule
+               |          __schedule
+               |          |          
+               |          |--4.94%--finish_task_switch.isra.0
+               |          |          |          
+               |          |           --2.47%--asm_sysvec_apic_timer_interrupt
+               |          |                     sysvec_apic_timer_interrupt
+               |          |                     __sysvec_apic_timer_interrupt
+               |          |                     hrtimer_interrupt
+               |          |                     __hrtimer_run_queues
+               |          |                     tick_nohz_handler
+               |          |                     update_process_times
+               |          |                     sched_tick
+               |          |                     task_tick_fair
+               |          |                     update_se
+               |          |          
+               |           --2.47%--pick_next_task
+               |                     pick_next_task_fair
+               |                     sched_balance_newidle
+               |                     __sched_balance_update_blocked_averages
+               |                     update_rt_rq_load_avg
+               |          
+                --4.94%--hrtimer_start_range_ns
+                          |          
+                          |--2.47%--switch_hrtimer_base
+                          |          
+                           --2.47%--enqueue_hrtimer
+                                     timerqueue_add
+
+    14.83%     4.94%  sms_app_x86  [kernel.kallsyms]     [.] __schedule
+            |          
+            |--9.89%--__schedule
+            |          |          
+            |          |--4.94%--finish_task_switch.isra.0
+            |          |          |          
+            |          |           --2.47%--asm_sysvec_apic_timer_interrupt
+            |          |                     sysvec_apic_timer_interrupt
+            |          |                     __sysvec_apic_timer_interrupt
+            |          |                     hrtimer_interrupt
+            |          |                     __hrtimer_run_queues
+            |          |                     tick_nohz_handler
+            |          |                     update_process_times
+            |          |                     sched_tick
+            |          |                     task_tick_fair
+            |          |                     update_se
+            |          |          
+            |          |--2.47%--psi_task_switch
+            |          |          psi_group_change
+            |          |          
+            |           --2.47%--pick_next_task
+            |                     pick_next_task_fair
+            |                     sched_balance_newidle
+            |                     __sched_balance_update_blocked_averages
+            |                     update_rt_rq_load_avg
+            |          
+             --4.94%--_start
+                       __libc_start_main_impl (inlined)
+                       call_init (inlined)
+                       __libc_start_call_main
+                       main
+                       __sleep
+                       __nanosleep
+                       __clock_nanosleep (inlined)
+                       __syscall_cancel_arch (inlined)
+                       entry_SYSCALL_64_after_hwframe
+                       do_syscall_64
+                       x64_sys_call
+                       __x64_sys_clock_nanosleep
+                       common_nsleep
+                       hrtimer_nanosleep
+                       do_nanosleep
+                       schedule
+                       __schedule
+
+    14.83%     0.00%  sms_app_x86  [kernel.kallsyms]     [.] schedule
+            |
+            ---schedule
+               __schedule
+               |          
+               |--4.94%--finish_task_switch.isra.0
+               |          |          
+               |           --2.47%--asm_sysvec_apic_timer_interrupt
+               |                     sysvec_apic_timer_interrupt
+               |                     __sysvec_apic_timer_interrupt
+               |                     hrtimer_interrupt
+               |                     __hrtimer_run_queues
+               |                     tick_nohz_handler
+               |                     update_process_times
+               |                     sched_tick
+               |                     task_tick_fair
+               |                     update_se
+               |          
+               |--2.47%--psi_task_switch
+               |          psi_group_change
+               |          
+                --2.47%--pick_next_task
+                          pick_next_task_fair
+                          sched_balance_newidle
+                          __sched_balance_update_blocked_averages
+                          update_rt_rq_load_avg
+
+    12.36%     0.00%  sms_app_x86  sms_app_x86           [.] alert_thread_func
+            |
+            ---alert_thread_func
+               ___mq_timedreceive_time64 (inlined)
+               |          
+               |--9.89%--__syscall_cancel_arch (inlined)
+               |          entry_SYSCALL_64_after_hwframe
+               |          do_syscall_64
+               |          |          
+               |          |--7.42%--x64_sys_call
+               |          |          __x64_sys_mq_timedreceive
+               |          |          |          
+               |          |          |--4.94%--do_mq_timedreceive
+               |          |          |          wq_sleep
+               |          |          |          |          
+               |          |          |           --2.47%--schedule_hrtimeout_range_clock
+               |          |          |          
+               |          |           --2.47%--fdget
+               |          |          
+               |           --2.47%--arch_exit_to_user_mode_prepare.isra.0
+               |                     restore_fpregs_from_fpstate
+               |          
+                --2.47%--__syscall_cancel
+                          __internal_syscall_cancel (inlined)
+
+    12.36%     0.00%  sms_app_x86  libc.so.6             [.] ___mq_timedreceive_time64 (inlined)
+            |
+            ---___mq_timedreceive_time64 (inlined)
+               |          
+               |--9.89%--__syscall_cancel_arch (inlined)
+               |          entry_SYSCALL_64_after_hwframe
+               |          do_syscall_64
+               |          |          
+               |          |--7.42%--x64_sys_call
+               |          |          __x64_sys_mq_timedreceive
+               |          |          |          
+               |          |          |--4.94%--do_mq_timedreceive
+               |          |          |          wq_sleep
+               |          |          |          |          
+               |          |          |           --2.47%--schedule_hrtimeout_range_clock
+               |          |          |          
+               |          |           --2.47%--fdget
+               |          |          
+               |           --2.47%--arch_exit_to_user_mode_prepare.isra.0
+               |                     restore_fpregs_from_fpstate
+               |          
+                --2.47%--__syscall_cancel
+                          __internal_syscall_cancel (inlined)
+
+    10.92%     0.00%  sms_app_x86  ld-linux-x86-64.so.2  [.] _dl_start_user
+            |
+            ---_dl_start_user
+               _dl_start
+               _dl_start_final (inlined)
+               _dl_sysdep_start
+               |          
+               |--6.41%--dl_main
+               |          _dl_receive_error
+               |          set_catch (inlined)
+               |          version_check_doit
+               |          _dl_check_all_versions
+               |          _dl_check_map_versions
+               |          
+                --4.51%--init_cpu_features (inlined)
+                          dl_init_cacheinfo (inlined)
+
+    10.92%     0.00%  sms_app_x86  ld-linux-x86-64.so.2  [.] _dl_start
+            |
+            ---_dl_start
+               _dl_start_final (inlined)
+               _dl_sysdep_start
+               |          
+               |--6.41%--dl_main
+               |          _dl_receive_error
+               |          set_catch (inlined)
+               |          version_check_doit
+               |          _dl_check_all_versions
+               |          _dl_check_map_versions
+               |          
+                --4.51%--init_cpu_features (inlined)
+                          dl_init_cacheinfo (inlined)
+
+    10.92%     0.00%  sms_app_x86  ld-linux-x86-64.so.2  [.] _dl_start_final (inlined)
+            |
+            ---_dl_start_final (inlined)
+               _dl_sysdep_start
+               |          
+               |--6.41%--dl_main
+               |          _dl_receive_error
+               |          set_catch (inlined)
+               |          version_check_doit
+               |          _dl_check_all_versions
+               |          _dl_check_map_versions
+               |          
+                --4.51%--init_cpu_features (inlined)
+                          dl_init_cacheinfo (inlined)
+
+    10.92%     0.00%  sms_app_x86  ld-linux-x86-64.so.2  [.] _dl_sysdep_start
+            |
+            ---_dl_sysdep_start
+               |          
+               |--6.41%--dl_main
+               |          _dl_receive_error
+               |          set_catch (inlined)
+               |          version_check_doit
+               |          _dl_check_all_versions
+               |          _dl_check_map_versions
+               |          
+                --4.51%--init_cpu_features (inlined)
+                          dl_init_cacheinfo (inlined)
+
+    10.58%     0.00%  sms_app_x86  [kernel.kallsyms]     [.] asm_exc_page_fault
+            |
+            ---asm_exc_page_fault
+               exc_page_fault
+               |          
+               |--8.10%--irqentry_exit
+               |          
+                --2.47%--do_user_addr_fault
+                          handle_mm_fault
+                          __handle_mm_fault
+                          handle_pte_fault
+                          do_anonymous_page
+                          __vmf_anon_prepare
+                          __anon_vma_prepare
+                          kmem_cache_alloc_noprof
+                          __memcg_slab_post_alloc_hook
+
+    10.58%     0.00%  sms_app_x86  [kernel.kallsyms]     [.] exc_page_fault
+            |
+            ---exc_page_fault
+               |          
+               |--8.10%--irqentry_exit
+               |          
+                --2.47%--do_user_addr_fault
+                          handle_mm_fault
+                          __handle_mm_fault
+                          handle_pte_fault
+                          do_anonymous_page
+                          __vmf_anon_prepare
+                          __anon_vma_prepare
+                          kmem_cache_alloc_noprof
+                          __memcg_slab_post_alloc_hook
+
+     9.89%     0.00%  sms_app_x86  libc.so.6             [.] __sleep
+            |
+            ---__sleep
+               __nanosleep
+               __clock_nanosleep (inlined)
+               __syscall_cancel_arch (inlined)
+               entry_SYSCALL_64_after_hwframe
+               do_syscall_64
+               x64_sys_call
+               |          
+               |--7.42%--__x64_sys_clock_nanosleep
+               |          common_nsleep
+               |          hrtimer_nanosleep
+               |          do_nanosleep
+               |          |          
+               |          |--4.94%--schedule
+               |          |          __schedule
+               |          |          
+               |           --2.47%--hrtimer_start_range_ns
+               |                     switch_hrtimer_base
+               |          
+                --2.47%--common_nsleep
+
+     9.82%     0.00%  sms_app_x86  libc.so.6             [.] __lseek64 (inlined)
+            |
+            ---__lseek64 (inlined)
+               |          
+                --7.35%--entry_SYSCALL_64_after_hwframe
+                          do_syscall_64
+                          x64_sys_call
+                          __x64_sys_lseek
+                          ksys_lseek
+                          fdget_pos
+
+     9.60%     9.60%  sms_app_x86  [kernel.kallsyms]     [k] _find_next_and_bit
+            |
+            ---_start
+               __libc_start_main_impl (inlined)
+               call_init (inlined)
+               __libc_start_call_main
+               main
+               __pthread_create_2_1 (inlined)
+               internal_signal_restore_set (inlined)
+               create_thread
+               __clone3 (inlined)
+               entry_SYSCALL_64_after_hwframe
+               do_syscall_64
+               x64_sys_call
+               __x64_sys_clone3
+               __do_sys_clone3
+               kernel_clone
+               wake_up_new_task
+               select_task_rq_fair
+               sched_balance_find_dst_group
+               _find_next_and_bit
+
+     9.60%     0.00%  sms_app_x86  libc.so.6             [.] __pthread_create_2_1 (inlined)
+            |
+            ---__pthread_create_2_1 (inlined)
+               internal_signal_restore_set (inlined)
+               create_thread
+               __clone3 (inlined)
+               entry_SYSCALL_64_after_hwframe
+               do_syscall_64
+               x64_sys_call
+               __x64_sys_clone3
+               __do_sys_clone3
+               kernel_clone
+               wake_up_new_task
+               select_task_rq_fair
+               sched_balance_find_dst_group
+               _find_next_and_bit
+
+     9.60%     0.00%  sms_app_x86  libc.so.6             [.] internal_signal_restore_set (inlined)
+            |
+            ---internal_signal_restore_set (inlined)
+               create_thread
+               __clone3 (inlined)
+               entry_SYSCALL_64_after_hwframe
+               do_syscall_64
+               x64_sys_call
+               __x64_sys_clone3
+               __do_sys_clone3
+               kernel_clone
+               wake_up_new_task
+               select_task_rq_fair
+               sched_balance_find_dst_group
+               _find_next_and_bit
+
+     9.60%     0.00%  sms_app_x86  libc.so.6             [.] create_thread
+            |
+            ---create_thread
+               __clone3 (inlined)
+               entry_SYSCALL_64_after_hwframe
+               do_syscall_64
+               x64_sys_call
+               __x64_sys_clone3
+               __do_sys_clone3
+               kernel_clone
+               wake_up_new_task
+               select_task_rq_fair
+               sched_balance_find_dst_group
+               _find_next_and_bit
+
+     9.60%     0.00%  sms_app_x86  [kernel.kallsyms]     [.] __x64_sys_clone3
+            |
+            ---__x64_sys_clone3
+               __do_sys_clone3
+               kernel_clone
+               wake_up_new_task
+               select_task_rq_fair
+               sched_balance_find_dst_group
+               _find_next_and_bit
+
+     9.60%     0.00%  sms_app_x86  [kernel.kallsyms]     [.] __do_sys_clone3
+            |
+            ---__do_sys_clone3
+               kernel_clone
+               wake_up_new_task
+               select_task_rq_fair
+               sched_balance_find_dst_group
+               _find_next_and_bit
+
+     9.60%     0.00%  sms_app_x86  [kernel.kallsyms]     [.] kernel_clone
+            |
+            ---kernel_clone
+               wake_up_new_task
+               select_task_rq_fair
+               sched_balance_find_dst_group
+               _find_next_and_bit
+
+     9.60%     0.00%  sms_app_x86  [kernel.kallsyms]     [.] wake_up_new_task
+            |
+            ---wake_up_new_task
+               select_task_rq_fair
+               sched_balance_find_dst_group
+               _find_next_and_bit
+
+     9.60%     0.00%  sms_app_x86  [kernel.kallsyms]     [.] select_task_rq_fair
+            |
+            ---select_task_rq_fair
+               sched_balance_find_dst_group
+               _find_next_and_bit
+
+     9.60%     0.00%  sms_app_x86  [kernel.kallsyms]     [.] sched_balance_find_dst_group
+            |
+            ---sched_balance_find_dst_group
+               _find_next_and_bit
+
+     8.10%     8.10%  sms_app_x86  [kernel.kallsyms]     [k] irqentry_exit
+            |
+            ---_start
+               asm_exc_page_fault
+               exc_page_fault
+               irqentry_exit
+
+     7.42%     0.00%  sms_app_x86  [kernel.kallsyms]     [.] __x64_sys_mq_timedreceive
+            |
+            ---__x64_sys_mq_timedreceive
+               |          
+               |--4.94%--do_mq_timedreceive
+               |          wq_sleep
+               |          |          
+               |           --2.47%--schedule_hrtimeout_range_clock
+               |          
+                --2.47%--fdget
+
+     7.35%     4.84%  sms_app_x86  [kernel.kallsyms]     [k] fdget_pos
+            |          
+            |--4.84%--__clone3 (inlined)
+            |          start_thread
+            |          __lseek64 (inlined)
+            |          entry_SYSCALL_64_after_hwframe
+            |          do_syscall_64
+            |          x64_sys_call
+            |          __x64_sys_lseek
+            |          ksys_lseek
+            |          fdget_pos
+            |          
+             --2.51%--fdget_pos
+
+     7.35%     0.00%  sms_app_x86  [kernel.kallsyms]     [.] __x64_sys_lseek
+            |
+            ---__x64_sys_lseek
+               ksys_lseek
+               fdget_pos
+
+     7.35%     0.00%  sms_app_x86  [kernel.kallsyms]     [.] ksys_lseek
+            |
+            ---ksys_lseek
+               fdget_pos
+
+     6.41%     6.41%  sms_app_x86  ld-linux-x86-64.so.2  [.] _dl_check_map_versions
+            |
+            ---_dl_start_user
+               _dl_start
+               _dl_start_final (inlined)
+               _dl_sysdep_start
+               dl_main
+               _dl_receive_error
+               set_catch (inlined)
+               version_check_doit
+               _dl_check_all_versions
+               _dl_check_map_versions
+
+     6.41%     0.00%  sms_app_x86  ld-linux-x86-64.so.2  [.] dl_main
+            |
+            ---dl_main
+               _dl_receive_error
+               set_catch (inlined)
+               version_check_doit
+               _dl_check_all_versions
+               _dl_check_map_versions
+
+     6.41%     0.00%  sms_app_x86  ld-linux-x86-64.so.2  [.] _dl_receive_error
+            |
+            ---_dl_receive_error
+               set_catch (inlined)
+               version_check_doit
+               _dl_check_all_versions
+               _dl_check_map_versions
+
+     6.41%     0.00%  sms_app_x86  ld-linux-x86-64.so.2  [.] set_catch (inlined)
+            |
+            ---set_catch (inlined)
+               version_check_doit
+               _dl_check_all_versions
+               _dl_check_map_versions
+
+     6.41%     0.00%  sms_app_x86  ld-linux-x86-64.so.2  [.] version_check_doit
+            |
+            ---version_check_doit
+               _dl_check_all_versions
+               _dl_check_map_versions
+
+     6.41%     0.00%  sms_app_x86  ld-linux-x86-64.so.2  [.] _dl_check_all_versions
+            |
+            ---_dl_check_all_versions
+               _dl_check_map_versions
+
+     5.03%     5.03%  sms_app_x86  [unknown]             [.] 0000000000000000
+            |
+            ---__clone3 (inlined)
+               start_thread
+               |          
+               |--2.51%--sensor_thread_func
+               |          usleep
+               |          
+                --2.51%--__lseek64 (inlined)
+                          entry_SYSCALL_64_after_hwframe
+                          do_syscall_64
+                          x64_sys_call
+                          __x64_sys_lseek
+                          ksys_lseek
+                          fdget_pos
+
+     4.94%     2.47%  sms_app_x86  [kernel.kallsyms]     [.] finish_task_switch.isra.0
+            |          
+            |--2.47%--finish_task_switch.isra.0
+            |          asm_sysvec_apic_timer_interrupt
+            |          sysvec_apic_timer_interrupt
+            |          __sysvec_apic_timer_interrupt
+            |          hrtimer_interrupt
+            |          __hrtimer_run_queues
+            |          tick_nohz_handler
+            |          update_process_times
+            |          sched_tick
+            |          task_tick_fair
+            |          update_se
+            |          
+             --2.47%--__clone3 (inlined)
+                       start_thread
+                       sensor_thread_func
+                       usleep
+                       __nanosleep
+                       __clock_nanosleep (inlined)
+                       __syscall_cancel_arch (inlined)
+                       entry_SYSCALL_64_after_hwframe
+                       do_syscall_64
+                       x64_sys_call
+                       __x64_sys_clock_nanosleep
+                       common_nsleep
+                       hrtimer_nanosleep
+                       do_nanosleep
+                       schedule
+                       __schedule
+                       finish_task_switch.isra.0
+
+     4.94%     2.47%  sms_app_x86  [kernel.kallsyms]     [.] wq_sleep
+            |          
+            |--2.47%--wq_sleep
+            |          schedule_hrtimeout_range_clock
+            |          
+             --2.47%--__clone3 (inlined)
+                       start_thread
+                       alert_thread_func
+                       ___mq_timedreceive_time64 (inlined)
+                       __syscall_cancel_arch (inlined)
+                       entry_SYSCALL_64_after_hwframe
+                       do_syscall_64
+                       x64_sys_call
+                       __x64_sys_mq_timedreceive
+                       do_mq_timedreceive
+                       wq_sleep
+
+     4.94%     2.47%  sms_app_x86  libc.so.6             [.] __syscall_cancel
+            |          
+            |--2.47%--__syscall_cancel
+            |          __internal_syscall_cancel (inlined)
+            |          
+             --2.47%--__clone3 (inlined)
+                       start_thread
+                       sensor_thread_func
+                       __libc_read (inlined)
+                       __syscall_cancel
+                       __internal_syscall_cancel (inlined)
+
+     4.94%     0.00%  sms_app_x86  [unknown]             [k] 0x00007b606a4f7f0b
+            |
+            ---0x7b606a4f7f0b
+               entry_SYSCALL_64_after_hwframe
+               do_syscall_64
+               x64_sys_call
+               __x64_sys_execve
+               do_execveat_common.isra.0
+               bprm_execve
+               bprm_execve.part.0
+               exec_binprm
+               load_elf_binary
+               |          
+               |--2.47%--load_elf_interp.isra.0
+               |          elf_load
+               |          vm_mmap
+               |          vm_mmap_pgoff
+               |          do_mmap
+               |          path_noexec
+               |          
+                --2.47%--elf_load
+                          vm_mmap
+                          vm_mmap_pgoff
+                          security_mmap_file
+                          ima_file_mmap
+                          process_measurement
+
+     4.94%     0.00%  sms_app_x86  [kernel.kallsyms]     [.] __x64_sys_execve
+            |
+            ---__x64_sys_execve
+               do_execveat_common.isra.0
+               bprm_execve
+               bprm_execve.part.0
+               exec_binprm
+               load_elf_binary
+               |          
+               |--2.47%--load_elf_interp.isra.0
+               |          elf_load
+               |          vm_mmap
+               |          vm_mmap_pgoff
+               |          do_mmap
+               |          path_noexec
+               |          
+                --2.47%--elf_load
+                          vm_mmap
+                          vm_mmap_pgoff
+                          security_mmap_file
+                          ima_file_mmap
+                          process_measurement
+
+     4.94%     0.00%  sms_app_x86  [kernel.kallsyms]     [.] do_execveat_common.isra.0
+            |
+            ---do_execveat_common.isra.0
+               bprm_execve
+               bprm_execve.part.0
+               exec_binprm
+               load_elf_binary
+               |          
+               |--2.47%--load_elf_interp.isra.0
+               |          elf_load
+               |          vm_mmap
+               |          vm_mmap_pgoff
+               |          do_mmap
+               |          path_noexec
+               |          
+                --2.47%--elf_load
+                          vm_mmap
+                          vm_mmap_pgoff
+                          security_mmap_file
+                          ima_file_mmap
+                          process_measurement
+
+     4.94%     0.00%  sms_app_x86  [kernel.kallsyms]     [.] bprm_execve
+            |
+            ---bprm_execve
+               bprm_execve.part.0
+               exec_binprm
+               load_elf_binary
+               |          
+               |--2.47%--load_elf_interp.isra.0
+               |          elf_load
+               |          vm_mmap
+               |          vm_mmap_pgoff
+               |          do_mmap
+               |          path_noexec
+               |          
+                --2.47%--elf_load
+                          vm_mmap
+                          vm_mmap_pgoff
+                          security_mmap_file
+                          ima_file_mmap
+                          process_measurement
+
+     4.94%     0.00%  sms_app_x86  [kernel.kallsyms]     [.] bprm_execve.part.0
+            |
+            ---bprm_execve.part.0
+               exec_binprm
+               load_elf_binary
+               |          
+               |--2.47%--load_elf_interp.isra.0
+               |          elf_load
+               |          vm_mmap
+               |          vm_mmap_pgoff
+               |          do_mmap
+               |          path_noexec
+               |          
+                --2.47%--elf_load
+                          vm_mmap
+                          vm_mmap_pgoff
+                          security_mmap_file
+                          ima_file_mmap
+                          process_measurement
+
+     4.94%     0.00%  sms_app_x86  [kernel.kallsyms]     [.] do_mq_timedreceive
+            |
+            ---do_mq_timedreceive
+               wq_sleep
+               |          
+                --2.47%--schedule_hrtimeout_range_clock
+
+     4.94%     0.00%  sms_app_x86  [kernel.kallsyms]     [.] exec_binprm
+            |
+            ---exec_binprm
+               load_elf_binary
+               |          
+               |--2.47%--load_elf_interp.isra.0
+               |          elf_load
+               |          vm_mmap
+               |          vm_mmap_pgoff
+               |          do_mmap
+               |          path_noexec
+               |          
+                --2.47%--elf_load
+                          vm_mmap
+                          vm_mmap_pgoff
+                          security_mmap_file
+                          ima_file_mmap
+                          process_measurement
+
+     4.94%     0.00%  sms_app_x86  [kernel.kallsyms]     [.] elf_load
+            |
+            ---elf_load
+               vm_mmap
+               vm_mmap_pgoff
+               |          
+               |--2.47%--security_mmap_file
+               |          ima_file_mmap
+               |          process_measurement
+               |          
+                --2.47%--do_mmap
+                          path_noexec
+
+     4.94%     0.00%  sms_app_x86  [kernel.kallsyms]     [.] hrtimer_start_range_ns
+            |
+            ---hrtimer_start_range_ns
+               |          
+               |--2.47%--switch_hrtimer_base
+               |          
+                --2.47%--enqueue_hrtimer
+                          timerqueue_add
+
+     4.94%     0.00%  sms_app_x86  [kernel.kallsyms]     [.] load_elf_binary
+            |
+            ---load_elf_binary
+               |          
+               |--2.47%--load_elf_interp.isra.0
+               |          elf_load
+               |          vm_mmap
+               |          vm_mmap_pgoff
+               |          do_mmap
+               |          path_noexec
+               |          
+                --2.47%--elf_load
+                          vm_mmap
+                          vm_mmap_pgoff
+                          security_mmap_file
+                          ima_file_mmap
+                          process_measurement
+
+     4.94%     0.00%  sms_app_x86  [kernel.kallsyms]     [.] vm_mmap
+            |
+            ---vm_mmap
+               vm_mmap_pgoff
+               |          
+               |--2.47%--security_mmap_file
+               |          ima_file_mmap
+               |          process_measurement
+               |          
+                --2.47%--do_mmap
+                          path_noexec
+
+     4.94%     0.00%  sms_app_x86  [kernel.kallsyms]     [.] vm_mmap_pgoff
+            |
+            ---vm_mmap_pgoff
+               |          
+               |--2.47%--security_mmap_file
+               |          ima_file_mmap
+               |          process_measurement
+               |          
+                --2.47%--do_mmap
+                          path_noexec
+
+     4.94%     0.00%  sms_app_x86  libc.so.6             [.] __internal_syscall_cancel (inlined)
+            |
+            ---__internal_syscall_cancel (inlined)
+
+     4.51%     4.51%  sms_app_x86  ld-linux-x86-64.so.2  [.] init_cpu_features.constprop.0
+            |
+            ---_dl_start_user
+               _dl_start
+               _dl_start_final (inlined)
+               _dl_sysdep_start
+               init_cpu_features (inlined)
+               dl_init_cacheinfo (inlined)
+
+     4.51%     0.00%  sms_app_x86  ld-linux-x86-64.so.2  [.] init_cpu_features (inlined)
+            |
+            ---init_cpu_features (inlined)
+               dl_init_cacheinfo (inlined)
+
+     4.51%     0.00%  sms_app_x86  ld-linux-x86-64.so.2  [.] dl_init_cacheinfo (inlined)
+            |
+            ---dl_init_cacheinfo (inlined)
+
+     2.47%     2.47%  sms_app_x86  [kernel.kallsyms]     [k] __memcg_slab_post_alloc_hook
+            |
+            ---__clone3 (inlined)
+               start_thread
+               logger_thread_func
+               _IO_new_fopen (inlined)
+               __fopen_internal (inlined)
+               __libc_malloc2
+               arena_get2
+               arena_get2
+               _int_new_arena (inlined)
+               alloc_new_heap
+               asm_exc_page_fault
+               exc_page_fault
+               do_user_addr_fault
+               handle_mm_fault
+               __handle_mm_fault
+               handle_pte_fault
+               do_anonymous_page
+               __vmf_anon_prepare
+               __anon_vma_prepare
+               kmem_cache_alloc_noprof
+               __memcg_slab_post_alloc_hook
+
+     2.47%     2.47%  sms_app_x86  [kernel.kallsyms]     [k] fdget
+            |
+            ---__clone3 (inlined)
+               start_thread
+               alert_thread_func
+               ___mq_timedreceive_time64 (inlined)
+               __syscall_cancel_arch (inlined)
+               entry_SYSCALL_64_after_hwframe
+               do_syscall_64
+               x64_sys_call
+               __x64_sys_mq_timedreceive
+               fdget
+
+     2.47%     2.47%  sms_app_x86  [kernel.kallsyms]     [k] psi_group_change
+            |
+            ---_start
+               __libc_start_main_impl (inlined)
+               call_init (inlined)
+               __libc_start_call_main
+               main
+               __pthread_clockjoin_ex
+               __futex_abstimed_wait_cancelable64 (inlined)
+               __futex_abstimed_wait_common (inlined)
+               __syscall_cancel_arch (inlined)
+               entry_SYSCALL_64_after_hwframe
+               do_syscall_64
+               x64_sys_call
+               __x64_sys_futex
+               do_futex
+               futex_wait
+               __futex_wait
+               futex_do_wait
+               schedule
+               __schedule
+               psi_task_switch
+               psi_group_change
+
+     2.47%     2.47%  sms_app_x86  [kernel.kallsyms]     [k] switch_hrtimer_base
+            |
+            ---_start
+               __libc_start_main_impl (inlined)
+               call_init (inlined)
+               __libc_start_call_main
+               main
+               __sleep
+               __nanosleep
+               __clock_nanosleep (inlined)
+               __syscall_cancel_arch (inlined)
+               entry_SYSCALL_64_after_hwframe
+               do_syscall_64
+               x64_sys_call
+               __x64_sys_clock_nanosleep
+               common_nsleep
+               hrtimer_nanosleep
+               do_nanosleep
+               hrtimer_start_range_ns
+               switch_hrtimer_base
+
+     2.47%     2.47%  sms_app_x86  [kernel.kallsyms]     [k] path_noexec
+            |
+            ---0x7b606a4f7f0b
+               entry_SYSCALL_64_after_hwframe
+               do_syscall_64
+               x64_sys_call
+               __x64_sys_execve
+               do_execveat_common.isra.0
+               bprm_execve
+               bprm_execve.part.0
+               exec_binprm
+               load_elf_binary
+               load_elf_interp.isra.0
+               elf_load
+               vm_mmap
+               vm_mmap_pgoff
+               do_mmap
+               path_noexec
+
+     2.47%     2.47%  sms_app_x86  [kernel.kallsyms]     [k] process_measurement
+            |
+            ---0x7b606a4f7f0b
+               entry_SYSCALL_64_after_hwframe
+               do_syscall_64
+               x64_sys_call
+               __x64_sys_execve
+               do_execveat_common.isra.0
+               bprm_execve
+               bprm_execve.part.0
+               exec_binprm
+               load_elf_binary
+               elf_load
+               vm_mmap
+               vm_mmap_pgoff
+               security_mmap_file
+               ima_file_mmap
+               process_measurement
+
+     2.47%     2.47%  sms_app_x86  [kernel.kallsyms]     [k] __d_lookup
+            |
+            ---_start
+               __libc_start_main_impl (inlined)
+               call_init (inlined)
+               __libc_start_call_main
+               __mq_unlink (inlined)
+               entry_SYSCALL_64_after_hwframe
+               do_syscall_64
+               x64_sys_call
+               __x64_sys_mq_unlink
+               __do_sys_mq_unlink
+               start_removing_noperm
+               lookup_one_qstr_excl
+               lookup_dcache
+               d_lookup
+               __d_lookup
+
+     2.47%     2.47%  sms_app_x86  [kernel.kallsyms]     [k] schedule_hrtimeout_range_clock
+            |
+            ---__clone3 (inlined)
+               start_thread
+               alert_thread_func
+               ___mq_timedreceive_time64 (inlined)
+               __syscall_cancel_arch (inlined)
+               entry_SYSCALL_64_after_hwframe
+               do_syscall_64
+               x64_sys_call
+               __x64_sys_mq_timedreceive
+               do_mq_timedreceive
+               wq_sleep
+               schedule_hrtimeout_range_clock
+
+     2.47%     2.47%  sms_app_x86  [kernel.kallsyms]     [k] update_se
+            |
+            ---__clone3 (inlined)
+               start_thread
+               sensor_thread_func
+               usleep
+               __nanosleep
+               __clock_nanosleep (inlined)
+               __syscall_cancel_arch (inlined)
+               entry_SYSCALL_64_after_hwframe
+               do_syscall_64
+               x64_sys_call
+               __x64_sys_clock_nanosleep
+               common_nsleep
+               hrtimer_nanosleep
+               do_nanosleep
+               schedule
+               __schedule
+               finish_task_switch.isra.0
+               asm_sysvec_apic_timer_interrupt
+               sysvec_apic_timer_interrupt
+               __sysvec_apic_timer_interrupt
+               hrtimer_interrupt
+               __hrtimer_run_queues
+               tick_nohz_handler
+               update_process_times
+               sched_tick
+               task_tick_fair
+               update_se
+
+     2.47%     2.47%  sms_app_x86  [kernel.kallsyms]     [k] update_rt_rq_load_avg
+            |
+            ---__clone3 (inlined)
+               start_thread
+               sensor_thread_func
+               usleep
+               __nanosleep
+               __clock_nanosleep (inlined)
+               __syscall_cancel_arch (inlined)
+               entry_SYSCALL_64_after_hwframe
+               do_syscall_64
+               x64_sys_call
+               __x64_sys_clock_nanosleep
+               common_nsleep
+               hrtimer_nanosleep
+               do_nanosleep
+               schedule
+               __schedule
+               pick_next_task
+               pick_next_task_fair
+               sched_balance_newidle
+               __sched_balance_update_blocked_averages
+               update_rt_rq_load_avg
+
+     2.47%     2.47%  sms_app_x86  [kernel.kallsyms]     [k] timerqueue_add
+            |
+            ---__clone3 (inlined)
+               start_thread
+               sensor_thread_func
+               usleep
+               __nanosleep
+               __clock_nanosleep (inlined)
+               __syscall_cancel_arch (inlined)
+               entry_SYSCALL_64_after_hwframe
+               do_syscall_64
+               x64_sys_call
+               __x64_sys_clock_nanosleep
+               common_nsleep
+               hrtimer_nanosleep
+               do_nanosleep
+               hrtimer_start_range_ns
+               enqueue_hrtimer
+               timerqueue_add
+
+     2.47%     2.47%  sms_app_x86  [kernel.kallsyms]     [k] hrtimer_active
+            |
+            ---__clone3 (inlined)
+               start_thread
+               sensor_thread_func
+               usleep
+               __nanosleep
+               __clock_nanosleep (inlined)
+               __syscall_cancel_arch (inlined)
+               entry_SYSCALL_64_after_hwframe
+               do_syscall_64
+               x64_sys_call
+               __x64_sys_clock_nanosleep
+               common_nsleep
+               hrtimer_nanosleep
+               hrtimer_active
+
+     2.47%     2.47%  sms_app_x86  libc.so.6             [.] __syscall_cancel_arch_end
+            |
+            ---__clone3 (inlined)
+               start_thread
+               alert_thread_func
+               ___mq_timedreceive_time64 (inlined)
+               __syscall_cancel
+               __internal_syscall_cancel (inlined)
+
+     2.47%     0.00%  sms_app_x86  [kernel.kallsyms]     [.] __handle_mm_fault
+            |
+            ---__handle_mm_fault
+               handle_pte_fault
+               do_anonymous_page
+               __vmf_anon_prepare
+               __anon_vma_prepare
+               kmem_cache_alloc_noprof
+               __memcg_slab_post_alloc_hook
+
+     2.47%     0.00%  sms_app_x86  [kernel.kallsyms]     [.] __vmf_anon_prepare
+            |
+            ---__vmf_anon_prepare
+               __anon_vma_prepare
+               kmem_cache_alloc_noprof
+               __memcg_slab_post_alloc_hook
+
+     2.47%     0.00%  sms_app_x86  [kernel.kallsyms]     [.] __anon_vma_prepare
+            |
+            ---__anon_vma_prepare
+               kmem_cache_alloc_noprof
+               __memcg_slab_post_alloc_hook
+
+     2.47%     0.00%  sms_app_x86  [kernel.kallsyms]     [.] __x64_sys_futex
+            |
+            ---__x64_sys_futex
+               do_futex
+               futex_wait
+               __futex_wait
+               futex_do_wait
+               schedule
+               __schedule
+               psi_task_switch
+               psi_group_change
+
+     2.47%     0.00%  sms_app_x86  [kernel.kallsyms]     [.] __x64_sys_mq_unlink
+            |
+            ---__x64_sys_mq_unlink
+               __do_sys_mq_unlink
+               start_removing_noperm
+               lookup_one_qstr_excl
+               lookup_dcache
+               d_lookup
+               __d_lookup
+
+     2.47%     0.00%  sms_app_x86  [kernel.kallsyms]     [.] __do_sys_mq_unlink
+            |
+            ---__do_sys_mq_unlink
+               start_removing_noperm
+               lookup_one_qstr_excl
+               lookup_dcache
+               d_lookup
+               __d_lookup
+
+     2.47%     0.00%  sms_app_x86  [kernel.kallsyms]     [.] __futex_wait
+            |
+            ---__futex_wait
+               futex_do_wait
+               schedule
+               __schedule
+               psi_task_switch
+               psi_group_change
+
+     2.47%     0.00%  sms_app_x86  [kernel.kallsyms]     [.] asm_sysvec_apic_timer_interrupt
+            |
+            ---asm_sysvec_apic_timer_interrupt
+               sysvec_apic_timer_interrupt
+               __sysvec_apic_timer_interrupt
+               hrtimer_interrupt
+               __hrtimer_run_queues
+               tick_nohz_handler
+               update_process_times
+               sched_tick
+               task_tick_fair
+               update_se
+
+     2.47%     0.00%  sms_app_x86  [kernel.kallsyms]     [.] __sysvec_apic_timer_interrupt
+            |
+            ---__sysvec_apic_timer_interrupt
+               hrtimer_interrupt
+               __hrtimer_run_queues
+               tick_nohz_handler
+               update_process_times
+               sched_tick
+               task_tick_fair
+               update_se
+
+     2.47%     0.00%  sms_app_x86  [kernel.kallsyms]     [.] __hrtimer_run_queues
+            |
+            ---__hrtimer_run_queues
+               tick_nohz_handler
+               update_process_times
+               sched_tick
+               task_tick_fair
+               update_se
+
+     2.47%     0.00%  sms_app_x86  [kernel.kallsyms]     [.] pick_next_task
+            |
+            ---pick_next_task
+               pick_next_task_fair
+               sched_balance_newidle
+               __sched_balance_update_blocked_averages
+               update_rt_rq_load_avg
+
+     2.47%     2.47%  sms_app_x86  [kernel.kallsyms]     [k] entry_SYSRETQ_unsafe_stack
+            |
+            ---__clone3 (inlined)
+               start_thread
+               __lseek64 (inlined)
+
+     2.47%     2.47%  sms_app_x86  [kernel.kallsyms]     [k] restore_fpregs_from_fpstate
+            |
+            ---__clone3 (inlined)
+               start_thread
+               alert_thread_func
+               ___mq_timedreceive_time64 (inlined)
+               __syscall_cancel_arch (inlined)
+               entry_SYSCALL_64_after_hwframe
+               do_syscall_64
+               arch_exit_to_user_mode_prepare.isra.0
+               restore_fpregs_from_fpstate
+
+     2.47%     0.00%  sms_app_x86  [kernel.kallsyms]     [.] __sched_balance_update_blocked_averages
+            |
+            ---__sched_balance_update_blocked_averages
+               update_rt_rq_load_avg
+
+     2.47%     0.00%  sms_app_x86  [kernel.kallsyms]     [.] arch_exit_to_user_mode_prepare.isra.0
+            |
+            ---arch_exit_to_user_mode_prepare.isra.0
+               restore_fpregs_from_fpstate
+
+     2.47%     0.00%  sms_app_x86  [kernel.kallsyms]     [.] do_futex
+            |
+            ---do_futex
+               futex_wait
+               __futex_wait
+               futex_do_wait
+               schedule
+               __schedule
+               psi_task_switch
+               psi_group_change
+
+     2.47%     0.00%  sms_app_x86  [kernel.kallsyms]     [.] do_user_addr_fault
+            |
+            ---do_user_addr_fault
+               handle_mm_fault
+               __handle_mm_fault
+               handle_pte_fault
+               do_anonymous_page
+               __vmf_anon_prepare
+               __anon_vma_prepare
+               kmem_cache_alloc_noprof
+               __memcg_slab_post_alloc_hook
+
+     2.47%     0.00%  sms_app_x86  [kernel.kallsyms]     [.] do_anonymous_page
+            |
+            ---do_anonymous_page
+               __vmf_anon_prepare
+               __anon_vma_prepare
+               kmem_cache_alloc_noprof
+               __memcg_slab_post_alloc_hook
+
+     2.47%     0.00%  sms_app_x86  libc.so.6             [.] __pthread_clockjoin_ex
+            |
+            ---__pthread_clockjoin_ex
+               __futex_abstimed_wait_cancelable64 (inlined)
+               __futex_abstimed_wait_common (inlined)
+               __syscall_cancel_arch (inlined)
+               entry_SYSCALL_64_after_hwframe
+               do_syscall_64
+               x64_sys_call
+               __x64_sys_futex
+               do_futex
+               futex_wait
+               __futex_wait
+               futex_do_wait
+               schedule
+               __schedule
+               psi_task_switch
+               psi_group_change
+
+     2.47%     0.00%  sms_app_x86  libc.so.6             [.] __futex_abstimed_wait_cancelable64 (inlined)
+            |
+            ---__futex_abstimed_wait_cancelable64 (inlined)
+               __futex_abstimed_wait_common (inlined)
+               __syscall_cancel_arch (inlined)
+               entry_SYSCALL_64_after_hwframe
+               do_syscall_64
+               x64_sys_call
+               __x64_sys_futex
+               do_futex
+               futex_wait
+               __futex_wait
+               futex_do_wait
+               schedule
+               __schedule
+               psi_task_switch
+               psi_group_change
+
+     2.47%     0.00%  sms_app_x86  libc.so.6             [.] __futex_abstimed_wait_common (inlined)
+            |
+            ---__futex_abstimed_wait_common (inlined)
+               __syscall_cancel_arch (inlined)
+               entry_SYSCALL_64_after_hwframe
+               do_syscall_64
+               x64_sys_call
+               __x64_sys_futex
+               do_futex
+               futex_wait
+               __futex_wait
+               futex_do_wait
+               schedule
+               __schedule
+               psi_task_switch
+               psi_group_change
+
+     2.47%     0.00%  sms_app_x86  libc.so.6             [.] __mq_unlink (inlined)
+            |
+            ---__mq_unlink (inlined)
+               entry_SYSCALL_64_after_hwframe
+               do_syscall_64
+               x64_sys_call
+               __x64_sys_mq_unlink
+               __do_sys_mq_unlink
+               start_removing_noperm
+               lookup_one_qstr_excl
+               lookup_dcache
+               d_lookup
+               __d_lookup
+
+     2.47%     0.00%  sms_app_x86  [kernel.kallsyms]     [.] futex_wait
+            |
+            ---futex_wait
+               __futex_wait
+               futex_do_wait
+               schedule
+               __schedule
+               psi_task_switch
+               psi_group_change
+
+     2.47%     0.00%  sms_app_x86  [kernel.kallsyms]     [.] futex_do_wait
+            |
+            ---futex_do_wait
+               schedule
+               __schedule
+               psi_task_switch
+               psi_group_change
+
+     2.47%     0.00%  sms_app_x86  [kernel.kallsyms]     [.] d_lookup
+            |
+            ---d_lookup
+               __d_lookup
+
+     2.47%     0.00%  sms_app_x86  [kernel.kallsyms]     [.] do_mmap
+            |
+            ---do_mmap
+               path_noexec
+
+     2.47%     0.00%  sms_app_x86  [kernel.kallsyms]     [.] handle_mm_fault
+            |
+            ---handle_mm_fault
+               __handle_mm_fault
+               handle_pte_fault
+               do_anonymous_page
+               __vmf_anon_prepare
+               __anon_vma_prepare
+               kmem_cache_alloc_noprof
+               __memcg_slab_post_alloc_hook
+
+     2.47%     0.00%  sms_app_x86  [kernel.kallsyms]     [.] handle_pte_fault
+            |
+            ---handle_pte_fault
+               do_anonymous_page
+               __vmf_anon_prepare
+               __anon_vma_prepare
+               kmem_cache_alloc_noprof
+               __memcg_slab_post_alloc_hook
+
+     2.47%     0.00%  sms_app_x86  [kernel.kallsyms]     [.] sysvec_apic_timer_interrupt
+            |
+            ---sysvec_apic_timer_interrupt
+               __sysvec_apic_timer_interrupt
+               hrtimer_interrupt
+               __hrtimer_run_queues
+               tick_nohz_handler
+               update_process_times
+               sched_tick
+               task_tick_fair
+               update_se
+
+     2.47%     0.00%  sms_app_x86  [kernel.kallsyms]     [.] hrtimer_interrupt
+            |
+            ---hrtimer_interrupt
+               __hrtimer_run_queues
+               tick_nohz_handler
+               update_process_times
+               sched_tick
+               task_tick_fair
+               update_se
+
+     2.47%     0.00%  sms_app_x86  [kernel.kallsyms]     [.] kmem_cache_alloc_noprof
+            |
+            ---kmem_cache_alloc_noprof
+               __memcg_slab_post_alloc_hook
+
+     2.47%     0.00%  sms_app_x86  [kernel.kallsyms]     [.] load_elf_interp.isra.0
+            |
+            ---load_elf_interp.isra.0
+               elf_load
+               vm_mmap
+               vm_mmap_pgoff
+               do_mmap
+               path_noexec
+
+     2.47%     0.00%  sms_app_x86  [kernel.kallsyms]     [.] lookup_one_qstr_excl
+            |
+            ---lookup_one_qstr_excl
+               lookup_dcache
+               d_lookup
+               __d_lookup
+
+     2.47%     0.00%  sms_app_x86  [kernel.kallsyms]     [.] lookup_dcache
+            |
+            ---lookup_dcache
+               d_lookup
+               __d_lookup
+
+     2.47%     0.00%  sms_app_x86  [kernel.kallsyms]     [.] ima_file_mmap
+            |
+            ---ima_file_mmap
+               process_measurement
+
+     2.47%     0.00%  sms_app_x86  [kernel.kallsyms]     [.] tick_nohz_handler
+            |
+            ---tick_nohz_handler
+               update_process_times
+               sched_tick
+               task_tick_fair
+               update_se
+
+     2.47%     0.00%  sms_app_x86  [kernel.kallsyms]     [.] pick_next_task_fair
+            |
+            ---pick_next_task_fair
+               sched_balance_newidle
+               __sched_balance_update_blocked_averages
+               update_rt_rq_load_avg
+
+     2.47%     0.00%  sms_app_x86  [kernel.kallsyms]     [.] psi_task_switch
+            |
+            ---psi_task_switch
+               psi_group_change
+
+     2.47%     0.00%  sms_app_x86  [kernel.kallsyms]     [.] update_process_times
+            |
+            ---update_process_times
+               sched_tick
+               task_tick_fair
+               update_se
+
+     2.47%     0.00%  sms_app_x86  [kernel.kallsyms]     [.] sched_balance_newidle
+            |
+            ---sched_balance_newidle
+               __sched_balance_update_blocked_averages
+               update_rt_rq_load_avg
+
+     2.47%     0.00%  sms_app_x86  [kernel.kallsyms]     [.] sched_tick
+            |
+            ---sched_tick
+               task_tick_fair
+               update_se
+
+     2.47%     0.00%  sms_app_x86  [kernel.kallsyms]     [.] enqueue_hrtimer
+            |
+            ---enqueue_hrtimer
+               timerqueue_add
+
+     2.47%     0.00%  sms_app_x86  [kernel.kallsyms]     [.] start_removing_noperm
+            |
+            ---start_removing_noperm
+               lookup_one_qstr_excl
+               lookup_dcache
+               d_lookup
+               __d_lookup
+
+     2.47%     0.00%  sms_app_x86  [kernel.kallsyms]     [.] security_mmap_file
+            |
+            ---security_mmap_file
+               ima_file_mmap
+               process_measurement
+
+     2.47%     0.00%  sms_app_x86  libc.so.6             [.] __libc_read (inlined)
+            |
+            ---__libc_read (inlined)
+               __syscall_cancel
+               __internal_syscall_cancel (inlined)
+
+     2.47%     0.00%  sms_app_x86  [kernel.kallsyms]     [.] task_tick_fair
+            |
+            ---task_tick_fair
+               update_se
+
+     2.47%     0.00%  sms_app_x86  sms_app_x86           [.] logger_thread_func
+            |
+            ---logger_thread_func
+               _IO_new_fopen (inlined)
+               __fopen_internal (inlined)
+               __libc_malloc2
+               arena_get2
+               arena_get2
+               _int_new_arena (inlined)
+               alloc_new_heap
+               asm_exc_page_fault
+               exc_page_fault
+               do_user_addr_fault
+               handle_mm_fault
+               __handle_mm_fault
+               handle_pte_fault
+               do_anonymous_page
+               __vmf_anon_prepare
+               __anon_vma_prepare
+               kmem_cache_alloc_noprof
+               __memcg_slab_post_alloc_hook
+
+     2.47%     0.00%  sms_app_x86  libc.so.6             [.] _IO_new_fopen (inlined)
+            |
+            ---_IO_new_fopen (inlined)
+               __fopen_internal (inlined)
+               __libc_malloc2
+               arena_get2
+               arena_get2
+               _int_new_arena (inlined)
+               alloc_new_heap
+               asm_exc_page_fault
+               exc_page_fault
+               do_user_addr_fault
+               handle_mm_fault
+               __handle_mm_fault
+               handle_pte_fault
+               do_anonymous_page
+               __vmf_anon_prepare
+               __anon_vma_prepare
+               kmem_cache_alloc_noprof
+               __memcg_slab_post_alloc_hook
+
+     2.47%     0.00%  sms_app_x86  libc.so.6             [.] __fopen_internal (inlined)
+            |
+            ---__fopen_internal (inlined)
+               __libc_malloc2
+               arena_get2
+               arena_get2
+               _int_new_arena (inlined)
+               alloc_new_heap
+               asm_exc_page_fault
+               exc_page_fault
+               do_user_addr_fault
+               handle_mm_fault
+               __handle_mm_fault
+               handle_pte_fault
+               do_anonymous_page
+               __vmf_anon_prepare
+               __anon_vma_prepare
+               kmem_cache_alloc_noprof
+               __memcg_slab_post_alloc_hook
+
+     2.47%     0.00%  sms_app_x86  libc.so.6             [.] __libc_malloc2
+            |
+            ---__libc_malloc2
+               arena_get2
+               arena_get2
+               _int_new_arena (inlined)
+               alloc_new_heap
+               asm_exc_page_fault
+               exc_page_fault
+               do_user_addr_fault
+               handle_mm_fault
+               __handle_mm_fault
+               handle_pte_fault
+               do_anonymous_page
+               __vmf_anon_prepare
+               __anon_vma_prepare
+               kmem_cache_alloc_noprof
+               __memcg_slab_post_alloc_hook
+
+     2.47%     0.00%  sms_app_x86  libc.so.6             [.] arena_get2
+            |
+            ---arena_get2
+               arena_get2
+               _int_new_arena (inlined)
+               alloc_new_heap
+               asm_exc_page_fault
+               exc_page_fault
+               do_user_addr_fault
+               handle_mm_fault
+               __handle_mm_fault
+               handle_pte_fault
+               do_anonymous_page
+               __vmf_anon_prepare
+               __anon_vma_prepare
+               kmem_cache_alloc_noprof
+               __memcg_slab_post_alloc_hook
+
+     2.47%     0.00%  sms_app_x86  libc.so.6             [.] _int_new_arena (inlined)
+            |
+            ---_int_new_arena (inlined)
+               alloc_new_heap
+               asm_exc_page_fault
+               exc_page_fault
+               do_user_addr_fault
+               handle_mm_fault
+               __handle_mm_fault
+               handle_pte_fault
+               do_anonymous_page
+               __vmf_anon_prepare
+               __anon_vma_prepare
+               kmem_cache_alloc_noprof
+               __memcg_slab_post_alloc_hook
+
+     2.47%     0.00%  sms_app_x86  libc.so.6             [.] alloc_new_heap
+            |
+            ---alloc_new_heap
+               asm_exc_page_fault
+               exc_page_fault
+               do_user_addr_fault
+               handle_mm_fault
+               __handle_mm_fault
+               handle_pte_fault
+               do_anonymous_page
+               __vmf_anon_prepare
+               __anon_vma_prepare
+               kmem_cache_alloc_noprof
+               __memcg_slab_post_alloc_hook
+
+
+
+#
+# (Cannot load tips.txt file, please install perf!)
+#
