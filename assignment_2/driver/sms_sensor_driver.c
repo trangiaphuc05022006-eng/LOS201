@@ -33,12 +33,18 @@ static ssize_t sms_read(struct file *f, char __user *buf,
 {
     char line[64];
     int  n;
+    int  temp;
+    int  hum;
     u64  now;
+
+    if (*off > 0) {
+        return 0;
+    }
 
     /* TODO 3: random values: temp in 150..450, hum in 300..900
      *         (get_random_u32() % range + offset) */
-    int temp = get_random_u32() % (450 - 150 + 1) + 150;
-    int hum = get_random_u32() % (900 - 300 + 1) + 300;
+    temp = get_random_u32() % (450 - 150 + 1) + 150;
+    hum = get_random_u32() % (900 - 300 + 1) + 300;
 
 
     /* TODO 1: lock sms_mutex, but let Ctrl+C interrupt the wait.
@@ -82,12 +88,14 @@ static ssize_t sms_read(struct file *f, char __user *buf,
         return -EFAULT;
     }
 
+    *off += n;
     return n;
 }
 
 static const struct file_operations sms_fops = {
     .owner = THIS_MODULE,
     .read = sms_read,
+    .llseek = default_llseek,
     .unlocked_ioctl = sms_ioctl,
 };
 
