@@ -1,0 +1,35 @@
+==18158== Memcheck, a memory error detector
+==18158== Copyright (C) 2002-2024, and GNU GPL'd, by Julian Seward et al.
+==18158== Using Valgrind-3.26.0 and LibVEX; rerun with -h for copyright info
+==18158== Command: ./leaky_app
+==18158== Parent PID: 18029
+==18158== 
+==18158== 
+==18158== HEAP SUMMARY:
+==18158==     in use at exit: 16,900 bytes in 250 blocks
+==18158==   total heap usage: 352 allocs, 102 frees, 21,124 bytes allocated
+==18158== 
+==18158== 2,000 bytes in 100 blocks are definitely lost in loss record 1 of 3
+==18158==    at 0x4850858: malloc (vg_replace_malloc.c:447)
+==18158==    by 0x4001280: create_record (leaky_app.c:19)
+==18158==    by 0x40013FB: main (leaky_app.c:52)
+==18158== 
+==18158== 2,100 bytes in 100 blocks are definitely lost in loss record 2 of 3
+==18158==    at 0x4850858: malloc (vg_replace_malloc.c:447)
+==18158==    by 0x400124D: create_record (leaky_app.c:17)
+==18158==    by 0x40013FB: main (leaky_app.c:52)
+==18158== 
+==18158== 12,800 bytes in 50 blocks are definitely lost in loss record 3 of 3
+==18158==    at 0x4850858: malloc (vg_replace_malloc.c:447)
+==18158==    by 0x4001314: process_messages (leaky_app.c:35)
+==18158==    by 0x4001450: main (leaky_app.c:58)
+==18158== 
+==18158== LEAK SUMMARY:
+==18158==    definitely lost: 16,900 bytes in 250 blocks
+==18158==    indirectly lost: 0 bytes in 0 blocks
+==18158==      possibly lost: 0 bytes in 0 blocks
+==18158==    still reachable: 0 bytes in 0 blocks
+==18158==         suppressed: 0 bytes in 0 blocks
+==18158== 
+==18158== For lists of detected and suppressed errors, rerun with: -s
+==18158== ERROR SUMMARY: 3 errors from 3 contexts (suppressed: 0 from 0)

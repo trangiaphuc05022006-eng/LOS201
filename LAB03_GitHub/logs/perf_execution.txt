@@ -1,0 +1,7 @@
+=== LAB-03 Perf Target ===
+Result: 11433083166.074631
+Search index: 99999
+Done.
+real 0.04
+user 0.04
+sys 0.00

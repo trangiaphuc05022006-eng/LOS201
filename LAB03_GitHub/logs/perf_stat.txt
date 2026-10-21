@@ -1,0 +1,39 @@
+fopen: Permission denied
+=== LAB-03 Perf Target ===
+Result: 11433083166.074631
+Search index: 99999
+Done.
+
+ Performance counter stats for './perf_target':
+
+                 1      context-switches                 #     21.9 cs/sec  cs_per_second     
+                 1      cpu-migrations                   #     21.9 migrations/sec  migrations_per_second
+               376      page-faults                      #   8235.3 faults/sec  page_faults_per_second
+             45.66 msec task-clock                       #      1.0 CPUs  CPUs_utilized       
+            14,265      cpu_core/branch-misses/          #      0.0 %  branch_miss_rate         (17.08%)
+       208,330,746      cpu_core/branches/               #   4563.0 M/sec  branch_frequency     (17.08%)
+        80,954,844      cpu_core/cpu-cycles/             #      1.8 GHz  cycles_frequency       (17.08%)
+       522,679,675      cpu_core/instructions/           #      6.5 instructions  insn_per_cycle  (17.08%)
+            15,138      cpu_atom/branch-misses/          #      0.0 %  branch_miss_rate         (56.65%)
+       260,271,356      cpu_atom/branches/               #   5700.6 M/sec  branch_frequency     (56.63%)
+       195,012,124      cpu_atom/cpu-cycles/             #      4.3 GHz  cycles_frequency       (58.62%)
+       935,686,015      cpu_atom/instructions/           #      4.8 instructions  insn_per_cycle  (60.80%)
+     <not counted>      cpu_lowpower/branch-misses/      #      nan %  branch_miss_rate         (0.00%)
+     <not counted>      cpu_lowpower/branches/           #      nan M/sec  branch_frequency     (0.00%)
+     <not counted>      cpu_lowpower/cpu-cycles/         #      nan GHz  cycles_frequency       (0.00%)
+     <not counted>      cpu_lowpower/instructions/       #      nan instructions  insn_per_cycle  (0.00%)
+             TopdownL1 (cpu_core)                        #     32.2 %  tma_backend_bound      
+                                                         #      0.4 %  tma_bad_speculation    
+                                                         #     18.8 %  tma_frontend_bound     
+                                                         #     48.6 %  tma_retiring             (17.08%)
+             TopdownL1 (cpu_atom)                        #      0.2 %  tma_bad_speculation      (63.21%)
+                                                         #     18.7 %  tma_backend_bound        (61.53%)
+                                                         #      0.0 %  tma_frontend_bound       (68.10%)
+                                                         #      0.0 %  tma_retiring             (65.92%)
+
+       0.046296592 seconds time elapsed
+
+       0.044341000 seconds user
+       0.001970000 seconds sys
+
+

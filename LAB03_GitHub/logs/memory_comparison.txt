@@ -1,0 +1,12 @@
+===== BEFORE FIX =====
+==18158== LEAK SUMMARY:
+==18158==    definitely lost: 16,900 bytes in 250 blocks
+==18158==    indirectly lost: 0 bytes in 0 blocks
+==18158==      possibly lost: 0 bytes in 0 blocks
+==18158==    still reachable: 0 bytes in 0 blocks
+==18158==         suppressed: 0 bytes in 0 blocks
+==18158== 
+
+===== AFTER FIX =====
+==18236== All heap blocks were freed -- no leaks are possible
+==18236== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)

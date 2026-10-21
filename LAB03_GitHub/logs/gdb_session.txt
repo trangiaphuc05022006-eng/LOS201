@@ -1,0 +1,35 @@
+Continuing.
+
+Breakpoint 3, create_message (text=0x400924 "Hello Embedded Linux") at buggy_app.c:17
+17	    char *buf = malloc(strlen(text) + 1);
+11	    }
+12	    printf("Sum = %d\n", sum);
+13	}
+14	
+15	/* Bug 2: Use after free */
+16	char *create_message(const char *text) {
+17	    char *buf = malloc(strlen(text) + 1);
+18	    strcpy(buf, text);
+19	    free(buf);
+20	    return buf;
+Temporary breakpoint 5 at 0x4006f0: file buggy_app.c, line 21.
+Continuing.
+
+Temporary breakpoint 5, create_message (text=0x400924 "Hello Embedded Linux") at buggy_app.c:21
+21	}
+$8 = 0x422010 "\"\004"
+0x422010:	"\"\004"
+#0  create_message (text=0x400924 "Hello Embedded Linux") at buggy_app.c:21
+#1  0x00400788 in main (argc=1, argv=0x7efffe94) at buggy_app.c:38
+Breakpoint 6 at 0x400702: file buggy_app.c, line 25.
+Continuing.
+
+Breakpoint 6, calculate (a=100000, b=100000) at buggy_app.c:25
+25	    int result = a * b;
+$9 = 100000
+$10 = 100000
+$11 = 10000000000
+26	    printf("calculate(%d, %d) = %d\n", a, b, result);
+$12 = 1410065408
+#0  calculate (a=100000, b=100000) at buggy_app.c:26
+#1  0x004007b4 in main (argc=1, argv=0x7efffe94) at buggy_app.c:42

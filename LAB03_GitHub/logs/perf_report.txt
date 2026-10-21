@@ -1,0 +1,200 @@
+# To display the perf.data header info, please use --header/--header-only options.
+#
+#
+# Total Lost Samples: 0
+#
+# Samples: 178  of event 'cpu_atom/cycles/P'
+# Event count (approx.): 181305843
+#
+# Overhead  Command      Shared Object         Symbol                            
+# ........  ...........  ....................  ..................................
+#
+    53.38%  perf_target  perf_target           [.] linear_search
+            |
+            ---linear_search
+               __libc_start_call_main
+               call_init (inlined)
+               __libc_start_main_impl (inlined)
+               _start
+
+    21.75%  perf_target  perf_target           [.] heavy_compute
+            |
+            ---heavy_compute
+               main
+               __libc_start_call_main
+               call_init (inlined)
+               __libc_start_main_impl (inlined)
+               _start
+
+    16.18%  perf_target  libm.so.6             [.] __ieee754_log_fma
+            |          
+            |--15.60%--__ieee754_log_fma
+            |          main
+            |          __libc_start_call_main
+            |          call_init (inlined)
+            |          __libc_start_main_impl (inlined)
+            |          _start
+            |          
+             --0.58%--heavy_compute
+                       main
+                       __libc_start_call_main
+                       call_init (inlined)
+                       __libc_start_main_impl (inlined)
+                       _start
+
+     2.18%  perf_target  libm.so.6             [.] log@@GLIBC_2.29
+            |
+            ---__log (inlined)
+               main
+               __libc_start_call_main
+               call_init (inlined)
+               __libc_start_main_impl (inlined)
+               _start
+
+     0.59%  perf_target  [kernel.kallsyms]     [k] next_uptodate_folio
+            |
+            ---next_uptodate_folio
+               filemap_map_pages
+               do_read_fault
+               do_fault
+               handle_pte_fault
+               __handle_mm_fault
+               handle_mm_fault
+               do_user_addr_fault
+               exc_page_fault
+               asm_exc_page_fault
+               __printf_fp_buffer_1 (inlined)
+               __printf_fp_l_buffer
+               __printf_buffer
+               __vfprintf_internal
+               ___printf_chk (inlined)
+               main
+               __libc_start_call_main
+               call_init (inlined)
+               __libc_start_main_impl (inlined)
+               _start
+
+     0.59%  perf_target  libc.so.6             [.] _int_malloc
+            |
+            ---_int_malloc
+               __libc_malloc2
+               tcache_init (inlined)
+               tcache_free_init
+               __fopen_internal (inlined)
+               _IO_new_fopen (inlined)
+               io_intensive
+               main
+               __libc_start_call_main
+               call_init (inlined)
+               __libc_start_main_impl (inlined)
+               _start
+
+     0.59%  perf_target  [kernel.kallsyms]     [k] timekeeping_update_from_shadow
+            |
+            ---timekeeping_update_from_shadow
+               __timekeeping_advance
+               update_wall_time
+               tick_do_update_jiffies64
+               tick_nohz_handler
+               __hrtimer_run_queues
+               hrtimer_interrupt
+               __sysvec_apic_timer_interrupt
+               sysvec_apic_timer_interrupt
+               asm_sysvec_apic_timer_interrupt
+               linear_search
+               __libc_start_call_main
+               call_init (inlined)
+               __libc_start_main_impl (inlined)
+               _start
+
+     0.59%  perf_target  [kernel.kallsyms]     [k] ntp_get_next_leap
+            |
+            ---ntp_get_next_leap
+               timekeeping_update_from_shadow
+               __timekeeping_advance
+               update_wall_time
+               tick_do_update_jiffies64
+               tick_nohz_handler
+               __hrtimer_run_queues
+               hrtimer_interrupt
+               __sysvec_apic_timer_interrupt
+               sysvec_apic_timer_interrupt
+               asm_sysvec_apic_timer_interrupt
+               linear_search
+               __libc_start_call_main
+               call_init (inlined)
+               __libc_start_main_impl (inlined)
+               _start
+
+     0.59%  perf_target  [kernel.kallsyms]     [k] update_cfs_group
+            |
+            ---update_cfs_group
+               sched_tick
+               update_process_times
+               tick_nohz_handler
+               __hrtimer_run_queues
+               hrtimer_interrupt
+               __sysvec_apic_timer_interrupt
+               sysvec_apic_timer_interrupt
+               asm_sysvec_apic_timer_interrupt
+               linear_search
+               __libc_start_call_main
+               call_init (inlined)
+               __libc_start_main_impl (inlined)
+               _start
+
+     0.59%  perf_target  [kernel.kallsyms]     [k] __update_load_avg_cfs_rq
+            |
+            ---__update_load_avg_cfs_rq
+               update_cfs_rq_load_avg
+               task_tick_fair
+               sched_tick
+               update_process_times
+               tick_nohz_handler
+               __hrtimer_run_queues
+               hrtimer_interrupt
+               __sysvec_apic_timer_interrupt
+               sysvec_apic_timer_interrupt
+               asm_sysvec_apic_timer_interrupt
+               heavy_compute
+               main
+               __libc_start_call_main
+               call_init (inlined)
+               __libc_start_main_impl (inlined)
+               _start
+
+     0.59%  perf_target  [kernel.kallsyms]     [k] __run_timers
+            |
+            ---__run_timers
+               timer_expire_remote
+               tmigr_handle_remote_cpu
+               tmigr_handle_remote_up
+               tmigr_handle_remote
+               run_timer_softirq
+               handle_softirqs
+               __irq_exit_rcu
+               irq_exit_rcu
+               sysvec_apic_timer_interrupt
+               asm_sysvec_apic_timer_interrupt
+               __ieee754_log_fma
+               main
+               __libc_start_call_main
+               call_init (inlined)
+               __libc_start_main_impl (inlined)
+               _start
+
+     0.41%  perf_target  [kernel.kallsyms]     [k] kernel_init_pages
+     0.38%  perf_target  [kernel.kallsyms]     [k] vma_alloc_folio_noprof
+     0.35%  perf_target  perf_target           [.] main
+     0.31%  perf_target  [kernel.kallsyms]     [k] folio_add_file_rmap_ptes
+     0.27%  perf_target  ld-linux-x86-64.so.2  [.] _dl_lookup_symbol_x
+     0.23%  perf_target  [kernel.kallsyms]     [k] __d_lookup_rcu
+     0.18%  perf_target  [kernel.kallsyms]     [k] copy_mc_enhanced_fast_string
+     0.13%  perf_target  [kernel.kallsyms]     [k] inode_io_list_del
+     0.07%  perf_target  [kernel.kallsyms]     [k] __kmalloc_cache_noprof
+     0.07%  perf_target  [kernel.kallsyms]     [k] set_pte_range
+
+
+#
+# (Cannot load tips.txt file, please install perf!)
+#
