@@ -1,7 +1,7 @@
 /*
  * sms_common.h - definitions shared by all threads of sms_app
  * Author: Tran Hoang Khoi - SE203155
- * Date:   2026-10-18
+ * Date:   2026-10-21
  */
 #ifndef SMS_COMMON_H
 #define SMS_COMMON_H
@@ -13,6 +13,12 @@
 #define DEFAULT_TEMP_THRESHOLD   40.0
 #define DEFAULT_HUM_THRESHOLD    80.0
 #define DEFAULT_DURATION_SEC     60
+#define DEFAULT_REALTIME         1      /* 1 = SCHED_FIFO, 0 = SCHED_OTHER */
+
+/* Real-time scheduling and jitter measurement (Task 4) */
+#define RT_PRIORITY              50     /* SCHED_FIFO priority of the Sensor thread */
+#define JITTER_SAMPLES_MAX       4096   /* jitter values kept in memory */
+#define JITTER_REPORT_PATH       "/tmp/jitter_report.txt"
 
 /* Paths and names: nothing is hardcoded in the .c files */
 #ifndef SENSOR_DEVICE_PATH
@@ -34,6 +40,7 @@ typedef struct {
     double hum_threshold;
     int    duration_sec;    /* 0 = run until Ctrl+C */
     int    verbose;
+    int    realtime;        /* 1 = SCHED_FIFO for the Sensor thread, 0 = normal */
 } Config;
 
 /* Kinds of alarm. ALARM_QUIT is not a real alarm: it is the message main

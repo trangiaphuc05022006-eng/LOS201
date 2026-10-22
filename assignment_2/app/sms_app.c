@@ -1,7 +1,7 @@
 /*
  * sms_app.c - Sensor Monitoring System, main program
  * Author: Tran Hoang Khoi - SE203155
- * Date:   2026-10-18
+ * Date:   2026-10-21
  */
 #include <stdio.h>
 #include <stdlib.h>
@@ -14,6 +14,7 @@
 #include <pthread.h>
 #include <mqueue.h>
 #include <sys/ioctl.h>
+#include <sys/mman.h>
 #include <sys/stat.h>
 #include <limits.h>
 #include <math.h>
@@ -26,6 +27,7 @@
 #include "processor_thread.h"
 #include "alert_thread.h"
 #include "logger_thread.h"
+#include "jitter.h"
 
 #define BUFFER_CAPACITY  64
 #define QUEUE_MAXMSG     10
@@ -43,11 +45,12 @@ static void usage(const char *prog)
     /* Show supported options and their default values. */
     fprintf(stderr,
             "Usage: %s [-i interval_ms] [-t temp_threshold] [-h hum_threshold] "
-            "[-d duration_sec] [-v]\n"
+            "[-d duration_sec] [-r 0|1] [-v]\n"
             "  -i interval in ms (default %d)\n"
             "  -t temperature threshold (default %.1f)\n"
             "  -h humidity threshold (default %.1f)\n"
             "  -d duration in seconds, 0 runs until a signal (default %d)\n"
+            "  -r real-time scheduling: 1=SCHED_FIFO, 0=SCHED_OTHER (default 1)\n"
             "  -v verbose sample output\n",
             prog, DEFAULT_INTERVAL_MS, DEFAULT_TEMP_THRESHOLD,
             DEFAULT_HUM_THRESHOLD, DEFAULT_DURATION_SEC);
@@ -63,6 +66,7 @@ static int parse_args(int argc, char **argv, Config *cfg)
     cfg->hum_threshold = DEFAULT_HUM_THRESHOLD;
     cfg->duration_sec = DEFAULT_DURATION_SEC;
     cfg->verbose = 0;
+    cfg->realtime = 1;
 
     opterr = 0;
     int opt;
@@ -70,7 +74,7 @@ static int parse_args(int argc, char **argv, Config *cfg)
     long integer_value;
     double real_value;
 
-    while ((opt = getopt(argc, argv, "i:t:h:d:v")) != -1) {
+    while ((opt = getopt(argc, argv, "i:t:h:d:r:v")) != -1) {
         switch (opt) {
         case 'i':
             errno = 0;
@@ -107,6 +111,16 @@ static int parse_args(int argc, char **argv, Config *cfg)
                 return -1;
             }
             cfg->duration_sec = (int)integer_value;
+            break;
+        case 'r':
+            errno = 0;
+            integer_value = strtol(optarg, &end, 10);
+            if (errno == ERANGE || end == optarg || *end != '\0' ||
+                (integer_value != 0 && integer_value != 1)) {
+                usage(argv[0]);
+                return -1;
+            }
+            cfg->realtime = (int)integer_value;
             break;
         case 'v':
             cfg->verbose = 1;
@@ -183,6 +197,7 @@ int main(int argc, char **argv)
     struct timespec start_time;
     int run_started = 0;
     CircularBuffer *cb = NULL;
+    long *jitter_us = NULL;
     mqd_t alarm_reader = (mqd_t)-1;
     mqd_t alarm_writer = (mqd_t)-1;
     mqd_t alarm_control = (mqd_t)-1;
@@ -219,13 +234,18 @@ int main(int argc, char **argv)
     }
     sigterm_installed = 1;
 
-    /* Open the sensor device and request the configured sampling interval. */
+    /* Open the sensor device and set driver minimum interval to half the app period
+     * (clamped to SMS_MIN_INTERVAL_MS) so the app's clock_nanosleep alone paces reads. */
     fd = open(SENSOR_DEVICE_PATH, O_RDONLY);
     if (fd == -1) {
         perror("open sensor device");
         goto cleanup;
     }
-    if (ioctl(fd, SMS_SET_INTERVAL, &cfg.interval_ms) == -1) {
+    int drv_interval = cfg.interval_ms / 2;
+    if (drv_interval < SMS_MIN_INTERVAL_MS) {
+        drv_interval = SMS_MIN_INTERVAL_MS;
+    }
+    if (ioctl(fd, SMS_SET_INTERVAL, &drv_interval) == -1) {
         if (errno == ENOTTY) {
             fprintf(stderr,
                     "warning: sensor path does not support interval ioctl; "
@@ -236,7 +256,7 @@ int main(int argc, char **argv)
         }
     }
 
-    /* Create queues and the sample buffer before starting worker threads. */
+    /* Create queues, sample buffer, and jitter array before starting worker threads. */
     if (create_queue(ALARM_QUEUE_NAME, sizeof(AlarmMsg)) == -1 ||
         create_queue(LOG_QUEUE_NAME, LOG_LINE_SIZE) == -1) {
         goto cleanup;
@@ -244,6 +264,11 @@ int main(int argc, char **argv)
     cb = cb_create(BUFFER_CAPACITY);
     if (!cb) {
         fprintf(stderr, "cb_create failed\n");
+        goto cleanup;
+    }
+    jitter_us = calloc(JITTER_SAMPLES_MAX, sizeof(*jitter_us));
+    if (!jitter_us) {
+        perror("calloc jitter_us");
         goto cleanup;
     }
 
@@ -260,12 +285,20 @@ int main(int argc, char **argv)
         goto cleanup;
     }
 
+    /* Lock process memory to avoid page faults during real-time sampling. */
+    if (mlockall(MCL_CURRENT | MCL_FUTURE) != 0) {
+        perror("warning: mlockall");
+    }
+
     sensor_ctx = (SensorCtx){
         .fd = fd,
         .buffer = cb,
         .log_mq = log_writer,
         .cfg = &cfg,
         .stop = &g_stop,
+        .jitter_us = jitter_us,
+        .jitter_cap = JITTER_SAMPLES_MAX,
+        .jitter_count = 0,
     };
     processor_ctx = (ProcessorCtx){
         .buffer = cb,
@@ -394,6 +427,19 @@ cleanup:
         }
     }
 
+    if (sensor_started) {
+        jitter_report(sensor_ctx.jitter_us, sensor_ctx.jitter_count, stdout);
+        FILE *jf = fopen(JITTER_REPORT_PATH, "w");
+        if (!jf) {
+            perror("fopen jitter report");
+        } else {
+            jitter_report(sensor_ctx.jitter_us, sensor_ctx.jitter_count, jf);
+            if (fclose(jf) != 0) {
+                perror("fclose jitter report");
+            }
+        }
+    }
+
     if (sensor_started || processor_started || alert_started || logger_started) {
         struct timespec end_time;
         double uptime = 0.0;
@@ -425,6 +471,7 @@ cleanup:
                 alert_ctx.count_temp_spike);
     }
 
+    free(jitter_us);
     if (can_destroy_cb) {
         cb_destroy(cb);
     }

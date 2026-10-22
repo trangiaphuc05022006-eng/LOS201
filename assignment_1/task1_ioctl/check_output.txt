@@ -1,0 +1,4 @@
+ASGN1_RESET_BUFFER   cmd=0x00007801  dir=0 type='x' nr=1 size=0
+ASGN1_GET_STATS      cmd=0x80147802  dir=2 type='x' nr=2 size=20
+ASGN1_SET_MODE       cmd=0x40047803  dir=1 type='x' nr=3 size=4
+ASGN1_GET_VERSION    cmd=0x80407804  dir=2 type='x' nr=4 size=64
