@@ -1,0 +1,216 @@
+=== 1. load module and create the device node ===
+  PASS: module is loaded
+crw-------    1 root     0         241,   0 Oct 13 03:26 [1;35m/dev/asgn1[m
+  PASS: /dev/asgn1 is a character device
+=== 2. GET_VERSION ===
+version: asgn1_driver v1.0 - SE203155
+  PASS: version string returned
+=== 3. echo mode (default): data stored unchanged ===
+read back: [hi]
+  PASS: echo mode stores 'hi' unchanged
+open_count      : 4
+read_count      : 2
+write_count     : 1
+buffer_len      : 2
+last_write_size : 2
+  PASS: write_count
+  PASS: buffer_len
+  PASS: last_write_size
+  PASS: read_count (one cat = data call + end-of-data call)
+=== 4. kernel mode: prefix added ===
+read back: [[KERNEL]hi]
+  PASS: kernel mode stores [KERNEL]hi
+open_count      : 12
+read_count      : 4
+write_count     : 2
+buffer_len      : 10
+last_write_size : 2
+  PASS: write_count (counters accumulate)
+  PASS: buffer_len is the STORED size
+  PASS: last_write_size is the USER size
+  PASS: read_count
+=== 5. oversized write is cut to fit (kernel mode) ===
+open_count      : 18
+read_count      : 4
+write_count     : 4
+buffer_len      : 993
+last_write_size : 985
+  PASS: write_count: dd needed two write() calls (2 + 2)
+  PASS: buffer_len after the second write (8 + 985)
+  PASS: last_write_size = second write (2000 - 1015)
+  PASS: driver logged the truncation
+=== 6. RESET_BUFFER ===
+  PASS: buffer filled before reset ([KERNEL]hello = 13)
+read back after reset: []
+  PASS: buffer is empty after reset
+open_count      : 26
+read_count      : 1
+write_count     : 0
+buffer_len      : 0
+last_write_size : 0
+  PASS: write_count reset
+  PASS: buffer_len reset
+  PASS: last_write_size reset
+  PASS: read_count reset, then one cat of an empty buffer = 1
+open_count after reset: 31 (RESET must not clear it)
+  PASS: open_count survived reset
+=== 7. error cases ===
+ioctl failed (mode): Invalid argument
+  PASS: mode 5 rejected with EINVAL
+  PASS: rejected mode left kernel mode unchanged
+ioctl failed (bogus): Inappropriate ioctl for device
+  PASS: unknown ioctl rejected with ENOTTY
+  PASS: SET_MODE 1 returns to echo mode
+=== 8. unload and check cleanup ===
+  PASS: module is gone
+  PASS: dmesg shows the cleanup line
+--- dmesg (asgn1_driver lines) ---
+asgn1_driver: initializing module
+asgn1_driver: loaded, major=241
+asgn1_driver: Device opened 1 times
+asgn1_driver: ioctl called: cmd=0x80407804 nr=4
+asgn1_driver: ioctl GET_VERSION: version sent to user
+asgn1_driver: Device closed
+asgn1_driver: Device opened 2 times
+asgn1_driver: ioctl called: cmd=0x802c542a nr=42
+asgn1_driver: ioctl: unknown command 0x802c542a
+asgn1_driver: received 2 bytes, mode=1
+asgn1_driver: Device closed
+asgn1_driver: Device opened 3 times
+asgn1_driver: sent 2 bytes to user
+asgn1_driver: Device closed
+asgn1_driver: Device opened 4 times
+asgn1_driver: ioctl called: cmd=0x80147802 nr=2
+asgn1_driver: ioctl GET_STATS: stats sent to user
+asgn1_driver: Device closed
+asgn1_driver: Device opened 5 times
+asgn1_driver: ioctl called: cmd=0x80147802 nr=2
+asgn1_driver: ioctl GET_STATS: stats sent to user
+asgn1_driver: Device closed
+asgn1_driver: Device opened 6 times
+asgn1_driver: ioctl called: cmd=0x80147802 nr=2
+asgn1_driver: ioctl GET_STATS: stats sent to user
+asgn1_driver: Device closed
+asgn1_driver: Device opened 7 times
+asgn1_driver: ioctl called: cmd=0x80147802 nr=2
+asgn1_driver: ioctl GET_STATS: stats sent to user
+asgn1_driver: Device closed
+asgn1_driver: Device opened 8 times
+asgn1_driver: ioctl called: cmd=0x80147802 nr=2
+asgn1_driver: ioctl GET_STATS: stats sent to user
+asgn1_driver: Device closed
+asgn1_driver: Device opened 9 times
+asgn1_driver: ioctl called: cmd=0x40047803 nr=3
+asgn1_driver: ioctl SET_MODE: mode set to 0
+asgn1_driver: Device closed
+asgn1_driver: Device opened 10 times
+asgn1_driver: received 2 bytes, mode=0
+asgn1_driver: Device closed
+asgn1_driver: Device opened 11 times
+asgn1_driver: sent 10 bytes to user
+asgn1_driver: Device closed
+asgn1_driver: Device opened 12 times
+asgn1_driver: ioctl called: cmd=0x80147802 nr=2
+asgn1_driver: ioctl GET_STATS: stats sent to user
+asgn1_driver: Device closed
+asgn1_driver: Device opened 13 times
+asgn1_driver: ioctl called: cmd=0x80147802 nr=2
+asgn1_driver: ioctl GET_STATS: stats sent to user
+asgn1_driver: Device closed
+asgn1_driver: Device opened 14 times
+asgn1_driver: ioctl called: cmd=0x80147802 nr=2
+asgn1_driver: ioctl GET_STATS: stats sent to user
+asgn1_driver: Device closed
+asgn1_driver: Device opened 15 times
+asgn1_driver: ioctl called: cmd=0x80147802 nr=2
+asgn1_driver: ioctl GET_STATS: stats sent to user
+asgn1_driver: Device closed
+asgn1_driver: Device opened 16 times
+asgn1_driver: ioctl called: cmd=0x80147802 nr=2
+asgn1_driver: ioctl GET_STATS: stats sent to user
+asgn1_driver: Device closed
+asgn1_driver: Device opened 17 times
+asgn1_driver: write too large, truncating
+asgn1_driver: received 1015 bytes, mode=0
+asgn1_driver: received 985 bytes, mode=0
+asgn1_driver: Device closed
+asgn1_driver: Device opened 18 times
+asgn1_driver: ioctl called: cmd=0x80147802 nr=2
+asgn1_driver: ioctl GET_STATS: stats sent to user
+asgn1_driver: Device closed
+asgn1_driver: Device opened 19 times
+asgn1_driver: ioctl called: cmd=0x80147802 nr=2
+asgn1_driver: ioctl GET_STATS: stats sent to user
+asgn1_driver: Device closed
+asgn1_driver: Device opened 20 times
+asgn1_driver: ioctl called: cmd=0x80147802 nr=2
+asgn1_driver: ioctl GET_STATS: stats sent to user
+asgn1_driver: Device closed
+asgn1_driver: Device opened 21 times
+asgn1_driver: ioctl called: cmd=0x80147802 nr=2
+asgn1_driver: ioctl GET_STATS: stats sent to user
+asgn1_driver: Device closed
+asgn1_driver: Device opened 22 times
+asgn1_driver: received 5 bytes, mode=0
+asgn1_driver: Device closed
+asgn1_driver: Device opened 23 times
+asgn1_driver: ioctl called: cmd=0x80147802 nr=2
+asgn1_driver: ioctl GET_STATS: stats sent to user
+asgn1_driver: Device closed
+asgn1_driver: Device opened 24 times
+asgn1_driver: ioctl called: cmd=0x7801 nr=1
+asgn1_driver: ioctl RESET_BUFFER: buffer and counters cleared
+asgn1_driver: Device closed
+asgn1_driver: Device opened 25 times
+asgn1_driver: Device closed
+asgn1_driver: Device opened 26 times
+asgn1_driver: ioctl called: cmd=0x80147802 nr=2
+asgn1_driver: ioctl GET_STATS: stats sent to user
+asgn1_driver: Device closed
+asgn1_driver: Device opened 27 times
+asgn1_driver: ioctl called: cmd=0x80147802 nr=2
+asgn1_driver: ioctl GET_STATS: stats sent to user
+asgn1_driver: Device closed
+asgn1_driver: Device opened 28 times
+asgn1_driver: ioctl called: cmd=0x80147802 nr=2
+asgn1_driver: ioctl GET_STATS: stats sent to user
+asgn1_driver: Device closed
+asgn1_driver: Device opened 29 times
+asgn1_driver: ioctl called: cmd=0x80147802 nr=2
+asgn1_driver: ioctl GET_STATS: stats sent to user
+asgn1_driver: Device closed
+asgn1_driver: Device opened 30 times
+asgn1_driver: ioctl called: cmd=0x80147802 nr=2
+asgn1_driver: ioctl GET_STATS: stats sent to user
+asgn1_driver: Device closed
+asgn1_driver: Device opened 31 times
+asgn1_driver: ioctl called: cmd=0x80147802 nr=2
+asgn1_driver: ioctl GET_STATS: stats sent to user
+asgn1_driver: Device closed
+asgn1_driver: Device opened 32 times
+asgn1_driver: ioctl called: cmd=0x40047803 nr=3
+asgn1_driver: ioctl SET_MODE: rejected mode 5
+asgn1_driver: Device closed
+asgn1_driver: Device opened 33 times
+asgn1_driver: received 2 bytes, mode=0
+asgn1_driver: Device closed
+asgn1_driver: Device opened 34 times
+asgn1_driver: sent 10 bytes to user
+asgn1_driver: Device closed
+asgn1_driver: Device opened 35 times
+asgn1_driver: ioctl called: cmd=0x7863 nr=99
+asgn1_driver: ioctl: unknown command 0x7863
+asgn1_driver: Device closed
+asgn1_driver: Device opened 36 times
+asgn1_driver: ioctl called: cmd=0x40047803 nr=3
+asgn1_driver: ioctl SET_MODE: mode set to 1
+asgn1_driver: Device closed
+asgn1_driver: Device opened 37 times
+asgn1_driver: received 2 bytes, mode=1
+asgn1_driver: Device closed
+asgn1_driver: Device opened 38 times
+asgn1_driver: sent 2 bytes to user
+asgn1_driver: Device closed
+asgn1_driver: unloaded, cleanup done
+/dev/asgn1 is gone
+=== SUMMARY: 30 passed, 0 failed ===
