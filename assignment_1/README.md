@@ -1,117 +1,117 @@
 # assignment_1 — Linux Kernel Device Driver (ioctl + misc)
 
-Viết hai Linux kernel module cho ARM: một character device driver với giao tiếp `ioctl`, và một misc device driver dạng counter. Chạy và kiểm thử trong môi trường QEMU ARM.
+Two Linux kernel modules for ARM: a character device driver with `ioctl` interface, and a misc device driver (counter). Built and tested inside a QEMU ARM environment.
 
 ---
 
-## Mục tiêu
+## Objectives
 
-- Hiểu cơ chế character device driver trong Linux kernel (register, file_operations, ioctl).
-- Triển khai các lệnh `ioctl` tùy chỉnh: `RESET_BUFFER`, `GET_STATS`, `SET_MODE`, `GET_VERSION`.
-- Viết misc device driver đơn giản (counter).
-- Kiểm thử driver bằng shell script bên trong QEMU (insmod, mknod, đọc/ghi qua `/dev`).
+- Understand the Linux kernel character device driver mechanism (register, file_operations, ioctl).
+- Implement custom `ioctl` commands: `RESET_BUFFER`, `GET_STATS`, `SET_MODE`, `GET_VERSION`.
+- Write a simple misc device driver (counter).
+- Test drivers via shell scripts inside QEMU (insmod, mknod, read/write through `/dev`).
 
 ---
 
-## Cấu trúc thư mục
+## Directory Structure
 
 ```
 assignment_1/
 ├── task1_ioctl/
-│   ├── asgn1_driver.c      # Character device driver (Major 241, buffer 1024 B, hai mode)
+│   ├── asgn1_driver.c      # Character device driver (Major 241, 1024 B buffer, two modes)
 │   ├── asgn1_ioctl.h       # Header: magic number, struct asgn1_stats, 4 ioctl commands
-│   ├── asgn1_ctl.c         # Userspace control tool
-│   ├── asgn1_ctl           # Binary userspace tool (đã build, ARM)
-│   ├── asgn1_driver.ko     # Kernel module đã build (Git LFS — file nhị phân)
+│   ├── asgn1_ctl.c         # Userspace control tool source
+│   ├── asgn1_ctl           # Userspace control tool binary (pre-built, ARM)
+│   ├── asgn1_driver.ko     # Pre-built kernel module (Git LFS — binary file)
 │   ├── check               # Binary test helper (ARM)
-│   ├── check_output.txt    # Output mẫu của check
-│   ├── test_asgn1.sh       # Shell script kiểm thử chức năng (chạy trong QEMU)
-│   ├── Makefile            # Build module (ARCH=arm, arm-linux-gnueabi-)
-│   └── .vscode/            # Cài đặt editor (không liên quan đến build)
+│   ├── check_output.txt    # Sample output from check
+│   ├── test_asgn1.sh       # Functional test shell script (runs inside QEMU)
+│   ├── Makefile            # Build script (ARCH=arm, arm-linux-gnueabi-)
+│   └── .vscode/            # Editor settings (not related to build)
 ├── task2_misc/
 │   ├── counter_driver.c    # Misc device driver (counter)
-│   ├── test_counter.sh     # Shell script kiểm thử counter
-│   └── Makefile            # Build module (ARCH=arm, arm-linux-gnueabi-)
+│   ├── test_counter.sh     # Shell script for counter driver testing
+│   └── Makefile            # Build script (ARCH=arm, arm-linux-gnueabi-)
 ├── initramfs_asgn1/
-│   └── usr/                # Cây thư mục usr/ cho initramfs (chứa binary đã build)
+│   └── usr/                # usr/ directory tree for initramfs (contains pre-built binaries)
 ├── logs/
-│   ├── dmesg_full.txt          # Kernel log (dmesg) khi chạy cả hai driver
-│   ├── session_both.txt        # Toàn bộ session terminal trong QEMU
-│   ├── test_asgn1_output.txt   # Output test_asgn1.sh
-│   ├── test_asgn1_output_30pass.txt  # Output test với 30 pass cases
-│   └── test_counter_output.txt # Output test_counter.sh
+│   ├── dmesg_full.txt          # Kernel log (dmesg) when running both drivers
+│   ├── session_both.txt        # Full terminal session inside QEMU
+│   ├── test_asgn1_output.txt   # Output of test_asgn1.sh
+│   ├── test_asgn1_output_30pass.txt  # Output with 30 pass cases
+│   └── test_counter_output.txt # Output of test_counter.sh
 ├── bao_cao/
-│   └── ASN01_Report.pdf    # Báo cáo (file nhị phân — không mở bằng git)
-└── report/                 # Thư mục dự phòng (hiện trống)
+│   └── ASN01_Report.pdf    # Assignment report (binary — do not open via git)
+└── report/                 # Reserved folder (currently empty)
 ```
 
 ---
 
-## Yêu cầu
+## Requirements
 
-| Công cụ | Ghi chú |
+| Tool | Notes |
 |---|---|
-| `arm-linux-gnueabi-gcc` | Cross-compiler (Makefile dùng `CROSS_COMPILE=arm-linux-gnueabi-`) |
-| Linux kernel 5.15 headers | `KDIR := $(HOME)/embedded_lab1/kernel/linux-5.15` (theo Makefile) |
-| `make` | Build kernel module |
-| `qemu-system-arm` | Chạy driver bên trong QEMU (xem Lab 1 để có image) |
+| `arm-linux-gnueabi-gcc` | Cross-compiler (`CROSS_COMPILE=arm-linux-gnueabi-` in Makefile) |
+| Linux kernel 5.15 headers | `KDIR := $(HOME)/embedded_lab1/kernel/linux-5.15` (per Makefile) |
+| `make` | Build kernel modules |
+| `qemu-system-arm` | Run the driver inside QEMU (see Lab 1 for the boot image) |
 
 ---
 
 ## Build & Run
 
-**Build kernel module (trên máy host Linux):**
+**Build kernel modules (on the Linux host):**
 
 ```bash
 # Task 1 — ioctl driver
 cd assignment_1/task1_ioctl
-make        # tạo asgn1_driver.ko
+make        # produces asgn1_driver.ko
 make clean
 
 # Task 2 — misc counter driver
 cd assignment_1/task2_misc
-make        # tạo counter_driver.ko
+make        # produces counter_driver.ko
 make clean
 ```
 
-> Yêu cầu `KDIR` trỏ đúng vào kernel 5.15 đã build (xem `lab_1/`).
+> `KDIR` must point to the built Linux 5.15 kernel tree (see `lab_1/`).
 
-**Chạy trong QEMU (với tư cách root):**
+**Run inside QEMU (as root):**
 
 ```sh
 # Load driver
 insmod /lib/modules/5.15.0/asgn1_driver.ko
 mknod /dev/asgn1 c 241 0
 
-# Kiểm thử tự động
+# Run automated tests
 sh /test_asgn1.sh
 
-# Gỡ driver
+# Unload driver
 rmmod asgn1_driver
 ```
 
-> Script `test_asgn1.sh` tự xử lý insmod/rmmod, tạo device node, và báo cáo PASS/FAIL.
+> `test_asgn1.sh` handles insmod/rmmod, creates the device node, and reports PASS/FAIL for each test case.
 
 ---
 
-## Kết quả / Output
+## Results / Output
 
-| File | Nội dung |
+| File | Content |
 |---|---|
-| `logs/test_asgn1_output_30pass.txt` | 30 test cases PASS — output đầy đủ |
-| `logs/test_counter_output.txt` | Output kiểm thử counter driver |
-| `logs/dmesg_full.txt` | Kernel log ghi nhận insmod/rmmod cả hai driver |
-| `logs/session_both.txt` | Session terminal đầy đủ (QEMU) |
-| `bao_cao/ASN01_Report.pdf` | Báo cáo PDF |
+| `logs/test_asgn1_output_30pass.txt` | Full output — all 30 test cases passed |
+| `logs/test_counter_output.txt` | Counter driver test output |
+| `logs/dmesg_full.txt` | Kernel log capturing insmod/rmmod of both drivers |
+| `logs/session_both.txt` | Complete terminal session (QEMU) |
+| `bao_cao/ASN01_Report.pdf` | Assignment report (PDF) |
 
 ---
 
-## Ghi chú
+## Notes
 
-- `asgn1_driver` có hai mode: **KERNEL mode** (thêm tiền tố `[KERNEL]` vào dữ liệu lưu) và **ECHO mode** (lưu nguyên).
-- `read_count` đếm cả lần đọc cuối trả về 0 byte (EOF), nên một lần `cat` một buffer không rỗng sẽ tăng `read_count` lên 2.
-- `RESET_BUFFER` (`ioctl`) xóa buffer và các counter đọc/ghi, nhưng **không** xóa `open_count`.
+- `asgn1_driver` has two modes: **KERNEL mode** (prepends `[KERNEL]` to stored data) and **ECHO mode** (stores data unchanged).
+- `read_count` also counts the final read that returns 0 bytes (EOF), so a single `cat` on a non-empty buffer increments `read_count` by 2.
+- `RESET_BUFFER` (`ioctl`) clears the buffer and the read/write counters, but does **not** reset `open_count`.
 
 ---
 
-[← Về README chính](../README.md)
+[← Back to main README](../README.md)

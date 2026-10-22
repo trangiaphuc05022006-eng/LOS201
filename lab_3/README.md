@@ -1,87 +1,87 @@
-# lab_3 — Debugging & Profiling ứng dụng nhúng
+# lab_3 — Debugging & Profiling for Embedded Applications
 
-Sử dụng các công cụ debugging và profiling trên môi trường Linux nhúng ARM: Valgrind (memory leak), GDB remote debug, `perf` (CPU profiling), `strace` (system call tracing). Ba ứng dụng C mẫu có lỗi cố ý được dùng làm target.
-
----
-
-## Mục tiêu
-
-- Phát hiện và phân tích memory leak bằng Valgrind.
-- Debug ứng dụng ARM cross-compiled bằng GDB + gdbserver (remote).
-- Profile CPU hotspot bằng `perf record` / `perf report`.
-- Trace system call bằng `strace`.
-- Đo và vẽ biểu đồ latency histogram bằng gnuplot.
+Apply debugging and profiling tools in an embedded Linux ARM environment: Valgrind (memory leak detection), GDB remote debugging, `perf` (CPU profiling), and `strace` (system call tracing). Three intentionally buggy C applications serve as targets.
 
 ---
 
-## Cấu trúc thư mục
+## Objectives
+
+- Detect and analyze memory leaks using Valgrind.
+- Debug an ARM cross-compiled application with GDB + gdbserver (remote).
+- Profile CPU hotspots using `perf record` / `perf report`.
+- Trace system calls using `strace`.
+- Measure and plot a latency histogram using gnuplot.
+
+---
+
+## Directory Structure
 
 ```
 lab_3/
 ├── apps/
-│   ├── buggy_app.c          # App có 3 lỗi cố ý: out-of-bounds, use-after-free, integer overflow
-│   ├── buggy_app            # Binary x86 (đã build)
-│   ├── leaky_app.c          # App có memory leak (name, scores không được free)
-│   ├── leaky_app            # Binary x86
-│   ├── leaky_app_arm        # Binary ARM cross-compiled (~478 KB)
-│   ├── leaky_app_fixed      # Binary x86 (đã sửa leak)
-│   ├── leaky_rss.c          # Biến thể đo RSS memory growth
-│   ├── leaky_rss_arm        # Binary ARM cross-compiled
-│   ├── leaky_rss_fixed_arm  # Binary ARM (đã sửa)
-│   ├── perf_target.c        # App profiling: heavy_compute (sqrt+log), linear_search
-│   ├── perf_target          # Binary x86
-│   ├── perf_target_arm      # Binary ARM cross-compiled (~484 KB)
-│   └── LOS201/              # Thư mục phụ (chứa Lab_3/)
-├── rt_kernel/               # RT kernel (hiện trống)
+│   ├── buggy_app.c          # App with 3 intentional bugs: out-of-bounds, use-after-free, integer overflow
+│   ├── buggy_app            # x86 binary (pre-built)
+│   ├── leaky_app.c          # App with memory leaks (name, scores not freed)
+│   ├── leaky_app            # x86 binary
+│   ├── leaky_app_arm        # ARM cross-compiled binary (~478 KB)
+│   ├── leaky_app_fixed      # x86 binary (leaks fixed)
+│   ├── leaky_rss.c          # Variant that measures RSS memory growth
+│   ├── leaky_rss_arm        # ARM cross-compiled binary
+│   ├── leaky_rss_fixed_arm  # ARM binary (fixed)
+│   ├── perf_target.c        # Profiling target app: heavy_compute (sqrt+log), linear_search
+│   ├── perf_target          # x86 binary
+│   ├── perf_target_arm      # ARM cross-compiled binary (~484 KB)
+│   └── LOS201/              # Auxiliary subdirectory (contains Lab_3/)
+├── rt_kernel/               # RT kernel directory (currently empty)
 ├── rootfs/
-│   └── initramfs/           # Root filesystem cho Lab 3
+│   └── initramfs/           # Root filesystem for Lab 3
 ├── output/
-│   └── initramfs_lab3.cpio.gz  # initramfs đóng gói (~8.9 MB, Git LFS)
+│   └── initramfs_lab3.cpio.gz  # Packaged initramfs (~8.9 MB, Git LFS)
 ├── logs/
-│   ├── gdb_session.txt          # GDB remote debug session (tóm tắt)
-│   ├── gdb_session_full.txt     # GDB session đầy đủ
-│   ├── valgrind_report.txt      # Báo cáo Valgrind chi tiết (leak check)
-│   ├── valgrind_fixed.txt       # Valgrind sau khi sửa leak
-│   ├── perf.data                # Raw perf data (~60 KB, file nhị phân — không mở)
-│   ├── perf.data.old            # perf data session trước (~60 KB)
-│   ├── perf_report.txt          # Kết quả perf report (text)
-│   ├── perf_stat.txt            # Kết quả perf stat
-│   ├── strace_arm.txt           # strace trên ARM (qua QEMU)
-│   ├── strace_full.txt          # strace đầy đủ trên host
-│   ├── strace_summary.txt       # Tóm tắt system call count
-│   ├── hist_standard.txt        # Latency histogram (dữ liệu thô)
-│   ├── latency_histogram.png    # Biểu đồ latency (file ảnh — không mở bằng git)
-│   ├── plot_latency.gnuplot     # Script gnuplot vẽ biểu đồ
-│   ├── qemu_session1.txt        # Session QEMU lần 1
-│   └── qemu_session2.txt        # Session QEMU lần 2
+│   ├── gdb_session.txt          # GDB remote debug session (summary)
+│   ├── gdb_session_full.txt     # Full GDB session transcript
+│   ├── valgrind_report.txt      # Detailed Valgrind leak check report
+│   ├── valgrind_fixed.txt       # Valgrind output after fixing the leaks
+│   ├── perf.data                # Raw perf data (~60 KB, binary — do not open)
+│   ├── perf.data.old            # Previous perf session data (~60 KB)
+│   ├── perf_report.txt          # perf report output (text)
+│   ├── perf_stat.txt            # perf stat output
+│   ├── strace_arm.txt           # strace on ARM (via QEMU)
+│   ├── strace_full.txt          # Full strace on host
+│   ├── strace_summary.txt       # System call count summary
+│   ├── hist_standard.txt        # Raw latency histogram data
+│   ├── latency_histogram.png    # Latency distribution chart (PNG image — do not open via git)
+│   ├── plot_latency.gnuplot     # gnuplot script to generate the chart
+│   ├── qemu_session1.txt        # QEMU session log 1
+│   └── qemu_session2.txt        # QEMU session log 2
 └── submit/
-    └── SE205180_TranNguyenVietDung_Lab03/
-        ├── apps/                # Bản app nộp chính thức
-        ├── bao_cao/             # Báo cáo
-        ├── logs/                # Log nộp chính thức
-        └── output/              # Output nộp chính thức
+    └── <official submission folder>/   # Official submission package under lab_3/submit/
+        ├── apps/                # Submitted app binaries
+        ├── bao_cao/             # Submitted report
+        ├── logs/                # Submitted logs
+        └── output/              # Submitted output
 ```
 
 ---
 
-## Yêu cầu
+## Requirements
 
-| Công cụ | Ghi chú |
+| Tool | Notes |
 |---|---|
-| `arm-linux-gnueabi-gcc` hoặc `arm-linux-gnueabihf-gcc` | Cross-compile app cho ARM |
-| `Valgrind` | Chạy trên host hoặc trong QEMU |
-| `GDB` + `gdbserver` | Remote debug — gdbserver chạy trong QEMU, GDB chạy trên host |
-| `perf` | CPU profiling (cần `linux-tools-$(uname -r)` hoặc build từ kernel source) |
+| `arm-linux-gnueabi-gcc` or `arm-linux-gnueabihf-gcc` | Cross-compile apps for ARM |
+| `Valgrind` | Run on host or inside QEMU |
+| `GDB` + `gdbserver` | Remote debug — gdbserver runs in QEMU, GDB runs on the host |
+| `perf` | CPU profiling (requires `linux-tools-$(uname -r)` or built from kernel source) |
 | `strace` | System call tracing |
-| `gnuplot` | Vẽ latency histogram (xem `logs/plot_latency.gnuplot`) |
-| `qemu-system-arm` | Chạy binary ARM và gdbserver |
-| `git-lfs` | Cần để pull `initramfs_lab3.cpio.gz` |
+| `gnuplot` | Plot the latency histogram (see `logs/plot_latency.gnuplot`) |
+| `qemu-system-arm` | Run ARM binaries and gdbserver |
+| `git-lfs` | Required to pull `initramfs_lab3.cpio.gz` |
 
 ---
 
 ## Build & Run
 
-**Build app trên host (x86):**
+**Build apps on host (x86):**
 
 ```bash
 cd lab_3/apps
@@ -90,14 +90,14 @@ gcc -g -o leaky_app leaky_app.c
 gcc -g -o perf_target perf_target.c -lm
 ```
 
-**Cross-compile cho ARM:**
+**Cross-compile for ARM:**
 
 ```bash
 arm-linux-gnueabi-gcc -g -o leaky_app_arm leaky_app.c
 arm-linux-gnueabi-gcc -g -o perf_target_arm perf_target.c -lm
 ```
 
-**Valgrind (memory leak):**
+**Valgrind (memory leak detection):**
 
 ```bash
 valgrind --leak-check=full --track-origins=yes ./leaky_app
@@ -107,31 +107,31 @@ valgrind --leak-check=full --track-origins=yes ./leaky_app
 
 ```bash
 perf record -g ./perf_target
-perf report     # xem kết quả (xem logs/perf_report.txt để có output mẫu)
+perf report     # view results (see logs/perf_report.txt for a sample output)
 perf stat ./perf_target
 ```
 
-**strace (system call trace):**
+**strace (system call tracing):**
 
 ```bash
-strace -c ./leaky_app         # tóm tắt
-strace -o strace_full.txt ./leaky_app  # chi tiết
+strace -c ./leaky_app                       # summary
+strace -o strace_full.txt ./leaky_app       # detailed
 ```
 
-**GDB remote debug (qua QEMU):**
+**GDB remote debug (via QEMU):**
 
 ```bash
-# Trong QEMU (gdbserver)
+# Inside QEMU (gdbserver side)
 gdbserver :1234 /leaky_app_arm
 
-# Trên host (GDB)
+# On the host (GDB side)
 arm-linux-gnueabi-gdb leaky_app_arm
 (gdb) target remote :1234
 ```
 
-> Xem `logs/gdb_session.txt` và `logs/gdb_session_full.txt` để biết chi tiết session thực tế.
+> See `logs/gdb_session.txt` and `logs/gdb_session_full.txt` for the actual session transcript.
 
-**Vẽ latency histogram:**
+**Plot latency histogram:**
 
 ```bash
 gnuplot logs/plot_latency.gnuplot
@@ -139,28 +139,28 @@ gnuplot logs/plot_latency.gnuplot
 
 ---
 
-## Kết quả / Output
+## Results / Output
 
-| File | Nội dung |
+| File | Content |
 |---|---|
-| `logs/valgrind_report.txt` | Phát hiện leak trong `leaky_app` (name, scores không free) |
-| `logs/valgrind_fixed.txt` | Valgrind clean sau khi sửa |
+| `logs/valgrind_report.txt` | Leak detected in `leaky_app` (name and scores not freed) |
+| `logs/valgrind_fixed.txt` | Clean Valgrind output after fixing leaks |
 | `logs/perf_report.txt` | Overhead: `__ieee754_log_fma` 48%, `heavy_compute` 37% |
-| `logs/perf_stat.txt` | CPU cycles, instructions, cache miss |
-| `logs/strace_summary.txt` | Thống kê system call count |
-| `logs/gdb_session_full.txt` | GDB remote session đầy đủ |
-| `logs/latency_histogram.png` | Biểu đồ phân phối latency (PNG) |
-| `output/initramfs_lab3.cpio.gz` | initramfs (~8.9 MB, Git LFS) |
+| `logs/perf_stat.txt` | CPU cycles, instructions, cache miss statistics |
+| `logs/strace_summary.txt` | System call count summary |
+| `logs/gdb_session_full.txt` | Full GDB remote session transcript |
+| `logs/latency_histogram.png` | Latency distribution chart (PNG) |
+| `output/initramfs_lab3.cpio.gz` | Packaged initramfs (~8.9 MB, Git LFS) |
 
 ---
 
-## Ghi chú
+## Notes
 
-- `perf_target.c`: hàm `heavy_compute` dùng `sqrt()` + `log()` với 100 000 phần tử × 50 vòng lặp — chiếm phần lớn CPU time theo `perf_report.txt`.
-- `buggy_app.c` có 3 lỗi cố ý (out-of-bounds, use-after-free, integer overflow) để thực hành debug.
-- `leaky_app.c` cố ý không free `name` và `scores` trong `Record` để thực hành Valgrind.
-- `rt_kernel/` hiện trống — có thể liên quan đến RT-preempt patch, chưa có nội dung.
+- `perf_target.c`: `heavy_compute` runs `sqrt()` + `log()` over 100,000 elements × 50 iterations — it dominates CPU time according to `perf_report.txt`.
+- `buggy_app.c` has 3 intentional bugs (out-of-bounds, use-after-free, integer overflow) for debugging practice.
+- `leaky_app.c` intentionally does not free `name` and `scores` in `Record` for Valgrind practice.
+- `rt_kernel/` is currently empty — it may relate to an RT-preempt patch and is expected to be populated later.
 
 ---
 
-[← Về README chính](../README.md)
+[← Back to main README](../README.md)

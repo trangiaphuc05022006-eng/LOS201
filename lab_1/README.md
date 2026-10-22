@@ -1,63 +1,63 @@
-# lab_1 — Build Kernel + U-Boot + initramfs cho QEMU ARM
+# lab_1 — Build Kernel + U-Boot + initramfs for QEMU ARM
 
-Cross-compile toàn bộ software stack cho nền tảng ARM vexpress-v2p-ca9: Linux kernel 5.15, U-Boot 2022.04, BusyBox 1.35.0, và đóng gói initramfs để boot trong QEMU.
-
----
-
-## Mục tiêu
-
-- Cross-compile Linux kernel 5.15 cho ARM Cortex-A9 (vexpress-v2p-ca9).
-- Build U-Boot 2022.04 làm bootloader.
-- Build BusyBox 1.35.0 để tạo root filesystem tối giản.
-- Đóng gói initramfs (`initramfs.cpio.gz`) và boot hệ thống trong `qemu-system-arm`.
+Cross-compile the full software stack for the ARM vexpress-v2p-ca9 platform: Linux kernel 5.15, U-Boot 2022.04, BusyBox 1.35.0, and package an initramfs to boot in QEMU.
 
 ---
 
-## Cấu trúc thư mục
+## Objectives
+
+- Cross-compile Linux kernel 5.15 for ARM Cortex-A9 (vexpress-v2p-ca9).
+- Build U-Boot 2022.04 as the bootloader.
+- Build BusyBox 1.35.0 to create a minimal root filesystem.
+- Package an initramfs (`initramfs.cpio.gz`) and boot the system in `qemu-system-arm`.
+
+---
+
+## Directory Structure
 
 ```
 lab_1/
 ├── kernel/
-│   ├── linux-5.15/          # Kernel source (trong .gitignore — không commit)
-│   └── linux-5.15.tar.xz    # Kernel tarball (~116 MB, file nén — không mở)
+│   ├── linux-5.15/          # Kernel source (excluded by .gitignore — not committed)
+│   └── linux-5.15.tar.xz    # Kernel tarball (~116 MB, archive — do not open)
 ├── uboot/
 │   ├── u-boot-2022.04/      # U-Boot source
-│   └── u-boot-2022.04.tar.bz2  # U-Boot tarball (~17 MB, file nén — không mở)
+│   └── u-boot-2022.04.tar.bz2  # U-Boot tarball (~17 MB, archive — do not open)
 ├── busybox-1.35.0/          # BusyBox source (untracked)
 ├── busybox-1.35.0.tar.bz2   # BusyBox tarball (~2.4 MB, Git LFS)
-├── initramfs.cpio.gz        # initramfs đóng gói (~8 MB, Git LFS)
-├── rootfs/                  # Root filesystem thủ công (untracked)
+├── initramfs.cpio.gz        # Packaged initramfs (~8 MB, Git LFS)
+├── rootfs/                  # Manually constructed root filesystem (untracked)
 │   ├── bin/, sbin/, usr/    # BusyBox symlinks
 │   ├── dev/, proc/, sys/    # Mount points
-│   ├── etc/                 # Cấu hình cơ bản
-│   ├── lib/                 # Thư viện
+│   ├── etc/                 # Basic configuration
+│   ├── lib/                 # Libraries
 │   ├── linuxrc              # Init script
 │   └── initramfs.cpio.gz    # Placeholder (266 B)
 └── output/
-    ├── zImage               # Kernel image ARM (~4.9 MB, Git LFS)
+    ├── zImage               # ARM kernel image (~4.9 MB, Git LFS)
     ├── u-boot               # U-Boot binary (~4.2 MB, Git LFS)
     └── vexpress-v2p-ca9.dtb # Device tree blob (~14 KB, Git LFS)
 ```
 
-> **Lưu ý:** `lab_1/kernel/linux-5.15/` có trong `.gitignore` và không được commit. Các thư mục `busybox-1.35.0/` và `rootfs/` là untracked (lớn).
+> **Note:** `lab_1/kernel/linux-5.15/` is listed in `.gitignore` and is not committed. The `busybox-1.35.0/` and `rootfs/` directories are untracked (large).
 
 ---
 
-## Yêu cầu
+## Requirements
 
-| Công cụ | Ghi chú |
+| Tool | Notes |
 |---|---|
-| `arm-linux-gnueabi-gcc` | Cross-compiler cho kernel và U-Boot |
-| `make` | Build kernel, U-Boot, BusyBox |
-| `qemu-system-arm` | Chạy image ARM |
-| `cpio`, `gzip` | Đóng gói initramfs |
-| `git-lfs` | Cần thiết để pull file `zImage`, `u-boot`, `*.dtb`, `*.cpio.gz` |
+| `arm-linux-gnueabi-gcc` | Cross-compiler for kernel and U-Boot |
+| `make` | Build kernel, U-Boot, and BusyBox |
+| `qemu-system-arm` | Run the ARM image |
+| `cpio`, `gzip` | Package the initramfs |
+| `git-lfs` | Required to pull `zImage`, `u-boot`, `*.dtb`, and `*.cpio.gz` |
 
 ---
 
 ## Build & Run
 
-**Giải nén source (nếu chưa có thư mục):**
+**Extract sources (if directories do not exist yet):**
 
 ```bash
 tar -xf lab_1/kernel/linux-5.15.tar.xz   -C lab_1/kernel/
@@ -68,12 +68,12 @@ tar -xf lab_1/busybox-1.35.0.tar.bz2
 **Cross-compile Linux kernel:**
 
 ```bash
-# <lệnh build kernel — xem config và script trong lab_1/kernel/ nếu có>
+# <kernel build command — check for a config or build script in lab_1/kernel/>
 ```
 
-> ⚠️ Chưa tìm thấy build script hoặc `.config` được lưu trong thư mục này. Xem báo cáo hoặc hỏi tác giả để biết defconfig đã dùng.
+> ⚠️ No build script or saved `.config` was found in this directory. Refer to the course report or contact the author to obtain the defconfig used.
 
-**Boot trong QEMU:**
+**Boot in QEMU:**
 
 ```bash
 qemu-system-arm \
@@ -85,27 +85,27 @@ qemu-system-arm \
   -nographic
 ```
 
-> Lệnh QEMU trên là suy luận từ tên file artifact. Kiểm tra lại với log hoặc script thực tế nếu có.
+> The QEMU command above is inferred from the artifact file names. Verify against actual logs or scripts if available.
 
 ---
 
-## Kết quả / Output
+## Results / Output
 
-| File | Nội dung |
+| File | Content |
 |---|---|
-| `output/zImage` | Kernel image ARM đã compile (Git LFS) |
+| `output/zImage` | Compiled ARM kernel image (Git LFS) |
 | `output/u-boot` | U-Boot bootloader binary (Git LFS) |
-| `output/vexpress-v2p-ca9.dtb` | Device tree cho vexpress-v2p-ca9 (Git LFS) |
-| `initramfs.cpio.gz` | Root filesystem đóng gói (Git LFS) |
+| `output/vexpress-v2p-ca9.dtb` | Device tree for vexpress-v2p-ca9 (Git LFS) |
+| `initramfs.cpio.gz` | Packaged root filesystem (Git LFS) |
 
 ---
 
-## Ghi chú
+## Notes
 
-- Thư mục `lab_1/kernel/linux-5.15/` bị loại khỏi git (`.gitignore`) vì quá lớn. Cần giải nén từ tarball trước khi build.
-- `busybox-1.35.0/` và `rootfs/` là untracked — không bị commit vào repo.
-- Các file nhị phân trong `output/` được quản lý bởi Git LFS (theo `.gitattributes`).
+- `lab_1/kernel/linux-5.15/` is excluded from git (`.gitignore`) due to its size. Extract it from the tarball before building.
+- `busybox-1.35.0/` and `rootfs/` are untracked — they are never committed to the repository.
+- Binary files in `output/` are managed by Git LFS (as specified in `.gitattributes`).
 
 ---
 
-[← Về README chính](../README.md)
+[← Back to main README](../README.md)

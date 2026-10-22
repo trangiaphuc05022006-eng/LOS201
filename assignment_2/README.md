@@ -1,61 +1,61 @@
 # assignment_2 — Sensor Monitoring System (SMS)
 
-Xây dựng một Sensor Monitoring System hoàn chỉnh gồm: kernel module mô phỏng cảm biến (`sms_sensor`), userspace application đa luồng đọc và xử lý dữ liệu cảm biến, và đo lường hiệu năng hệ thống.
+A complete Sensor Monitoring System consisting of: a kernel module that simulates a sensor device (`sms_sensor`), a multi-threaded userspace application that reads and processes sensor data, and system performance measurements.
 
 ---
 
-## Mục tiêu
+## Objectives
 
-- Viết Linux kernel module dạng misc device mô phỏng cảm biến nhiệt độ/độ ẩm (`sms_sensor_driver`).
-- Xây dựng userspace app đa luồng sử dụng POSIX `pthread`, POSIX message queue (`mqueue`), và circular buffer.
-- Đo và phân tích hiệu năng hệ thống bằng `perf`, `strace`, `valgrind`.
+- Write a Linux kernel module as a misc device that simulates a temperature/humidity sensor (`sms_sensor_driver`).
+- Build a multi-threaded userspace application using POSIX `pthread`, POSIX message queues (`mqueue`), and a circular buffer.
+- Measure and analyze system performance using `perf`, `strace`, and `valgrind`.
 
 ---
 
-## Cấu trúc thư mục
+## Directory Structure
 
 ```
 assignment_2/
 ├── driver/
-│   ├── sms_sensor_driver.c  # Kernel module: misc device, sinh dữ liệu cảm biến ngẫu nhiên (linux/random.h)
-│   ├── sms_sensor.h         # Header: ioctl command và struct dữ liệu cảm biến
-│   ├── test_ioctl.c         # Chương trình userspace kiểm thử ioctl
-│   ├── Makefile             # Build module (ARCH=arm, arm-linux-gnueabi-, KDIR=~/embedded_lab1/kernel/linux-5.15)
-│   └── lab2_driver.ko       # (Artifact build — file nhị phân, không mở)
+│   ├── sms_sensor_driver.c  # Kernel module: misc device, generates random sensor data (linux/random.h)
+│   ├── sms_sensor.h         # Header: ioctl command and sensor data struct
+│   ├── test_ioctl.c         # Userspace program for ioctl testing
+│   ├── Makefile             # Build script (ARCH=arm, arm-linux-gnueabi-, KDIR=~/embedded_lab1/kernel/linux-5.15)
+│   └── lab2_driver.ko       # Build artifact — binary file, do not open
 ├── app/
-│   ├── sms_app.c            # Chương trình chính: quản lý luồng, signal handler, CLI options
-│   ├── sms_common.h         # Hằng số, kiểu dữ liệu dùng chung
-│   ├── sensor_thread.c/h    # Luồng đọc dữ liệu từ /dev/sms_sensor
-│   ├── processor_thread.c/h # Luồng xử lý dữ liệu và tính jitter
-│   ├── logger_thread.c/h    # Luồng ghi log ra file/stdout
-│   ├── alert_thread.c/h     # Luồng phát cảnh báo khi vượt ngưỡng
-│   ├── circular_buffer.c/h  # Cấu trúc dữ liệu circular buffer (thread-safe)
-│   ├── jitter.c/h           # Đo độ trễ (jitter) giữa các lần đọc cảm biến
-│   └── test_cb.c            # Unit test cho circular buffer
+│   ├── sms_app.c            # Main program: thread management, signal handler, CLI options
+│   ├── sms_common.h         # Shared constants and data types
+│   ├── sensor_thread.c/h    # Thread that reads data from /dev/sms_sensor
+│   ├── processor_thread.c/h # Thread that processes data and computes jitter
+│   ├── logger_thread.c/h    # Thread that writes logs to file/stdout
+│   ├── alert_thread.c/h     # Thread that raises alerts when thresholds are exceeded
+│   ├── circular_buffer.c/h  # Thread-safe circular buffer data structure
+│   ├── jitter.c/h           # Measures inter-read latency (jitter)
+│   └── test_cb.c            # Unit tests for the circular buffer
 ├── rootfs/
-│   └── etc/                 # Cấu hình hệ thống (mount trong QEMU)
+│   └── etc/                 # System configuration (mounted in QEMU)
 ├── tools/
-│   ├── fake_sensor.sh       # Script mô phỏng dữ liệu cảm biến giả
-│   └── measure.sh           # Script đo VmRSS/smaps của sms_app trong 60 giây
+│   ├── fake_sensor.sh       # Script to simulate fake sensor data
+│   └── measure.sh           # Script to snapshot VmRSS/smaps of sms_app over 60 seconds
 ├── logs/
-│   ├── perf_sms.txt             # Kết quả perf stat cho sms_app
-│   ├── perf_sms_callgraph.txt   # Callgraph từ perf report (file lớn)
-│   ├── strace_sms.txt           # System call trace của sms_app
-│   └── valgrind_sms.txt         # Kiểm tra memory leak với Valgrind
+│   ├── perf_sms.txt             # perf stat results for sms_app
+│   ├── perf_sms_callgraph.txt   # Call graph from perf report (large file)
+│   ├── strace_sms.txt           # System call trace of sms_app
+│   └── valgrind_sms.txt         # Memory leak check with Valgrind
 └── report/
-    └── Group2_Assignment2.pdf   # Báo cáo nhóm (file nhị phân — không mở)
+    └── Group2_Assignment2.pdf   # Group report (binary — do not open via git)
 ```
 
 ---
 
-## Yêu cầu
+## Requirements
 
-| Công cụ | Ghi chú |
+| Tool | Notes |
 |---|---|
-| `arm-linux-gnueabi-gcc` | Cross-compiler cho kernel module và userspace app |
-| Linux kernel 5.15 headers | `KDIR := $(HOME)/embedded_lab1/kernel/linux-5.15` (theo Makefile) |
-| `make` | Build module và app |
-| `qemu-system-arm` | Chạy hệ thống trong QEMU (dùng image từ `lab_1/`) |
+| `arm-linux-gnueabi-gcc` | Cross-compiler for the kernel module and userspace app |
+| Linux kernel 5.15 headers | `KDIR := $(HOME)/embedded_lab1/kernel/linux-5.15` (per Makefile) |
+| `make` | Build module and app |
+| `qemu-system-arm` | Run the system in QEMU (use the image from `lab_1/`) |
 | `perf` | CPU profiling |
 | `strace` | System call tracing |
 | `Valgrind` | Memory leak detection |
@@ -68,32 +68,32 @@ assignment_2/
 
 ```bash
 cd assignment_2/driver
-make        # tạo sms_sensor_driver.ko
+make        # produces sms_sensor_driver.ko
 make clean
 ```
 
 **Build userspace app:**
 
 ```bash
-# <lệnh build userspace app — xem Makefile hoặc script nếu có>
+# <build command for userspace app — check for a Makefile or build script>
 ```
 
-> ⚠️ Chưa tìm thấy Makefile cho `app/`. Xem `sms_app.c` để biết cách biên dịch thủ công (cần `-lpthread -lm -lrt`).
+> ⚠️ No Makefile was found for `app/`. See `sms_app.c` for manual compilation; required flags include `-lpthread -lm -lrt`.
 
-**Chạy trong QEMU (với tư cách root):**
+**Run inside QEMU (as root):**
 
 ```sh
 # Load driver
 insmod sms_sensor_driver.ko
 
-# Chạy app (ví dụ 60 giây)
+# Run app (e.g., for 60 seconds)
 sms_app -d 60
 
-# Đo bộ nhớ song song
+# Measure memory in parallel
 sh /measure.sh
 ```
 
-**Đo hiệu năng:**
+**Performance measurement:**
 
 ```sh
 # perf
@@ -108,24 +108,24 @@ valgrind --leak-check=full ./sms_app -d 5
 
 ---
 
-## Kết quả / Output
+## Results / Output
 
-| File | Nội dung |
+| File | Content |
 |---|---|
-| `logs/perf_sms.txt` | Thống kê CPU cycles, instructions, cache miss của sms_app |
-| `logs/perf_sms_callgraph.txt` | Callgraph chi tiết (perf report) |
-| `logs/strace_sms.txt` | Danh sách system call |
-| `logs/valgrind_sms.txt` | Báo cáo memory leak (Valgrind) |
-| `report/Group2_Assignment2.pdf` | Báo cáo nhóm (PDF) |
+| `logs/perf_sms.txt` | CPU cycles, instructions, and cache miss statistics for sms_app |
+| `logs/perf_sms_callgraph.txt` | Detailed call graph (perf report) |
+| `logs/strace_sms.txt` | System call list |
+| `logs/valgrind_sms.txt` | Valgrind memory leak report |
+| `report/Group2_Assignment2.pdf` | Group report (PDF) |
 
 ---
 
-## Ghi chú
+## Notes
 
-- `sms_sensor_driver` dùng `linux/random.h` để sinh dữ liệu ngẫu nhiên và `linux/ktime.h` để timestamp.
-- `measure.sh` đọc `/proc/$PID/smaps_rollup` khi có, fallback sang `/proc/$PID/smaps` nếu kernel không hỗ trợ.
-- Circular buffer cần thread-safe — kiểm tra `circular_buffer.c` để biết cơ chế lock.
+- `sms_sensor_driver` uses `linux/random.h` to generate random data and `linux/ktime.h` for timestamps.
+- `measure.sh` reads `/proc/$PID/smaps_rollup` when available, falling back to `/proc/$PID/smaps` on older kernels.
+- The circular buffer requires thread safety — see `circular_buffer.c` for the locking mechanism.
 
 ---
 
-[← Về README chính](../README.md)
+[← Back to main README](../README.md)

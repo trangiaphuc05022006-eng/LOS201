@@ -1,92 +1,92 @@
 # LOS201 — Linux Operating System (Embedded Linux)
 
-Repo lưu bài làm assignments và labs của môn học **LOS201 – Linux Operating System** (lập trình nhân Linux và hệ thống nhúng).
+This repository contains coursework assignments and labs for **LOS201 – Linux Operating System** (Linux kernel programming and embedded systems).
 
-> ⚠️ **Repo đang được cập nhật dần** — một số thư mục chưa hoàn chỉnh hoặc chưa có báo cáo.
+> ⚠️ **This repository is updated incrementally** — some folders may be incomplete or missing reports.
 
 ---
 
-## Cấu trúc thư mục
+## Directory Structure
 
 ```
 LOS201/
 ├── assignment_1/    # Assignment 1: Linux kernel character device driver (ioctl + misc)
-├── assignment_2/    # Assignment 2: Sensor Monitoring System (kernel module + userspace app đa luồng)
-├── lab_1/           # Lab 1: Cross-compile Linux 5.15 + U-Boot 2022.04 + BusyBox 1.35; boot trên QEMU ARM
-├── lab_2/           # Lab 2: Character device driver cross-compiled cho QEMU ARM vexpress-ca9
+├── assignment_2/    # Assignment 2: Sensor Monitoring System (kernel module + multi-threaded userspace app)
+├── lab_1/           # Lab 1: Cross-compile Linux 5.15 + U-Boot 2022.04 + BusyBox 1.35; boot on QEMU ARM
+├── lab_2/           # Lab 2: Character device driver cross-compiled for QEMU ARM vexpress-ca9
 └── lab_3/           # Lab 3: Debugging & profiling (Valgrind, GDB, perf, strace)
 ```
 
 ---
 
-## Bảng nội dung
+## Table of Contents
 
-| Thư mục | Nội dung | Trạng thái |
+| Folder | Content | Status |
 |---|---|---|
-| [assignment_1](assignment_1/README.md) | Viết character device driver với `ioctl`; thêm misc device (counter); kiểm thử bằng shell script trong QEMU | ✅ Hoàn thành |
-| [assignment_2](assignment_2/README.md) | Sensor Monitoring System: kernel module `sms_sensor` + userspace app đa luồng (`pthread`, POSIX `mqueue`, circular buffer); đo hiệu năng bằng `perf`/`valgrind`/`strace` | ✅ Hoàn thành |
-| [lab_1](lab_1/README.md) | Cross-compile Linux 5.15 + U-Boot 2022.04 + BusyBox 1.35.0 cho ARM vexpress-v2p-ca9; đóng gói initramfs; boot thử trên QEMU | ✅ Hoàn thành |
-| [lab_2](lab_2/README.md) | Viết `lab2_driver` (simple character device, Major 240) cross-compiled với `arm-linux-gnueabihf-`; đóng gói vào initramfs; load vào kernel đã build ở Lab 1 | ✅ Hoàn thành |
-| [lab_3](lab_3/README.md) | Debug và profiling ứng dụng nhúng: Valgrind (memory leak), GDB remote debug (ARM), `perf`, `strace`; ba app mẫu có bug | ✅ Hoàn thành |
-| `lab_4`, ... | Các lab tiếp theo | 🗓️ Planned |
+| [assignment_1](assignment_1/README.md) | Character device driver with `ioctl`; misc device (counter); functional testing via shell scripts in QEMU | Done |
+| [assignment_2](assignment_2/README.md) | Sensor Monitoring System: `sms_sensor` kernel module + multi-threaded userspace app (`pthread`, POSIX `mqueue`, circular buffer); performance analysis with `perf`/`valgrind`/`strace` | Done |
+| [lab_1](lab_1/README.md) | Cross-compile Linux 5.15 + U-Boot 2022.04 + BusyBox 1.35.0 for ARM vexpress-v2p-ca9; package initramfs; boot on QEMU | Done |
+| [lab_2](lab_2/README.md) | `lab2_driver` (simple character device, Major 240) cross-compiled with `arm-linux-gnueabihf-`; packaged into initramfs; loaded on the kernel built in Lab 1 | Done |
+| [lab_3](lab_3/README.md) | Embedded application debugging and profiling: Valgrind (memory leak), GDB remote debug (ARM), `perf`, `strace`; three intentionally buggy sample apps | Done |
+| `lab_4`, ... | Upcoming labs | Planned |
 
 ---
 
-## Yêu cầu môi trường
+## Requirements
 
-| Công cụ | Phiên bản / Ghi chú |
+| Tool | Version / Notes |
 |---|---|
-| `arm-linux-gnueabi-gcc` | Cross-compiler dùng trong `assignment_1`, `assignment_2` (Makefile dùng `arm-linux-gnueabi-`) |
-| `arm-linux-gnueabihf-gcc` | Cross-compiler dùng trong `lab_2` (hard-float ABI; `-march=armv7-a -mtune=cortex-a9`) |
-| Linux kernel headers | Phiên bản **5.15** — cần khi build kernel module |
-| `make` | Build kernel module và userspace app |
-| `qemu-system-arm` | Chạy ảnh ARM vexpress-v2p-ca9 trên máy host |
-| BusyBox | **1.35.0** (source trong `lab_1/`) |
-| U-Boot | **2022.04** (source trong `lab_1/`) |
-| `Valgrind` | Dùng trong Lab 3 và Assignment 2 |
-| `GDB` / `gdbserver` | Remote debug ARM trong Lab 3 |
-| `perf` | CPU profiling trong Assignment 2 và Lab 3 |
-| `strace` | Trace system call trong Assignment 2 và Lab 3 |
-| `git-lfs` | Quản lý file nhị phân lớn (`.ko`, `.img`, `.bin`, `*.cpio.gz`) |
-| Distro Linux host | `<tên distro và phiên bản>` |
+| `arm-linux-gnueabi-gcc` | Cross-compiler used in `assignment_1` and `assignment_2` (Makefile uses `arm-linux-gnueabi-`) |
+| `arm-linux-gnueabihf-gcc` | Cross-compiler used in `lab_2` (hard-float ABI; `-march=armv7-a -mtune=cortex-a9`) |
+| Linux kernel headers | Version **5.15** — required when building kernel modules |
+| `make` | Build kernel modules and userspace apps |
+| `qemu-system-arm` | Run ARM vexpress-v2p-ca9 images on the host machine |
+| BusyBox | **1.35.0** (source in `lab_1/`) |
+| U-Boot | **2022.04** (source in `lab_1/`) |
+| `Valgrind` | Used in Lab 3 and Assignment 2 |
+| `GDB` / `gdbserver` | Remote ARM debugging in Lab 3 |
+| `perf` | CPU profiling in Assignment 2 and Lab 3 |
+| `strace` | System call tracing in Assignment 2 and Lab 3 |
+| `git-lfs` | Manages large binary files (`.ko`, `.img`, `.bin`, `*.cpio.gz`) |
+| Host Linux distro | `<host OS and version>` |
 
 ---
 
-## Cài đặt & Clone
+## Installation & Clone
 
 ```bash
-# 1. Cài Git LFS (bắt buộc — repo dùng LFS cho file nhị phân lớn)
+# 1. Install Git LFS (required — this repo uses LFS for large binary files)
 git lfs install
 
-# 2. Clone repo
+# 2. Clone the repository
 git clone https://github.com/trangiaphuc05022006-eng/LOS201.git
 cd LOS201
 
-# 3. Kéo các file LFS về local
+# 3. Pull LFS files to local
 git lfs pull
 ```
 
-> **Lưu ý:** Nếu bỏ qua bước `git lfs install`, các file `.ko`, `*.cpio.gz`, `zImage`, `u-boot` sẽ chỉ là con trỏ LFS và không dùng được.
+> **Note:** If you skip `git lfs install`, files such as `.ko`, `*.cpio.gz`, `zImage`, and `u-boot` will only be LFS pointer files and will not be usable.
 
 ---
 
-## Quy ước làm việc
+## Working Conventions
 
-| Quy ước | Mô tả |
+| Convention | Description |
 |---|---|
-| **Nhánh chính** | `main` — luôn ổn định, không push trực tiếp |
-| **Merge** | Tất cả thay đổi phải qua **Pull Request**; cần review trước khi merge |
-| **Đặt tên nhánh** | `<loại>/<mô-tả-ngắn>` — ví dụ: `feat/asgn2-circular-buffer`, `fix/lab2-makefile` |
-| **Commit message** | Tiếng Anh, dạng `<type>: <summary>` — ví dụ: `feat: add ioctl handler for RESET`, `docs: update lab_2 README` |
+| **Main branch** | `main` — always stable; do not push directly |
+| **Merge** | All changes must go through a **Pull Request**; review required before merging |
+| **Branch naming** | `<type>/<short-description>` — e.g., `feat/asgn2-circular-buffer`, `fix/lab2-makefile` |
+| **Commit message** | English, format `<type>: <summary>` — e.g., `feat: add ioctl handler for RESET`, `docs: update lab_2 README` |
 
 ---
 
-## Tác giả
+## Author
 
 **trangiaphuc05022006-eng**
 
 ---
 
-## Lưu ý
+## Notice
 
-> Nội dung trong repo này được tạo ra phục vụ **mục đích học tập** trong khuôn khổ môn học LOS201. Không sao chép để nộp bài.
+> The content in this repository is produced for **educational purposes** within the LOS201 course. Do not copy for academic submission.
