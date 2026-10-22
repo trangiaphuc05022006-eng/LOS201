@@ -75,10 +75,13 @@ make clean
 **Build userspace app:**
 
 ```bash
-# <build command for userspace app — check for a Makefile or build script>
+# Leave CROSS_COMPILE empty for a native build, or set it to the ARM toolchain prefix
+${CROSS_COMPILE}gcc -o sms_app sms_app.c sensor_thread.c processor_thread.c \
+    logger_thread.c alert_thread.c circular_buffer.c jitter.c \
+    -lpthread -lm -lrt
 ```
 
-> ⚠️ No Makefile was found for `app/`. See `sms_app.c` for manual compilation; required flags include `-lpthread -lm -lrt`.
+> There is no Makefile in `app/`. `test_cb.c` is a separate test program for the circular buffer (it has its own `main`) and is not part of the main build.
 
 **Run inside QEMU (as root):**
 

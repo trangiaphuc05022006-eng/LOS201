@@ -48,7 +48,6 @@ LOS201/
 | `perf` | CPU profiling in Assignment 2 and Lab 3 |
 | `strace` | System call tracing in Assignment 2 and Lab 3 |
 | `git-lfs` | Manages large binary files (`.ko`, `.img`, `.bin`, `*.cpio.gz`) |
-| Host Linux distro | `<host OS and version>` |
 
 ---
 

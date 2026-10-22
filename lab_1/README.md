@@ -67,11 +67,15 @@ tar -xf lab_1/busybox-1.35.0.tar.bz2
 
 **Cross-compile Linux kernel:**
 
+The kernel was configured for ARM Versatile Express (`CONFIG_ARCH_VEXPRESS=y`) and built with `arm-linux-gnueabihf-gcc`:
+
 ```bash
-# <kernel build command — check for a config or build script in lab_1/kernel/>
+cd kernel/linux-5.15
+make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- vexpress_defconfig
+make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- -j$(nproc) zImage dtbs
 ```
 
-> ⚠️ No build script or saved `.config` was found in this directory. Refer to the course report or contact the author to obtain the defconfig used.
+> The kernel source tree is not stored in this repository (see `.gitignore`). The exact configuration options may differ from the stock `vexpress_defconfig`; see the report for details.
 
 **Boot in QEMU:**
 
