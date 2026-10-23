@@ -1,0 +1,13 @@
+make -C /home/phuc/embedded_lab1/kernel/linux-5.15 M=/home/phuc/embedded_lab2/driver ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- modules
+make -f ./scripts/Makefile.build obj=/home/phuc/embedded_lab2/driver \
+single-build= \
+need-builtin=1 need-modorder=1
+  arm-linux-gnueabihf-gcc -Wp,-MMD,/home/phuc/embedded_lab2/driver/.lab2_driver.o.d -nostdinc -isystem /usr/lib/gcc-cross/arm-linux-gnueabihf/15/include -I./arch/arm/include -I./arch/arm/include/generated  -I./include -I./arch/arm/include/uapi -I./arch/arm/include/generated/uapi -I./include/uapi -I./include/generated/uapi -include ./include/linux/compiler-version.h -include ./include/linux/kconfig.h -include ./include/linux/compiler_types.h -D__KERNEL__ -mlittle-endian -fmacro-prefix-map=./= -Wall -Wundef -Werror=strict-prototypes -Wno-trigraphs -fno-strict-aliasing -fno-common -fshort-wchar -fno-PIE -Werror=implicit-function-declaration -Werror=implicit-int -Werror=return-type -Wno-format-security -std=gnu89 -fno-dwarf2-cfi-asm -fno-ipa-sra -mabi=aapcs-linux -mfpu=vfp -funwind-tables -marm -Wa,-mno-warn-deprecated -D__LINUX_ARM_ARCH__=7 -march=armv5t -Wa,-march=armv7-a -msoft-float -Uarm -fno-delete-null-pointer-checks -Wno-frame-address -Wno-format-truncation -Wno-format-overflow -Wno-address-of-packed-member -O2 -fno-allow-store-data-races -Wframe-larger-than=1024 -fstack-protector-strong -Wimplicit-fallthrough=5 -Wno-main -Wno-unused-but-set-variable -Wno-unused-const-variable -fomit-frame-pointer -ftrivial-auto-var-init=zero -enable-trivial-auto-var-init-zero-knowing-it-will-be-removed-from-clang -fno-stack-clash-protection -g -Wdeclaration-after-statement -Wvla -Wno-pointer-sign -Wno-stringop-truncation -Wno-zero-length-bounds -Wno-array-bounds -Wno-stringop-overflow -Wno-restrict -Wno-maybe-uninitialized -fno-strict-overflow -fno-stack-check -fconserve-stack -Werror=date-time -Werror=incompatible-pointer-types -Werror=designated-init -Wno-packed-not-aligned  -DMODULE  -DKBUILD_BASENAME='"lab2_driver"' -DKBUILD_MODNAME='"lab2_driver"' -D__KBUILD_MODNAME=kmod_lab2_driver -c -o /home/phuc/embedded_lab2/driver/lab2_driver.o /home/phuc/embedded_lab2/driver/lab2_driver.c
+/tmp/cckElAnj.s: Assembler messages:
+/tmp/cckElAnj.s:352: Error: selected processor does not support `isb' in ARM mode
+/tmp/cckElAnj.s:385: Error: selected processor does not support `isb' in ARM mode
+/tmp/cckElAnj.s:677: Error: selected processor does not support `isb' in ARM mode
+/tmp/cckElAnj.s:714: Error: selected processor does not support `isb' in ARM mode
+make[2]: *** [scripts/Makefile.build:277: /home/phuc/embedded_lab2/driver/lab2_driver.o] Error 1
+make[1]: *** [Makefile:1868: /home/phuc/embedded_lab2/driver] Error 2
+make: *** [Makefile:9: all] Error 2
