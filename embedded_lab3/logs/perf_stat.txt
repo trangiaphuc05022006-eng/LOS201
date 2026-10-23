@@ -1,0 +1,19 @@
+./perf_target: Segmentation fault
+
+ Performance counter stats for './perf_target':
+
+                 2      context-switches                 #     57.2 cs/sec  cs_per_second     
+                 1      cpu-migrations                   #     28.6 migrations/sec  migrations_per_second
+               377      page-faults                      #  10775.1 faults/sec  page_faults_per_second
+             34.99 msec task-clock                       #      0.2 CPUs  CPUs_utilized       
+            95,029      branch-misses                    #      0.2 %  branch_miss_rate         (48.55%)
+        49,902,403      branches                         #   1426.3 M/sec  branch_frequency     (48.56%)
+       138,835,534      cpu-cycles                       #      4.0 GHz  cycles_frequency       (48.71%)
+       353,495,352      instructions                     #      2.5 instructions  insn_per_cycle  (51.45%)
+
+       0.142127457 seconds time elapsed
+
+       0.034733000 seconds user
+       0.001021000 seconds sys
+
+
