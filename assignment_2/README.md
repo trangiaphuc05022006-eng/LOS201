@@ -1,134 +1,206 @@
-# assignment_2 — Sensor Monitoring System (SMS)
+# Assignment 02 — Sensor Monitoring System (SMS)
 
-A complete Sensor Monitoring System consisting of: a kernel module that simulates a sensor device (`sms_sensor`), a multi-threaded userspace application that reads and processes sensor data, and system performance measurements.
+A simulated industrial sensor-monitoring pipeline built with a **Linux kernel sensor driver**, **four POSIX threads**, a **thread-safe circular buffer**, **POSIX message queues**, and run-time diagnostics.
 
----
+## Course information
 
-## Objectives
+| Item | Details |
+|---|---|
+| **Course** | LOS201 |
+| **Class** | IC2008 |
 
-- Write a Linux kernel module as a misc device that simulates a temperature/humidity sensor (`sms_sensor_driver`).
-- Build a multi-threaded userspace application using POSIX `pthread`, POSIX message queues (`mqueue`), and a circular buffer.
-- Measure and analyze system performance using `perf`, `strace`, and `valgrind`.
+## Team members
 
----
+| No. | Full name | Student ID |
+|---:|---|---|
+| 1 | Trần Gia Phúc | SE204417 |
+| 2 | Trần Hoàng Khôi | SE203155 |
+| 3 | Trần Nguyễn Việt Dũng | SE205180 |
+| 4 | Thân Trọng Khang | SE203290 |
+| 5 | Nguyễn Huy Khánh | SE204207 |
 
-## Directory Structure
+## System design
 
+```text
+                         Kernel space
+                    sms_sensor_driver.c
+                      /dev/sms_sensor
+                      /proc/sms_stats
+                              |
+                           read()
+                              v
+                         User space
+                    [Sensor thread] ---> [Circular buffer]
+                                                |
+                                                v
+                                         [Processor thread]
+                                                |
+                                  +-------------+------------+
+                                  |                          |
+                              alarm_queue                  log_queue
+                                  |                          |
+                                  v                          v
+                            [Alert thread] ------------> [Logger thread]
+                                                             |
+                                                             v
+                                                       /tmp/sms.log
 ```
+
+The Sensor thread requests a sampling period and records wake-up jitter. The Processor maintains a rolling 10-sample average and detects temperature/humidity alarms; the Logger timestamps messages, flushes periodically, and rotates logs exceeding 1 MiB.
+
+## Repository structure
+
+```text
 assignment_2/
+├── README.md
 ├── driver/
-│   ├── sms_sensor_driver.c  # Kernel module: misc device, generates random sensor data (linux/random.h)
-│   ├── sms_sensor.h         # Header: ioctl command and sensor data struct
-│   ├── test_ioctl.c         # Userspace program for ioctl testing
-│   ├── Makefile             # Build script (ARCH=arm, arm-linux-gnueabi-, KDIR=~/embedded_lab1/kernel/linux-5.15)
-│   └── lab2_driver.ko       # Build artifact — binary file, do not open
+│   ├── sms_sensor_driver.c   # Kernel misc driver: random sensor readings
+│   ├── sms_sensor.h          # SMS_SET_INTERVAL ioctl contract
+│   ├── test_ioctl.c          # Userspace ioctl example
+│   └── Makefile
 ├── app/
-│   ├── sms_app.c            # Main program: thread management, signal handler, CLI options
-│   ├── sms_common.h         # Shared constants and data types
-│   ├── sensor_thread.c/h    # Thread that reads data from /dev/sms_sensor
-│   ├── processor_thread.c/h # Thread that processes data and computes jitter
-│   ├── logger_thread.c/h    # Thread that writes logs to file/stdout
-│   ├── alert_thread.c/h     # Thread that raises alerts when thresholds are exceeded
-│   ├── circular_buffer.c/h  # Thread-safe circular buffer data structure
-│   ├── jitter.c/h           # Measures inter-read latency (jitter)
-│   └── test_cb.c            # Unit tests for the circular buffer
-├── rootfs/
-│   └── etc/                 # System configuration (mounted in QEMU)
+│   ├── sms_app.c             # CLI, startup, threading, shutdown
+│   ├── sms_common.h          # Configuration, paths and message definitions
+│   ├── sensor_thread.c/.h
+│   ├── processor_thread.c/.h
+│   ├── alert_thread.c/.h
+│   ├── logger_thread.c/.h
+│   ├── circular_buffer.c/.h
+│   ├── jitter.c/.h
+│   └── test_cb.c             # Circular-buffer test (separate executable)
+├── rootfs/etc/init.d/rcS     # Init script: loads sensor module if present
 ├── tools/
-│   ├── fake_sensor.sh       # Script to simulate fake sensor data
-│   └── measure.sh           # Script to snapshot VmRSS/smaps of sms_app over 60 seconds
+│   ├── fake_sensor.sh       # Host FIFO sensor simulator
+│   └── measure.sh           # Samples memory at T=5/30/55 seconds
 ├── logs/
-│   ├── perf_sms.txt             # perf stat results for sms_app
-│   ├── perf_sms_callgraph.txt   # Call graph from perf report (large file)
-│   ├── strace_sms.txt           # System call trace of sms_app
-│   └── valgrind_sms.txt         # Memory leak check with Valgrind
-└── report/
-    └── Group2_Assignment2.pdf   # Group report (binary — do not open via git)
+│   ├── valgrind_sms.txt
+│   ├── strace_sms.txt
+│   ├── perf_sms.txt
+│   └── perf_sms_callgraph.txt
+└── report/Group2_Assignment2.pdf
 ```
 
----
+**Packaging note:** the repository currently does **not** contain `app/Makefile`, a committed `sms_sensor_driver.ko`, or a complete Assignment 02 `initramfs` image. Build and copy the components into a suitable guest filesystem before running on QEMU.
 
-## Requirements
+## Kernel sensor interface
 
-| Tool | Notes |
+- `/dev/sms_sensor`: misc character device; each successful new read generates a line of CSV data: `timestamp_ms,temperature,humidity`.
+- Temperature is simulated from **15.0–45.0 °C**, humidity from **30.0–90.0%**.
+- `/proc/sms_stats`: read count, most recent temperature/humidity, and driver uptime.
+- `SMS_SET_INTERVAL`: `ioctl` to configure the minimum driver read interval in milliseconds (10–60000 ms according to `sms_sensor.h`).
+
+The userspace program requests a driver interval equal to half its sampling period (subject to the 10-ms minimum), then controls its own read schedule with an absolute monotonic timer.
+
+## Application threads
+
+| Thread | Job |
 |---|---|
-| `arm-linux-gnueabi-gcc` | Cross-compiler for the kernel module and userspace app |
-| Linux kernel 5.15 headers | `KDIR := $(HOME)/embedded_lab1/kernel/linux-5.15` (per Makefile) |
-| `make` | Build module and app |
-| `qemu-system-arm` | Run the system in QEMU (use the image from `lab_1/`) |
-| `perf` | CPU profiling |
-| `strace` | System call tracing |
-| `Valgrind` | Memory leak detection |
+| Sensor | Reads sensor CSV, parses samples, pushes to a mutex/condition-variable circular buffer, records jitter |
+| Processor | Computes rolling averages, generates alerts for high temperature, high humidity or a temperature spike |
+| Alert | Receives alarm messages and prints them to stderr; forwards them to the logger |
+| Logger | Receives text logs, writes `/tmp/sms.log`, flushes periodically, rotates at >1 MiB |
 
----
+Default alarm settings: **temperature >40 °C**, **humidity >80%**, or **temperature change >5 °C** between consecutive samples.
 
-## Build & Run
+## Build the driver
 
-**Build kernel module:**
+The existing driver Makefile references `~/embedded_lab1/kernel/linux-5.15` and uses `arm-linux-gnueabi-`:
 
 ```bash
-cd assignment_2/driver
-make        # produces sms_sensor_driver.ko
-make clean
+# From the LOS201 repository root
+make -C assignment_2/driver
+# Produces sms_sensor_driver.ko when the toolchain/kernel are compatible
 ```
 
-**Build userspace app:**
+Build modules with a toolchain/ABI compatible with the configured kernel. Use `modinfo` to check the resulting module and install it in the guest rootfs's `/lib/modules/<kernel-release>/` directory.
+
+## Build the userspace application
+
+There is no checked-in `app/Makefile`. From `assignment_2/app`, build the C sources directly:
 
 ```bash
-# Leave CROSS_COMPILE empty for a native build, or set it to the ARM toolchain prefix
-${CROSS_COMPILE}gcc -o sms_app sms_app.c sensor_thread.c processor_thread.c \
-    logger_thread.c alert_thread.c circular_buffer.c jitter.c \
-    -lpthread -lm -lrt
+# Native Linux host build: use the FIFO test sensor instead of /dev/sms_sensor
+gcc -O2 -Wall -Wextra -I../driver \
+  -DSENSOR_DEVICE_PATH='"/tmp/fake_sensor"' \
+  sms_app.c sensor_thread.c processor_thread.c alert_thread.c \
+  logger_thread.c circular_buffer.c jitter.c \
+  -o sms_app_x86 -pthread -lrt -lm
+
+# ARM build: replace gcc with a compatible cross-compiler and omit the FIFO define
+arm-linux-gnueabi-gcc -O2 -I../driver \
+  sms_app.c sensor_thread.c processor_thread.c alert_thread.c \
+  logger_thread.c circular_buffer.c jitter.c \
+  -o sms_app -pthread -lrt -lm
 ```
 
-> There is no Makefile in `app/`. `test_cb.c` is a separate test program for the circular buffer (it has its own `main`) and is not part of the main build.
+The ARM build is a recipe consistent with the source and recorded Makefile conventions, **not** a build verified in this documentation pass. `test_cb.c` has its own `main()` and must not be linked into `sms_app`.
 
-**Run inside QEMU (as root):**
+## Run
+
+### In a prepared QEMU ARM guest
+
+Install/load `sms_sensor_driver.ko` first, and ensure `/dev/sms_sensor` and `/proc/sms_stats` exist:
 
 ```sh
-# Load driver
-insmod sms_sensor_driver.ko
-
-# Run app (e.g., for 60 seconds)
-sms_app -d 60
-
-# Measure memory in parallel
-sh /measure.sh
+insmod /lib/modules/5.15.0/sms_sensor_driver.ko   # Only if rcS has not loaded it
+cat /proc/sms_stats
+sms_app -i 500 -t 40 -h 80 -d 60 -r 0 -v
+cat /tmp/sms.log
+cat /tmp/jitter_report.txt
 ```
 
-**Performance measurement:**
+The init script under `rootfs/etc/init.d/rcS` attempts to load the module automatically **if the binary is installed at the expected location**.
 
-```sh
-# perf
-perf stat ./sms_app -d 30
+### Host-side smoke test (no kernel module required)
 
-# strace
-strace -o strace_sms.txt ./sms_app -d 10
+In terminal A (from `assignment_2`):
 
-# valgrind
-valgrind --leak-check=full ./sms_app -d 5
+```bash
+bash tools/fake_sensor.sh
 ```
 
----
+In terminal B:
 
-## Results / Output
+```bash
+cd assignment_2/app
+./sms_app_x86 -d 10 -r 0 -v
+```
 
-| File | Content |
+The host simulator writes to `/tmp/fake_sensor` (FIFO), and the app tolerates its lack of the sensor ioctl (`ENOTTY`). This is a functional host test, not a substitute for running the kernel driver on ARM.
+
+## Command-line flags
+
+| Flag | Meaning | Default |
+|---|---|---|
+| `-i` | Sampling period (milliseconds) | `500` |
+| `-t` | Temperature alarm threshold (°C) | `40.0` |
+| `-h` | Humidity alarm threshold (%) | `80.0` |
+| `-d` | Run duration (seconds); `0` = until signal | `60` |
+| `-r` | `1` requests `SCHED_FIFO` priority 50; `0` uses `SCHED_OTHER` | `1` |
+| `-v` | Print processed samples to standard output | Off |
+
+`SCHED_FIFO` and `mlockall()` may require elevated privileges. The program logs a warning and continues when real-time scheduling cannot be enabled; do not assume `-r 1` always means the process actually ran under `SCHED_FIFO`.
+
+## Measured evidence in the repository
+
+| Record | Observation |
 |---|---|
-| `logs/perf_sms.txt` | CPU cycles, instructions, and cache miss statistics for sms_app |
-| `logs/perf_sms_callgraph.txt` | Detailed call graph (perf report) |
-| `logs/strace_sms.txt` | System call list |
-| `logs/valgrind_sms.txt` | Valgrind memory leak report |
-| `report/Group2_Assignment2.pdf` | Group report (PDF) |
+| [Valgrind](logs/valgrind_sms.txt) | **0 bytes in 0 blocks at exit**; **0 errors** in the captured host session |
+| [strace](logs/strace_sms.txt) | 1,342 syscalls recorded; leading time consumers include `mq_timedreceive`, `clock_nanosleep`, and `futex` |
+| [perf](logs/perf_sms.txt) | CPU sample report includes `sensor_thread` and user/kernel symbols |
+| [Detailed callgraph](logs/perf_sms_callgraph.txt) | Additional profiling evidence |
+| [Report PDF](report/Group2_Assignment2.pdf) | Written design and analysis |
 
----
+The code emits Min/Avg/Max/P99 jitter and a text histogram to `/tmp/jitter_report.txt` **at runtime**; that output file is not committed under `assignment_2/logs/`. It would be incorrect to claim a measured FIFO-versus-OTHER jitter improvement from the committed logs alone.
 
-## Notes
+## Code-review caveat for the current checkout
 
-- `sms_sensor_driver` uses `linux/random.h` to generate random data and `linux/ktime.h` for timestamps.
-- `measure.sh` reads `/proc/$PID/smaps_rollup` when available, falling back to `/proc/$PID/smaps` on older kernels.
-- The circular buffer requires thread safety — see `circular_buffer.c` for the locking mechanism.
+The checked-in `sms_sensor_driver.c` returns EOF whenever a previously read file descriptor has a nonzero offset (`*off > 0`). In the current `sensor_thread.c`, the sampling loop repeatedly calls `read()` on the same descriptor **without an `lseek(fd, 0, SEEK_SET)` or a reopen step**. As written, this can yield one sample followed by repeated EOFs with the real kernel driver. The saved host-side profiling and Valgrind logs do not by themselves establish that repeated ARM-driver sampling works in this exact checkout. Verify or correct this behavior before claiming a sustained 60-second ARM demonstration.
 
----
+## Shutdown and extensions
 
-[← Back to main README](../README.md)
+The application handles SIGINT/SIGTERM, joins worker threads, drains its circular buffer, sends stop messages to queues, closes descriptors, and unlinks queues. It prints runtime statistics covering samples, read errors, buffer overflows, and alarms. See `sms_app.c` for the cleanup sequence.
+
+Potential next experiments include storing two jitter reports (`-r 0` and `-r 1`) under comparable load, embedding the compiled module and app in an Assignment 02 initramfs, and checking RSS at 5, 30 and 55 seconds with `tools/measure.sh`.
+
+[← Back to repository](../README.md)

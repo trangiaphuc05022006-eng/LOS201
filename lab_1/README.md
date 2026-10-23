@@ -1,115 +1,103 @@
-# lab_1 — Build Kernel + U-Boot + initramfs for QEMU ARM
+# Lab 01 — Booting an Embedded Linux System on ARMv7
 
-Cross-compile the full software stack for the ARM vexpress-v2p-ca9 platform: Linux kernel 5.15, U-Boot 2022.04, BusyBox 1.35.0, and package an initramfs to boot in QEMU.
+Set up a minimal ARM Linux boot stack using **Linux kernel 5.15**, **U-Boot 2022.04**, **BusyBox 1.35.0**, an `initramfs`, and the QEMU `vexpress-a9` machine (Cortex-A9).
 
----
+## Course information
+
+| Item | Details |
+|---|---|
+| **Course** | LOS201 |
+| **Class** | IC2008 |
+
+## Team members
+
+| No. | Full name | Student ID |
+|---:|---|---|
+| 1 | Trần Gia Phúc | SE204417 |
+| 2 | Trần Hoàng Khôi | SE203155 |
+| 3 | Trần Nguyễn Việt Dũng | SE205180 |
+| 4 | Thân Trọng Khang | SE203290 |
+| 5 | Nguyễn Huy Khánh | SE204207 |
 
 ## Objectives
 
-- Cross-compile Linux kernel 5.15 for ARM Cortex-A9 (vexpress-v2p-ca9).
-- Build U-Boot 2022.04 as the bootloader.
-- Build BusyBox 1.35.0 to create a minimal root filesystem.
-- Package an initramfs (`initramfs.cpio.gz`) and boot the system in `qemu-system-arm`.
+1. Configure and cross-compile an ARM Linux kernel and device tree.
+2. Explore U-Boot as the bootloader and the role of kernel boot arguments.
+3. Build a minimal BusyBox-based root filesystem.
+4. Package that filesystem as an initramfs and boot it in QEMU.
+5. Understand the transition from the bootloader/kernel to the first userspace process.
 
----
+## Checked-in artifacts
 
-## Directory Structure
-
-```
+```text
 lab_1/
-├── kernel/
-│   ├── linux-5.15/          # Kernel source (excluded by .gitignore — not committed)
-│   └── linux-5.15.tar.xz    # Kernel tarball (~116 MB, archive — do not open)
-├── uboot/
-│   ├── u-boot-2022.04/      # U-Boot source
-│   └── u-boot-2022.04.tar.bz2  # U-Boot tarball (~17 MB, archive — do not open)
-├── busybox-1.35.0/          # BusyBox source (untracked)
-├── busybox-1.35.0.tar.bz2   # BusyBox tarball (~2.4 MB, Git LFS)
-├── initramfs.cpio.gz        # Packaged initramfs (~8 MB, Git LFS)
-├── rootfs/                  # Manually constructed root filesystem (untracked)
-│   ├── bin/, sbin/, usr/    # BusyBox symlinks
-│   ├── dev/, proc/, sys/    # Mount points
-│   ├── etc/                 # Basic configuration
-│   ├── lib/                 # Libraries
-│   ├── linuxrc              # Init script
-│   └── initramfs.cpio.gz    # Placeholder (266 B)
-└── output/
-    ├── zImage               # ARM kernel image (~4.9 MB, Git LFS)
-    ├── u-boot               # U-Boot binary (~4.2 MB, Git LFS)
-    └── vexpress-v2p-ca9.dtb # Device tree blob (~14 KB, Git LFS)
+├── README.md
+├── configs/
+│   ├── kernel.config           # Saved Linux kernel configuration
+│   └── busybox.config          # Saved BusyBox configuration
+├── busybox-1.35.0.tar.bz2      # BusyBox source archive
+├── initramfs.cpio.gz           # Packaged root filesystem
+├── output/
+│   ├── zImage                 # ARM kernel image
+│   ├── vexpress-v2p-ca9.dtb   # Device tree
+│   ├── u-boot                 # Bootloader executable
+│   └── initramfs.cpio.gz     # Another checked-in initramfs copy
+└── uboot/
+    ├── .config                # U-Boot configuration
+    ├── u-boot                 # Built executable
+    ├── u-boot.bin             # Bootloader binary
+    ├── u-boot-2022.04.tar.bz2 # Source archive
+    └── u-boot-2022.04/       # Checked-in U-Boot source tree
 ```
 
-> **Note:** `lab_1/kernel/linux-5.15/` is listed in `.gitignore` and is not committed. The `busybox-1.35.0/` and `rootfs/` directories are untracked (large).
-
----
+**Not in this GitHub snapshot:** the Linux 5.15 source/build tree and the unpacked BusyBox source/rootfs working directories. Do not assume that cloning the repository alone is enough to rebuild these components.
 
 ## Requirements
 
-| Tool | Notes |
-|---|---|
-| `arm-linux-gnueabi-gcc` | Cross-compiler for kernel and U-Boot |
-| `make` | Build kernel, U-Boot, and BusyBox |
-| `qemu-system-arm` | Run the ARM image |
-| `cpio`, `gzip` | Package the initramfs |
-| `git-lfs` | Required to pull `zImage`, `u-boot`, `*.dtb`, and `*.cpio.gz` |
+On a Linux host, install the ARM cross-toolchain, `qemu-system-arm`, `make`, `cpio`, `gzip`, and the libraries needed to build Linux/U-Boot/BusyBox. The course instructions use the ARM hard-float compiler prefix `arm-linux-gnueabihf-` for the Cortex-A9 target.
 
----
+## Boot the prebuilt image
 
-## Build & Run
-
-**Extract sources (if directories do not exist yet):**
-
-```bash
-tar -xf lab_1/kernel/linux-5.15.tar.xz   -C lab_1/kernel/
-tar -xf lab_1/uboot/u-boot-2022.04.tar.bz2 -C lab_1/uboot/
-tar -xf lab_1/busybox-1.35.0.tar.bz2
-```
-
-**Cross-compile Linux kernel:**
-
-The kernel was configured for ARM Versatile Express (`CONFIG_ARCH_VEXPRESS=y`) and built with `arm-linux-gnueabihf-gcc`:
-
-```bash
-cd kernel/linux-5.15
-make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- vexpress_defconfig
-make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- -j$(nproc) zImage dtbs
-```
-
-> The kernel source tree is not stored in this repository (see `.gitignore`). The exact configuration options may differ from the stock `vexpress_defconfig`; see the report for details.
-
-**Boot in QEMU:**
+From the **LOS201 repository root**:
 
 ```bash
 qemu-system-arm \
   -M vexpress-a9 \
+  -cpu cortex-a9 \
+  -m 512M \
+  -nographic \
   -kernel lab_1/output/zImage \
   -dtb lab_1/output/vexpress-v2p-ca9.dtb \
-  -initrd lab_1/initramfs.cpio.gz \
-  -append "console=ttyAMA0 root=/dev/ram rdinit=/linuxrc" \
-  -nographic
+  -initrd lab_1/output/initramfs.cpio.gz \
+  -append 'console=ttyAMA0,115200 root=/dev/ram0 rw rdinit=/linuxrc'
 ```
 
-> The QEMU command above is inferred from the artifact file names. Verify against actual logs or scripts if available.
+This is a **documented boot example**, not an independently re-executed test. The `rdinit` path must match the executable init entry point inside the chosen archive. If your rootfs uses `/init` or `/sbin/init` instead, adjust the boot command to match. To exit QEMU in `-nographic` mode, press **Ctrl+A**, then **X**.
 
----
+## Rebuild outline
 
-## Results / Output
+Retrieve the Linux 5.15 source separately (it is not committed), then restore the versioned configuration:
 
-| File | Content |
-|---|---|
-| `output/zImage` | Compiled ARM kernel image (Git LFS) |
-| `output/u-boot` | U-Boot bootloader binary (Git LFS) |
-| `output/vexpress-v2p-ca9.dtb` | Device tree for vexpress-v2p-ca9 (Git LFS) |
-| `initramfs.cpio.gz` | Packaged root filesystem (Git LFS) |
+```bash
+# Run within your extracted linux-5.15 source directory
+cp /path/to/LOS201/lab_1/configs/kernel.config .config
+make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- olddefconfig
+make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- -j"$(nproc)" zImage dtbs
+```
 
----
+To rebuild BusyBox, extract `busybox-1.35.0.tar.bz2`, load `configs/busybox.config` as `.config`, use the same compatible ARM toolchain, and follow the course lab's steps for creating the rootfs and init scripts. U-Boot has its own source archive and saved `.config` in `uboot/`; its build is distinct from booting the kernel directly with QEMU's `-kernel` option.
 
-## Notes
+## Results and verification
 
-- `lab_1/kernel/linux-5.15/` is excluded from git (`.gitignore`) due to its size. Extract it from the tarball before building.
-- `busybox-1.35.0/` and `rootfs/` are untracked — they are never committed to the repository.
-- Binary files in `output/` are managed by Git LFS (as specified in `.gitattributes`).
+The repository contains the resulting `zImage`, `vexpress-v2p-ca9.dtb`, `u-boot`, and `initramfs.cpio.gz`, together with configuration snapshots. These artifacts document the build output; no Lab 01 terminal boot log is included here, so the boot sequence is not claimed to have been independently reproduced as part of this README review.
 
----
+Useful commands after entering the Linux shell include `uname -a`, `cat /proc/cmdline`, `mount`, and `dmesg`.
 
-[← Back to main README](../README.md)
+## Technical takeaways
+
+- **Device Tree:** describes the emulated hardware to the ARM kernel.
+- **Boot arguments:** select the serial console and userspace initialization path.
+- **BusyBox/initramfs:** provide a compact early userspace environment.
+- **Cross-compilation:** produces ARM executables on a non-ARM Linux host.
+
+[← Back to repository](../README.md)
