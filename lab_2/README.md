@@ -1,109 +1,117 @@
-# lab_2 — Character Device Driver for QEMU ARM
+# Lab 02 — Character Device Driver, procfs and sysfs
 
-Implements the `lab2_driver` Linux kernel module — a simple character device driver — cross-compiled for ARM Cortex-A9 (hard-float ABI), packaged into an initramfs, and tested inside QEMU ARM.
+Implement and integrate a Linux **character device driver** for ARMv7. The code supports `open`, `read`, `write`, and `release`, exposes statistics through `/proc`, and publishes read-only attributes through `/sys`.
 
----
+## Course information
+
+| Item | Details |
+|---|---|
+| **Course** | LOS201 |
+| **Class** | IC2008 |
+
+## Team members
+
+| No. | Full name | Student ID |
+|---:|---|---|
+| 1 | Trần Gia Phúc | SE204417 |
+| 2 | Trần Hoàng Khôi | SE203155 |
+| 3 | Trần Nguyễn Việt Dũng | SE205180 |
+| 4 | Thân Trọng Khang | SE203290 |
+| 5 | Nguyễn Huy Khánh | SE204207 |
 
 ## Objectives
 
-- Write a character device driver using `cdev`, `device_create`, a `/proc` interface, and mutex locking.
-- Cross-compile with `arm-linux-gnueabihf-` (hard-float ABI, `-march=armv7-a -mtune=cortex-a9`).
-- Package the driver into an initramfs together with the root filesystem from Lab 1.
-- Load and test the driver inside QEMU ARM.
+- Register a character device with major number **240**.
+- Exchange bytes between kernel space and userspace with `copy_to_user()` and `copy_from_user()`.
+- Protect driver state with a mutex.
+- Expose driver data via `procfs` and `sysfs`.
+- Place the module in a BusyBox initramfs and load it on QEMU startup.
 
----
+## Project layout
 
-## Directory Structure
-
-```
+```text
 lab_2/
+├── README.md
 ├── driver/
-│   ├── lab2_driver.c        # Character device driver (Major 240, "lab2_class", 1024 B buffer, /proc entry)
-│   ├── Makefile             # Build script (ARCH=arm, arm-linux-gnueabihf-, -march=armv7-a -mtune=cortex-a9)
-│   ├── lab2_driver.ko       # Pre-built kernel module (~140 KB, binary file)
-│   ├── lab2_driver.o        # Object file (~112 KB)
-│   ├── lab2_driver.mod      # Module descriptor
-│   ├── lab2_driver.mod.c    # Module metadata (auto-generated)
-│   ├── lab2_driver.mod.o    # Compiled metadata
-│   ├── Module.symvers       # Symbol versions
-│   ├── modules.order        # Module load order
-│   └── .*.cmd               # Kconfig command files (auto-generated)
-├── configs/                 # Configuration directory (currently empty)
-├── mtd/                     # MTD-related files (currently empty)
-├── rootfs/
-│   └── initramfs/           # Root filesystem for Lab 2
+│   ├── lab2_driver.c             # Kernel module source
+│   └── Makefile                  # ARMv7 out-of-tree Kbuild
+├── rootfs/initramfs/
+│   ├── etc/init.d/rcS            # Boots and tries to load the driver
+│   └── usr/bin/
+│       ├── test_driver.sh       # read/write functional test
+│       └── test_procfs.sh       # procfs + sysfs test
 └── output/
-    └── initramfs_lab2.cpio.gz  # Packaged initramfs (~8.1 MB, Git LFS)
+    └── initramfs_lab2.cpio.gz   # Packaged rootfs image
 ```
 
----
+Additional BusyBox files, libraries, and generated module-build artifacts are also tracked; they are omitted from this abbreviated tree.
 
-## Requirements
+## Driver interface
 
-| Tool | Notes |
+| Interface | Behavior |
 |---|---|
-| `arm-linux-gnueabihf-gcc` | Hard-float cross-compiler (different from `arm-linux-gnueabi-` used in Lab 1) |
-| Linux kernel 5.15 headers | `KDIR := $(HOME)/embedded_lab1/kernel/linux-5.15` (per Makefile) |
-| `make` | Build the kernel module |
-| `qemu-system-arm` | Run the initramfs in QEMU (requires `zImage` and `vexpress-v2p-ca9.dtb` from `lab_1/output/`) |
-| `git-lfs` | Required to pull `initramfs_lab2.cpio.gz` |
+| `/dev/lab2` | Character device, major **240**, minor **0**, 1024-byte internal buffer |
+| `read()` | Reads stored data and respects file offset/EOF |
+| `write()` | Replaces stored data; truncates writes larger than the available buffer |
+| `/proc/lab2_info` | Driver name, major number, buffer size/length, open count, last data |
+| `/sys/class/lab2_class/lab2/buffer_len` | Read-only stored length |
+| `/sys/class/lab2_class/lab2/open_count` | Read-only count of opens |
+| `/sys/class/lab2_class/lab2/last_data` | Read-only last stored value |
 
----
+The `sysfs` location follows the class and device names in `lab2_driver.c`, not the shorter `/proc/lab2` path shown in the old README.
 
-## Build & Run
+## Build
 
-**Build kernel module (on the Linux host):**
+The checked-in Makefile uses `ARCH=arm`, `CROSS_COMPILE=arm-linux-gnueabihf-`, and the kernel source at `~/embedded_lab1/kernel/linux-5.15`.
 
 ```bash
+# From the repository root
 cd lab_2/driver
-make        # produces lab2_driver.ko
-make clean
+make
+# Output: lab2_driver.ko
 ```
 
-> The Makefile automatically uses `arm-linux-gnueabihf-` and the flags `-march=armv7-a -mtune=cortex-a9`.
+Set `KDIR` inside the Makefile to the path of **your configured Linux 5.15 source tree** when it differs. The compiled module must match the kernel running in QEMU; check `modinfo lab2_driver.ko` and its `vermagic`.
 
-**Boot in QEMU with the Lab 2 initramfs:**
+## Boot and test
+
+From the repository root:
 
 ```bash
 qemu-system-arm \
-  -M vexpress-a9 \
+  -M vexpress-a9 -cpu cortex-a9 -m 512M -nographic \
   -kernel lab_1/output/zImage \
   -dtb lab_1/output/vexpress-v2p-ca9.dtb \
   -initrd lab_2/output/initramfs_lab2.cpio.gz \
-  -append "console=ttyAMA0 root=/dev/ram rdinit=/linuxrc" \
-  -nographic
+  -append 'console=ttyAMA0,115200 root=/dev/ram0 rw rdinit=/linuxrc'
 ```
 
-> The QEMU command above is inferred from the artifact file names (see Lab 1 for `zImage` and `.dtb`).
+The boot command is an example based on the stored images; check the initramfs startup path on your environment.
 
-**Load and test driver inside QEMU (as root):**
+**Inside QEMU**, the `rcS` script already tries to load `lab2_driver.ko` automatically. First verify that it is loaded:
 
 ```sh
-insmod /lib/modules/5.15.0/lab2_driver.ko
-mknod /dev/lab2 c 240 0
-echo "hello" > /dev/lab2
+lsmod | grep lab2
+ls -l /dev/lab2
+echo 'Hello, Lab 02' > /dev/lab2
 cat /dev/lab2
-cat /proc/lab2     # read stats via /proc interface
-rmmod lab2_driver
+cat /proc/lab2_info
+cat /sys/class/lab2_class/lab2/buffer_len
+cat /sys/class/lab2_class/lab2/open_count
+cat /sys/class/lab2_class/lab2/last_data
 ```
 
----
+Both included scripts call `insmod` themselves. **Do not run them against an already loaded module without unloading it first**:
 
-## Results / Output
+```sh
+rmmod lab2_driver
+sh /usr/bin/test_driver.sh
+rmmod lab2_driver
+sh /usr/bin/test_procfs.sh
+```
 
-| File | Content |
-|---|---|
-| `driver/lab2_driver.ko` | Kernel module cross-compiled for ARM |
-| `output/initramfs_lab2.cpio.gz` | Complete initramfs containing the driver and root filesystem (~8.1 MB, Git LFS) |
+## Scope and evidence
 
----
+The committed source and scripts directly document the character driver and procfs/sysfs integration. The original Lab 02 specification also discusses **MTD/JFFS2**, but there is no separate MTD/JFFS2 implementation evident in this checked-in lab folder; this README therefore does not claim that exercise as demonstrated by the repository.
 
-## Notes
-
-- Lab 2 uses `arm-linux-gnueabihf-` (hard-float) instead of `arm-linux-gnueabi-` from Lab 1 / Assignment 1 — use the correct toolchain.
-- `driver/lab2_driver.c` registers module name `lab2`, class `lab2_class`, major number 240, buffer size 1024 bytes, and a `/proc` entry for reading stats.
-- The `configs/` and `mtd/` directories are currently empty and may be populated later.
-
----
-
-[← Back to main README](../README.md)
+[← Back to repository](../README.md)
