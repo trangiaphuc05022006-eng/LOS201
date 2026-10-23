@@ -19,6 +19,40 @@ Set up a minimal ARM Linux boot stack using **Linux kernel 5.15**, **U-Boot 2022
 | 4 | Thân Trọng Khang | SE203290 |
 | 5 | Nguyễn Huy Khánh | SE204207 |
 
+## Block diagram — ARM Linux build and boot
+
+```mermaid
+flowchart TB
+    subgraph HOST["Ubuntu build host"]
+        TOOL["ARM cross-compilation toolchain"]
+        KCONF["Linux 5.15 source and kernel.config"]
+        BCONF["BusyBox 1.35.0 and busybox.config"]
+        UCONF["U-Boot 2022.04 source and configuration"]
+        KBUILD["Build ARM Linux kernel and Device Tree"]
+        RBUILD["Build BusyBox and prepare root filesystem"]
+        UBUILD["Build U-Boot (separate bootloader exercise)"]
+
+        TOOL --> KBUILD
+        TOOL --> RBUILD
+        TOOL --> UBUILD
+        KCONF --> KBUILD
+        BCONF --> RBUILD
+        UCONF --> UBUILD
+    end
+
+    KBUILD --> KOUT["zImage and vexpress-v2p-ca9.dtb"]
+    RBUILD --> ROOT["BusyBox rootfs"]
+    ROOT --> INITRD["initramfs.cpio.gz"]
+    UBUILD --> UOUT["u-boot and u-boot.bin"]
+
+    KOUT --> QEMU["QEMU vexpress-a9 (Cortex-A9)"]
+    INITRD --> QEMU
+    QEMU --> KERNEL["Linux kernel startup"]
+    KERNEL --> USER["init / linuxrc and BusyBox shell"]
+```
+
+The documented QEMU command **boots the kernel directly** using `-kernel`, `-dtb`, and `-initrd`. U-Boot is built and studied separately; the diagram does not imply that the stored `u-boot` binary is executed by that direct-boot command.
+
 ## Objectives
 
 1. Configure and cross-compile an ARM Linux kernel and device tree.

@@ -22,6 +22,25 @@ Coursework repository covering ARM Linux boot, kernel modules, Linux driver inte
 **Target platform:** ARMv7 Cortex-A9 emulated with QEMU `vexpress-a9`  
 **Main technologies:** Linux 5.15, U-Boot 2022.04, BusyBox 1.35.0, C, Linux kernel APIs, POSIX threads, and IPC.
 
+## Block diagram — Course project roadmap
+
+```mermaid
+flowchart LR
+    L1["Lab 01: ARM Linux boot stack"]
+    L2["Lab 02: Character device driver"]
+    L3["Lab 03: Debugging and profiling"]
+    A1["Assignment 01: ioctl and misc drivers"]
+    A2["Assignment 02: Sensor Monitoring System"]
+
+    L1 -->|"Kernel and QEMU environment"| L2
+    L2 -->|"Driver interfaces"| A1
+    A1 -->|"Kernel-device experience"| A2
+    L3 -->|"Tracing, profiling, timing"| A2
+    L1 -.->|"ARM test environment"| A2
+```
+
+This is a **learning and implementation roadmap**, not a claim that these projects form one executable program. Each linked folder contains its own architecture block diagram.
+
 ## Projects
 
 | Project | Focus | Evidence and details |

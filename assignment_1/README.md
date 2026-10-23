@@ -19,6 +19,36 @@ Two ARM Linux kernel drivers demonstrate different interfaces: an `ioctl`-enable
 | 4 | Thân Trọng Khang | SE203290 |
 | 5 | Nguyễn Huy Khánh | SE204207 |
 
+## Block diagram — Two Linux device-driver implementations
+
+```mermaid
+flowchart TB
+    subgraph TASK1["Task 1: ioctl character device"]
+        TOOL["asgn1_ctl and test_asgn1.sh"]
+        DEV1["/dev/asgn1 (major 241)"]
+        OPS1["asgn1_driver: read / write / unlocked_ioctl"]
+        BUF["Mutex-protected 1024-byte buffer and statistics"]
+        CMD["RESET_BUFFER / GET_STATS / SET_MODE / GET_VERSION"]
+        TOOL --> DEV1 --> OPS1
+        OPS1 -->|"read and write"| BUF
+        OPS1 -->|"ioctl commands"| CMD
+        CMD <--> BUF
+    end
+
+    subgraph TASK2["Task 2: misc counter device"]
+        TEST2["cat / echo / test_counter.sh"]
+        DEV2["/dev/counter (misc major 10)"]
+        OPS2["counter_driver: read / write"]
+        ATOM["atomic_t counter and access totals"]
+        PROC["/proc/counter_info"]
+        TEST2 --> DEV2 --> OPS2 --> ATOM
+        ATOM --> PROC
+        TEST2 --> PROC
+    end
+```
+
+Task 1 uses explicit character-device registration and supports four `ioctl` commands. Task 2 uses `misc_register()` and atomic counters; `/proc/counter_info` provides read-only statistics. They are **independent drivers**, not sequential stages in one data pipeline.
+
 ## Tasks and objectives
 
 | Task | Implementation | Key interface |
