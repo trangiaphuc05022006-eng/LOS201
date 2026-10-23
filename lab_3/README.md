@@ -19,6 +19,32 @@ Practice diagnosing embedded applications using **GDB**, **Valgrind**, **strace*
 | 4 | Thân Trọng Khang | SE203290 |
 | 5 | Nguyễn Huy Khánh | SE204207 |
 
+## Block diagram — Debugging and performance workflow
+
+```mermaid
+flowchart LR
+    subgraph TARGETS["C applications and experiments"]
+        BUG["buggy_app.c: memory and arithmetic bugs"]
+        LEAK["leaky_app and leaky_rss"]
+        PERF["perf_target.c: compute, search, I/O"]
+        LAT["Latency measurement data"]
+    end
+
+    subgraph TOOLS["Analysis tools"]
+        GDB["gdbserver (ARM guest) + GDB (host)"]
+        VAL["Valgrind / Memcheck"]
+        PTOOLS["perf and strace"]
+        PLOT["gnuplot"]
+    end
+
+    BUG --> GDB --> GLOG["logs/gdb_session_full.txt"]
+    LEAK --> VAL --> VLOG["Valgrind reports: before / after fix"]
+    PERF --> PTOOLS --> PLOG["perf and strace logs"]
+    LAT --> HRAW["logs/hist_standard.txt"] --> PLOT --> HPLOT["logs/latency_histogram.png"]
+```
+
+The workflows are separate experiments; the arrows indicate which tool analyzes which kind of evidence. The top-level `leaky_app.c` is already corrected, while the saved Valgrind logs also document the original leaking run.
+
 ## Learning goals
 
 - Inspect invalid memory access and arithmetic bugs with a debugger.

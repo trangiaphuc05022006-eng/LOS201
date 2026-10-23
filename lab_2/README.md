@@ -19,6 +19,36 @@ Implement and integrate a Linux **character device driver** for ARMv7. The code 
 | 4 | Thân Trọng Khang | SE203290 |
 | 5 | Nguyễn Huy Khánh | SE204207 |
 
+## Block diagram — Character driver and virtual filesystems
+
+```mermaid
+flowchart LR
+    subgraph USER["Userspace in QEMU ARM"]
+        TEST["echo / cat / test_driver.sh"]
+        STATS["test_procfs.sh / cat"]
+        INIT["BusyBox rcS startup script"]
+    end
+
+    subgraph KERNEL["Linux kernel"]
+        VFS["VFS: open, read, write, close"]
+        OPS["lab2_driver: file_operations"]
+        STATE["1024-byte buffer, open_count, mutex"]
+        PROC["/proc/lab2_info"]
+        SYS["/sys/class/lab2_class/lab2/*"]
+    end
+
+    INIT -->|"insmod lab2_driver.ko"| OPS
+    TEST --> VFS
+    VFS -->|"/dev/lab2, major 240"| OPS
+    OPS <-->|"buffer access under mutex"| STATE
+    STATE --> PROC
+    STATE --> SYS
+    STATS --> PROC
+    STATS --> SYS
+```
+
+`/dev/lab2` is a character-device interface for data, whereas `procfs` and `sysfs` expose driver status. The diagram depicts the interfaces implemented in [`driver/lab2_driver.c`](driver/lab2_driver.c).
+
 ## Objectives
 
 - Register a character device with major number **240**.

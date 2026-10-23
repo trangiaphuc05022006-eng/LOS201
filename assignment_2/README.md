@@ -19,34 +19,53 @@ A simulated industrial sensor-monitoring pipeline built with a **Linux kernel se
 | 4 | Thân Trọng Khang | SE203290 |
 | 5 | Nguyễn Huy Khánh | SE204207 |
 
-## System design
+## Block diagram — Sensor Monitoring System architecture
 
-```text
-                         Kernel space
-                    sms_sensor_driver.c
-                      /dev/sms_sensor
-                      /proc/sms_stats
-                              |
-                           read()
-                              v
-                         User space
-                    [Sensor thread] ---> [Circular buffer]
-                                                |
-                                                v
-                                         [Processor thread]
-                                                |
-                                  +-------------+------------+
-                                  |                          |
-                              alarm_queue                  log_queue
-                                  |                          |
-                                  v                          v
-                            [Alert thread] ------------> [Logger thread]
-                                                             |
-                                                             v
-                                                       /tmp/sms.log
+```mermaid
+flowchart LR
+    subgraph KERNEL["Kernel space"]
+        DRIVER["sms_sensor_driver.ko"]
+        DEVICE["/dev/sms_sensor: CSV samples"]
+        PROC["/proc/sms_stats: driver statistics"]
+        DRIVER --> DEVICE
+        DRIVER --> PROC
+    end
+
+    subgraph USER["Userspace: sms_app with four POSIX threads"]
+        MAIN["Main: configuration and lifecycle"]
+        SENSOR["Sensor thread: read and sample timing"]
+        CB["Circular buffer: mutex and condition variable"]
+        PROCESS["Processor thread: rolling average and thresholds"]
+        AQ["POSIX alarm queue"]
+        ALERT["Alert thread"]
+        LQ["POSIX log queue"]
+        LOGGER["Logger thread"]
+        JSAMPLES["Jitter samples in memory"]
+        JITTER["/tmp/jitter_report.txt"]
+        STDERR["stderr alerts"]
+        LOG["/tmp/sms.log"]
+
+        MAIN --> SENSOR
+        MAIN --> PROCESS
+        MAIN --> ALERT
+        MAIN --> LOGGER
+        SENSOR --> CB --> PROCESS
+        PROCESS -->|"high temp / humidity / spike"| AQ
+        AQ --> ALERT
+        PROCESS -->|"sample log"| LQ
+        ALERT -->|"alert log"| LQ
+        ALERT --> STDERR
+        LQ --> LOGGER --> LOG
+        SENSOR -->|"wake-up measurements"| JSAMPLES
+        JSAMPLES --> MAIN
+        MAIN -->|"write report at shutdown"| JITTER
+    end
+
+    MAIN -->|"SMS_SET_INTERVAL ioctl"| DEVICE
+    DEVICE -->|"read()"| SENSOR
 ```
 
-The Sensor thread requests a sampling period and records wake-up jitter. The Processor maintains a rolling 10-sample average and detects temperature/humidity alarms; the Logger timestamps messages, flushes periodically, and rotates logs exceeding 1 MiB.
+The block diagram shows the **intended architecture implemented by the source files**, not proof of uninterrupted ARM-side operation. In the current checkout the driver returns EOF after the first read at a nonzero file offset; see the code-review caveat below for the sampling-loop limitation.
 
 ## Repository structure
 
