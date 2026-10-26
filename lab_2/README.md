@@ -145,3 +145,27 @@ sh /usr/bin/test_procfs.sh
 The committed source and scripts directly document the character driver and procfs/sysfs integration. The original Lab 02 specification also discusses **MTD/JFFS2**, but there is no separate MTD/JFFS2 implementation evident in this checked-in lab folder; this README therefore does not claim that exercise as demonstrated by the repository.
 
 [← Back to repository](../README.md)
+
+## LAB-02 technical handbook
+
+The documentation below is a source-based companion to this README. It explains the
+current implementation, reproducing manual checks, and interpreting the checked-in
+boot/build evidence. It does not modify the kernel module and does not claim that
+unperformed tests passed.
+
+1. [Architecture and data flow](docs/01-architecture.md)
+2. [Building the ARM kernel module](docs/02-cross-compilation.md)
+3. [BusyBox initramfs boot sequence](docs/03-initramfs-startup.md)
+4. [Character device registration](docs/04-device-registration.md)
+5. [open() and release() lifecycle](docs/05-file-open-release.md)
+6. [read() path and EOF behavior](docs/06-read-path.md)
+7. [write() replacement and truncation](docs/07-write-path.md)
+8. [User/kernel memory copying](docs/08-userspace-kernel-copy.md)
+9. [Mutex and shared state](docs/09-mutex-and-races.md)
+10. [procfs and seq_file](docs/10-procfs-seq-file.md)
+11. [sysfs read-only attributes](docs/11-sysfs-attributes.md)
+12. [Device nodes and numbering](docs/12-device-node-and-major.md)
+13. [Functional verification checklist](docs/13-functional-test-plan.md)
+14. [Test script walkthrough](docs/14-test-script-review.md)
+15. [Boot and build evidence](docs/15-boot-and-build-evidence.md)
+16. [Troubleshooting and project scope](docs/16-troubleshooting-and-scope.md)
